@@ -1,0 +1,38 @@
+{
+  "name": "memberstack",
+  "version": "1.0.0",
+  "packageManager": "pnpm@11.0.8",
+  "description": "",
+  "main": "index.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "dev": "turbo run dev",
+    "build": "turbo run build",
+    "lint": "turbo run lint"
+  },
+  "keywords": [],
+  "author": "",
+  "license": "ISC",
+  "type": "module",
+  "devDependencies": {
+    "@types/bcrypt": "^6.0.0",
+    "@types/jsonwebtoken": "^9.0.10",
+    "nodemon": "^3.1.14",
+    "ts-node": "^10.9.2",
+    "turbo": "^2.9.9"
+  },
+  "dependencies": {
+    "bcrypt": "^6.0.0",
+    "class-validator": "^0.15.1",
+    "dotenv": "^17.4.2",
+    "jsonwebtoken": "^9.0.3",
+    "pg": "^8.20.0",
+    "uuid": "^14.0.0"
+  },
+  "workspaces": [
+    "docs",
+    "apps/*",
+    "packages/*",
+    "packages/**/*"
+  ]
+}

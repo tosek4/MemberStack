@@ -1,0 +1,15 @@
+# dependencies
+/node_modules
+/.pnp
+.pnp.js
+
+# local env files
+.env
+.env.local
+
+# next.js
+/.next/
+/out/
+
+# production
+/build
