@@ -1,31 +1,32 @@
-import {Client} from '@loopback/testlab';
-import {MemberstackApiApplication} from '../..';
-import {setupApplication} from './test-helper';
+import { Client } from '@loopback/testlab'
+import { MemberstackApiApplication } from '../..'
+import { setupApplication } from './test-helper'
+import { after, before, describe, it } from 'node:test'
 
 describe('HomePage', () => {
-  let app: MemberstackApiApplication;
-  let client: Client;
+  let app: MemberstackApiApplication
+  let client: Client
 
-  before('setupApplication', async () => {
-    ({app, client} = await setupApplication());
-  });
+  before( async () => {
+    ;({ app, client } = await setupApplication())
+  })
 
   after(async () => {
-    await app.stop();
-  });
+    await app.stop()
+  })
 
   it('exposes a default home page', async () => {
     await client
       .get('/')
       .expect(200)
-      .expect('Content-Type', /text\/html/);
-  });
+      .expect('Content-Type', /text\/html/)
+  })
 
   it('exposes self-hosted explorer', async () => {
     await client
       .get('/explorer/')
       .expect(200)
       .expect('Content-Type', /text\/html/)
-      .expect(/<title>LoopBack API Explorer/);
-  });
-});
+      .expect(/<title>LoopBack API Explorer/)
+  })
+})

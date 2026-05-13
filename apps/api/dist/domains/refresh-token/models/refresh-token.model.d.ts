@@ -1,0 +1,13 @@
+import { Entity } from '@loopback/repository';
+export declare class RefreshToken extends Entity {
+    id?: number;
+    userId: string;
+    token: string;
+    expiresAt: string;
+    revokedAt?: string;
+    [prop: string]: any;
+    constructor(data?: Partial<RefreshToken>);
+}
+export interface RefreshTokenRelations {
+}
+export type RefreshTokenWithRelations = RefreshToken & RefreshTokenRelations;
