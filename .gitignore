@@ -13,3 +13,11 @@
 
 # production
 /build
+
+
+# Turborepo cache artifacts
+.turbo/
+
+# typescript
+*.tsbuildinfo
+next-env.d.ts
