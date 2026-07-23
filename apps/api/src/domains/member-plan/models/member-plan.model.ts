@@ -1,4 +1,9 @@
-import { Entity, model, property } from '@loopback/repository'
+import { Entity, hasMany, model, property } from '@loopback/repository'
+import {
+  MemberSubscription,
+  MemberSubscriptionWithRelations,
+} from '../../member-subscription/models'
+import { MemberPlanRelations } from '../types'
 
 @model()
 export class MemberPlan extends Entity {
@@ -27,13 +32,13 @@ export class MemberPlan extends Entity {
   })
   createdAt: string
 
+  // relations
+  @hasMany(() => MemberSubscription, { keyTo: 'membershipPlanId' })
+  subscriptions?: MemberSubscription[]
+
   constructor(data?: Partial<MemberPlan>) {
     super(data)
   }
-}
-
-export interface MemberPlanRelations {
-  // describe navigational properties here
 }
 
 export type MemberPlanWithRelations = MemberPlan & MemberPlanRelations

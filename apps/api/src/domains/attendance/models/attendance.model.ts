@@ -1,4 +1,7 @@
-import { Entity, model, property } from '@loopback/repository'
+import { belongsTo, Entity, model, property } from '@loopback/repository'
+import { Member } from '../../member/models'
+import { User } from '../../user/models'
+import { AttendanceRelations } from '../types'
 
 @model()
 export class Attendance extends Entity {
@@ -8,12 +11,6 @@ export class Attendance extends Entity {
     generated: true,
   })
   id?: number
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  memberId: string
 
   @property({
     type: 'timestamp',
@@ -29,23 +26,20 @@ export class Attendance extends Entity {
   @property({
     type: 'enum',
     required: true,
-    enum: ['qr', 'nfc', 'manual'],
+    members: ['qr', 'nfc', 'manual'],
   })
   attendanceMethod: string
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  createdByUserId?: string
+  // relations
+  @belongsTo(() => Member)
+  memberId: number
+
+  @belongsTo(() => User, { name: 'createdBy' })
+  createdByUserId: number
 
   constructor(data?: Partial<Attendance>) {
     super(data)
   }
-}
-
-export interface AttendanceRelations {
-  // describe navigational properties here
 }
 
 export type AttendanceWithRelations = Attendance & AttendanceRelations

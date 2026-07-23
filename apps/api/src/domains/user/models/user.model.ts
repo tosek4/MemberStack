@@ -1,4 +1,16 @@
-import { Entity, model, property } from '@loopback/repository'
+import {
+  belongsTo,
+  Entity,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository'
+import { Role } from '../../role/models'
+import { RefreshToken } from '../../refresh-token/models'
+import { Member } from '../../member/models'
+import { Payment } from '../../payment/models'
+import { Attendance } from '../../attendance/models'
+import { UserRelations } from '../types'
 
 @model()
 export class User extends Entity {
@@ -8,12 +20,6 @@ export class User extends Entity {
     generated: true,
   })
   id?: number
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  roleId: string
 
   @property({
     type: 'string',
@@ -58,7 +64,23 @@ export class User extends Entity {
     defaultFn: 'now',
     required: true,
   })
-  createdAt: string;
+  createdAt: string
+
+  // relations
+  @belongsTo(() => Role)
+  roleId: number
+
+  @hasMany(() => RefreshToken)
+  refreshTokens?: RefreshToken[]
+
+  @hasMany(() => Member, { keyTo: 'createdByUserId' })
+  members?: Member[]
+
+  @hasMany(() => Payment, { keyTo: 'createdByUserId' })
+  payments?: Payment[]
+
+  @hasMany(() => Attendance, { keyTo: 'createdByUserId' })
+  attendances?: Attendance[];
 
   // Define well-known properties here
 
@@ -69,10 +91,6 @@ export class User extends Entity {
   constructor(data?: Partial<User>) {
     super(data)
   }
-}
-
-export interface UserRelations {
-  // describe navigational properties here
 }
 
 export type UserWithRelations = User & UserRelations

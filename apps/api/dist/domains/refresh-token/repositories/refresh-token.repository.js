@@ -7,13 +7,17 @@ const repository_1 = require("@loopback/repository");
 const datasources_1 = require("../../../datasources");
 const models_1 = require("../models");
 let RefreshTokenRepository = class RefreshTokenRepository extends repository_1.DefaultCrudRepository {
-    constructor(dataSource) {
+    constructor(dataSource, userRepositoryGetter) {
         super(models_1.RefreshToken, dataSource);
+        this.userRepositoryGetter = userRepositoryGetter;
+        this.user = this.createBelongsToAccessorFor('user', userRepositoryGetter);
+        this.registerInclusionResolver('user', this.user.inclusionResolver);
     }
 };
 exports.RefreshTokenRepository = RefreshTokenRepository;
 exports.RefreshTokenRepository = RefreshTokenRepository = tslib_1.__decorate([
     tslib_1.__param(0, (0, core_1.inject)('datasources.postgres')),
-    tslib_1.__metadata("design:paramtypes", [datasources_1.PostgresDataSource])
+    tslib_1.__param(1, repository_1.repository.getter('UserRepository')),
+    tslib_1.__metadata("design:paramtypes", [datasources_1.PostgresDataSource, Function])
 ], RefreshTokenRepository);
 //# sourceMappingURL=refresh-token.repository.js.map

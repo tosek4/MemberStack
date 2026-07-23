@@ -3,6 +3,7 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.RefreshToken = void 0;
 const tslib_1 = require("tslib");
 const repository_1 = require("@loopback/repository");
+const models_1 = require("../../user/models");
 let RefreshToken = class RefreshToken extends repository_1.Entity {
     constructor(data) {
         super(data);
@@ -23,13 +24,6 @@ tslib_1.__decorate([
         required: true,
     }),
     tslib_1.__metadata("design:type", String)
-], RefreshToken.prototype, "userId", void 0);
-tslib_1.__decorate([
-    (0, repository_1.property)({
-        type: 'string',
-        required: true,
-    }),
-    tslib_1.__metadata("design:type", String)
 ], RefreshToken.prototype, "token", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
@@ -44,6 +38,10 @@ tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:type", String)
 ], RefreshToken.prototype, "revokedAt", void 0);
+tslib_1.__decorate([
+    (0, repository_1.belongsTo)(() => models_1.User),
+    tslib_1.__metadata("design:type", Number)
+], RefreshToken.prototype, "userId", void 0);
 exports.RefreshToken = RefreshToken = tslib_1.__decorate([
     (0, repository_1.model)(),
     tslib_1.__metadata("design:paramtypes", [Object])

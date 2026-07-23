@@ -1,7 +1,11 @@
 import { Entity } from '@loopback/repository';
+import { RefreshToken } from '../../refresh-token/models';
+import { Member } from '../../member/models';
+import { Payment } from '../../payment/models';
+import { Attendance } from '../../attendance/models';
+import { UserRelations } from '../types';
 export declare class User extends Entity {
     id?: number;
-    roleId: string;
     firstName: string;
     lastName: string;
     email: string;
@@ -9,9 +13,12 @@ export declare class User extends Entity {
     phone?: string;
     isActive: boolean;
     createdAt: string;
+    roleId: number;
+    refreshTokens?: RefreshToken[];
+    members?: Member[];
+    payments?: Payment[];
+    attendances?: Attendance[];
     [prop: string]: any;
     constructor(data?: Partial<User>);
-}
-export interface UserRelations {
 }
 export type UserWithRelations = User & UserRelations;

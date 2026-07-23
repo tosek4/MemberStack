@@ -1,4 +1,8 @@
-import { Entity, model, property } from '@loopback/repository'
+import { belongsTo, Entity, model, property } from '@loopback/repository'
+import { Member } from '../../member/models'
+import { User } from '../../user/models'
+import { MemberSubscription } from '../../member-subscription/models'
+import { PaymentRelations } from '../types'
 
 @model()
 export class Payment extends Entity {
@@ -8,12 +12,6 @@ export class Payment extends Entity {
     generated: true,
   })
   id?: number
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  memberSubscriptionId: string
 
   @property({
     type: 'number',
@@ -37,18 +35,19 @@ export class Payment extends Entity {
   })
   transactionReference?: string
 
-  @property({
-    type: 'string',
-  })
-  createdByUserId?: string
+  // relations
+  @belongsTo(() => Member)
+  memberId: number
+
+  @belongsTo(() => MemberSubscription)
+  memberSubscriptionId: number
+
+  @belongsTo(() => User, { name: 'createdBy' })
+  createdByUserId: number
 
   constructor(data?: Partial<Payment>) {
     super(data)
   }
-}
-
-export interface PaymentRelations {
-  // describe navigational properties here
 }
 
 export type PaymentWithRelations = Payment & PaymentRelations

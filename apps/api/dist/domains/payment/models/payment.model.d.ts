@@ -1,14 +1,14 @@
 import { Entity } from '@loopback/repository';
+import { PaymentRelations } from '../types';
 export declare class Payment extends Entity {
     id?: number;
-    memberSubscriptionId: string;
     amount?: number;
     paymentMethod: string;
     paidAt?: string;
     transactionReference?: string;
-    createdByUserId?: string;
+    memberId: number;
+    memberSubscriptionId: number;
+    createdByUserId: number;
     constructor(data?: Partial<Payment>);
-}
-export interface PaymentRelations {
 }
 export type PaymentWithRelations = Payment & PaymentRelations;

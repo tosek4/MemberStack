@@ -1,4 +1,15 @@
-import { Entity, model, property } from '@loopback/repository'
+import {
+  belongsTo,
+  Entity,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository'
+import { User } from '../../user/models'
+import { Attendance } from '../../attendance/models'
+import { Payment } from '../../payment/models'
+import { MemberSubscription } from '../../member-subscription/models'
+import { MemberRelations } from '../types'
 
 @model()
 export class Member extends Entity {
@@ -61,7 +72,20 @@ export class Member extends Entity {
     required: true,
     members: ['active', 'inactive', 'expired', 'suspended', 'blocked'],
   })
-  status?: string;
+  status?: string
+
+  // relations
+  @belongsTo(() => User, { name: 'createdBy' })
+  createdByUserId: number
+
+  @hasMany(() => Attendance)
+  attendances?: Attendance[]
+
+  @hasMany(() => Payment)
+  payments?: Payment[]
+
+  @hasMany(() => MemberSubscription)
+  subscriptions?: MemberSubscription[];
 
   // Define well-known properties here
 
@@ -72,10 +96,6 @@ export class Member extends Entity {
   constructor(data?: Partial<Member>) {
     super(data)
   }
-}
-
-export interface MemberRelations {
-  // describe navigational properties here
 }
 
 export type MemberWithRelations = Member & MemberRelations

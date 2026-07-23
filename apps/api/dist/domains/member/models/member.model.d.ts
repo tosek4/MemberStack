@@ -1,4 +1,8 @@
 import { Entity } from '@loopback/repository';
+import { Attendance } from '../../attendance/models';
+import { Payment } from '../../payment/models';
+import { MemberSubscription } from '../../member-subscription/models';
+import { MemberRelations } from '../types';
 export declare class Member extends Entity {
     id?: number;
     firstName: string;
@@ -10,9 +14,11 @@ export declare class Member extends Entity {
     emergency_contact?: string;
     profile_image?: string;
     status?: string;
+    createdByUserId: number;
+    attendances?: Attendance[];
+    payments?: Payment[];
+    subscriptions?: MemberSubscription[];
     [prop: string]: any;
     constructor(data?: Partial<Member>);
-}
-export interface MemberRelations {
 }
 export type MemberWithRelations = Member & MemberRelations;

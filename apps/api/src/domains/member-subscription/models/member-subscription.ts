@@ -1,4 +1,15 @@
-import { Entity, model, property } from '@loopback/repository'
+import {
+  belongsTo,
+  Entity,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository'
+import { Member } from '../../member/models'
+import { MemberPlan } from '../../member-plan/models'
+import { User } from '../../user/models'
+import { Payment } from '../../payment/models'
+import { MemberSubscriptionRelations } from '../types'
 
 @model()
 export class MemberSubscription extends Entity {
@@ -8,18 +19,6 @@ export class MemberSubscription extends Entity {
     generated: true,
   })
   id?: number
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  memberId: string
-
-  @property({
-    type: 'string',
-    required: true,
-  })
-  membershipPlanId: string
 
   @property({
     type: 'date',
@@ -45,19 +44,22 @@ export class MemberSubscription extends Entity {
   })
   remainingVisits: number
 
-  @property({
-    type: 'string',
-    required: true,
-  })
-  createdByUserId: string
+  // relations
+  @belongsTo(() => Member)
+  memberId: number
+
+  @belongsTo(() => MemberPlan)
+  membershipPlanId: number
+
+  @belongsTo(() => User, { name: 'createdBy' })
+  createdByUserId: number
+
+  @hasMany(() => Payment)
+  payments?: Payment[]
 
   constructor(data?: Partial<MemberSubscription>) {
     super(data)
   }
-}
-
-export interface MemberSubscriptionRelations {
-  // describe navigational properties here
 }
 
 export type MemberSubscriptionWithRelations = MemberSubscription &

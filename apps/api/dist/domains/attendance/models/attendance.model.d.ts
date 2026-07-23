@@ -1,13 +1,12 @@
 import { Entity } from '@loopback/repository';
+import { AttendanceRelations } from '../types';
 export declare class Attendance extends Entity {
     id?: number;
-    memberId: string;
     checkedInAt?: string;
     checkedOutAt?: string;
     attendanceMethod: string;
-    createdByUserId?: string;
+    memberId: number;
+    createdByUserId: number;
     constructor(data?: Partial<Attendance>);
-}
-export interface AttendanceRelations {
 }
 export type AttendanceWithRelations = Attendance & AttendanceRelations;

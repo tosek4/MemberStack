@@ -3,6 +3,10 @@ Object.defineProperty(exports, "__esModule", { value: true });
 exports.Member = void 0;
 const tslib_1 = require("tslib");
 const repository_1 = require("@loopback/repository");
+const models_1 = require("../../user/models");
+const models_2 = require("../../attendance/models");
+const models_3 = require("../../payment/models");
+const models_4 = require("../../member-subscription/models");
 let Member = class Member extends repository_1.Entity {
     constructor(data) {
         super(data);
@@ -80,6 +84,22 @@ tslib_1.__decorate([
     }),
     tslib_1.__metadata("design:type", String)
 ], Member.prototype, "status", void 0);
+tslib_1.__decorate([
+    (0, repository_1.belongsTo)(() => models_1.User, { name: 'createdBy' }),
+    tslib_1.__metadata("design:type", Number)
+], Member.prototype, "createdByUserId", void 0);
+tslib_1.__decorate([
+    (0, repository_1.hasMany)(() => models_2.Attendance),
+    tslib_1.__metadata("design:type", Array)
+], Member.prototype, "attendances", void 0);
+tslib_1.__decorate([
+    (0, repository_1.hasMany)(() => models_3.Payment),
+    tslib_1.__metadata("design:type", Array)
+], Member.prototype, "payments", void 0);
+tslib_1.__decorate([
+    (0, repository_1.hasMany)(() => models_4.MemberSubscription),
+    tslib_1.__metadata("design:type", Array)
+], Member.prototype, "subscriptions", void 0);
 exports.Member = Member = tslib_1.__decorate([
     (0, repository_1.model)(),
     tslib_1.__metadata("design:paramtypes", [Object])
