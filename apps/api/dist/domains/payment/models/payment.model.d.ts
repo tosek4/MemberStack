@@ -4,7 +4,7 @@ export declare class Payment extends Entity {
     id?: number;
     amount?: number;
     paymentMethod: string;
-    paidAt?: string;
+    paidAt?: Date;
     transactionReference?: string;
     memberId: number;
     memberSubscriptionId: number;

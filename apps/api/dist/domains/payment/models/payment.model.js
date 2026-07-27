@@ -28,17 +28,20 @@ tslib_1.__decorate([
 ], Payment.prototype, "amount", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
-        type: 'enum',
+        type: 'string',
         required: true,
-        members: ['cash', 'card', 'bank_transfer', 'paypal', 'other'],
+        jsonSchema: {
+            enum: ['cash', 'card', 'bank_transfer', 'paypal', 'other'],
+        },
     }),
     tslib_1.__metadata("design:type", String)
 ], Payment.prototype, "paymentMethod", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
-        type: 'timestamp',
+        type: 'date',
+        required: true,
     }),
-    tslib_1.__metadata("design:type", String)
+    tslib_1.__metadata("design:type", Date)
 ], Payment.prototype, "paidAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({

@@ -7,6 +7,7 @@ const models_1 = require("../../user/models");
 const models_2 = require("../../attendance/models");
 const models_3 = require("../../payment/models");
 const models_4 = require("../../member-subscription/models");
+const member_status_1 = require("../types/member-status");
 let Member = class Member extends repository_1.Entity {
     constructor(data) {
         super(data);
@@ -78,9 +79,11 @@ tslib_1.__decorate([
 ], Member.prototype, "profile_image", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
-        type: 'enum',
+        type: 'string',
         required: true,
-        members: ['active', 'inactive', 'expired', 'suspended', 'blocked'],
+        jsonSchema: {
+            enum: Object.values(member_status_1.MemberStatus),
+        },
     }),
     tslib_1.__metadata("design:type", String)
 ], Member.prototype, "status", void 0);

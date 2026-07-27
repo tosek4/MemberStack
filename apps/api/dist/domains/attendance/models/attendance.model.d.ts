@@ -2,8 +2,8 @@ import { Entity } from '@loopback/repository';
 import { AttendanceRelations } from '../types';
 export declare class Attendance extends Entity {
     id?: number;
-    checkedInAt?: string;
-    checkedOutAt?: string;
+    checkedInAt: Date;
+    checkedOutAt: Date;
     attendanceMethod: string;
     memberId: number;
     createdByUserId: number;

@@ -25,9 +25,8 @@ export class Role extends Entity {
   @property({
     type: 'date',
     defaultFn: 'now',
-    required: true,
   })
-  createdAt: string
+  createdAt?: Date
 
   // relations
   @hasMany(() => User)

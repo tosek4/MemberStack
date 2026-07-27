@@ -21,22 +21,24 @@ tslib_1.__decorate([
 ], Attendance.prototype, "id", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
-        type: 'timestamp',
+        type: 'date',
         required: true,
     }),
-    tslib_1.__metadata("design:type", String)
+    tslib_1.__metadata("design:type", Date)
 ], Attendance.prototype, "checkedInAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
-        type: 'timestamp',
+        type: 'date',
     }),
-    tslib_1.__metadata("design:type", String)
+    tslib_1.__metadata("design:type", Date)
 ], Attendance.prototype, "checkedOutAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
-        type: 'enum',
+        type: 'string',
         required: true,
-        members: ['qr', 'nfc', 'manual'],
+        jsonSchema: {
+            enum: ['qr', 'nfc', 'manual'],
+        },
     }),
     tslib_1.__metadata("design:type", String)
 ], Attendance.prototype, "attendanceMethod", void 0);

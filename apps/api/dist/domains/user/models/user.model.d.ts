@@ -5,7 +5,7 @@ import { Payment } from '../../payment/models';
 import { Attendance } from '../../attendance/models';
 import { UserRelations } from '../types';
 export declare class User extends Entity {
-    id?: number;
+    id: number;
     firstName: string;
     lastName: string;
     email: string;

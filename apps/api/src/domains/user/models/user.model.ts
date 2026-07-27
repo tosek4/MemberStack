@@ -63,9 +63,8 @@ export class User extends Entity {
   @property({
     type: 'date',
     defaultFn: 'now',
-    required: true,
   })
-  createdAt: string
+  createdAt?: Date
 
   // relations
   @belongsTo(() => Role)

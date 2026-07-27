@@ -19,16 +19,19 @@ export class Payment extends Entity {
   amount?: number
 
   @property({
-    type: 'enum',
+    type: 'string',
     required: true,
-    members: ['cash', 'card', 'bank_transfer', 'paypal', 'other'],
+    jsonSchema: {
+      enum: ['cash', 'card', 'bank_transfer', 'paypal', 'other'],
+    },
   })
   paymentMethod: string
 
   @property({
-    type: 'timestamp',
+    type: 'date',
+    required: true,
   })
-  paidAt?: string
+  paidAt?: Date
 
   @property({
     type: 'string',

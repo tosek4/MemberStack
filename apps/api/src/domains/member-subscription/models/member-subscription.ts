@@ -33,9 +33,11 @@ export class MemberSubscription extends Entity {
   expiresAt: string
 
   @property({
-    type: 'enum',
+    type: 'string',
     required: true,
-    members: ['active', 'inactive', 'expired', 'suspended', 'blocked'],
+    jsonSchema: {
+      enum: ['active', 'inactive', 'expired', 'suspended', 'blocked'],
+    },
   })
   status?: string
 

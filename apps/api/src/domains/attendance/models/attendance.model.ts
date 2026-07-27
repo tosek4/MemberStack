@@ -13,20 +13,22 @@ export class Attendance extends Entity {
   id?: number
 
   @property({
-    type: 'timestamp',
+    type: 'date',
     required: true,
   })
-  checkedInAt?: string
+  checkedInAt: Date
 
   @property({
-    type: 'timestamp',
+    type: 'date',
   })
-  checkedOutAt?: string
+  checkedOutAt: Date
 
   @property({
-    type: 'enum',
+    type: 'string',
     required: true,
-    members: ['qr', 'nfc', 'manual'],
+    jsonSchema: {
+      enum: ['qr', 'nfc', 'manual'],
+    },
   })
   attendanceMethod: string
 

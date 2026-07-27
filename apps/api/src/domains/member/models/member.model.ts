@@ -10,6 +10,7 @@ import { Attendance } from '../../attendance/models'
 import { Payment } from '../../payment/models'
 import { MemberSubscription } from '../../member-subscription/models'
 import { MemberRelations } from '../types'
+import { MemberStatus } from '../types/member-status'
 
 @model()
 export class Member extends Entity {
@@ -68,11 +69,13 @@ export class Member extends Entity {
   profile_image?: string
 
   @property({
-    type: 'enum',
+    type: 'string',
     required: true,
-    members: ['active', 'inactive', 'expired', 'suspended', 'blocked'],
+    jsonSchema: {
+      enum: Object.values(MemberStatus),
+    },
   })
-  status?: string
+  status: MemberStatus
 
   // relations
   @belongsTo(() => User, { name: 'createdBy' })

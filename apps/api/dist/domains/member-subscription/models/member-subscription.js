@@ -37,9 +37,11 @@ tslib_1.__decorate([
 ], MemberSubscription.prototype, "expiresAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
-        type: 'enum',
+        type: 'string',
         required: true,
-        members: ['active', 'inactive', 'expired', 'suspended', 'blocked'],
+        jsonSchema: {
+            enum: ['active', 'inactive', 'expired', 'suspended', 'blocked'],
+        },
     }),
     tslib_1.__metadata("design:type", String)
 ], MemberSubscription.prototype, "status", void 0);

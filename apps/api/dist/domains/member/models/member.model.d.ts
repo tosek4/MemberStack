@@ -3,6 +3,7 @@ import { Attendance } from '../../attendance/models';
 import { Payment } from '../../payment/models';
 import { MemberSubscription } from '../../member-subscription/models';
 import { MemberRelations } from '../types';
+import { MemberStatus } from '../types/member-status';
 export declare class Member extends Entity {
     id?: number;
     firstName: string;
@@ -13,7 +14,7 @@ export declare class Member extends Entity {
     gender?: string;
     emergency_contact?: string;
     profile_image?: string;
-    status?: string;
+    status: MemberStatus;
     createdByUserId: number;
     attendances?: Attendance[];
     payments?: Payment[];
