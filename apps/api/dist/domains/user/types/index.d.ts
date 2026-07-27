@@ -1,8 +1,8 @@
-import { AttendanceWithRelations } from "../../attendance/models";
-import { MemberWithRelations } from "../../member/models";
-import { PaymentWithRelations } from "../../payment/models";
-import { RefreshTokenWithRelations } from "../../refresh-token/models";
-import { RoleWithRelations } from "../../role/models";
+import { AttendanceWithRelations } from '../../attendance/models';
+import { MemberWithRelations } from '../../member/models';
+import { PaymentWithRelations } from '../../payment/models';
+import { RefreshTokenWithRelations } from '../../refresh-token/models';
+import { RoleWithRelations } from '../../role/models';
 export interface UserRelations {
     role?: RoleWithRelations;
     refreshTokens?: RefreshTokenWithRelations[];
@@ -10,3 +10,4 @@ export interface UserRelations {
     payments?: PaymentWithRelations[];
     attendances?: AttendanceWithRelations[];
 }
+export * from './dto';

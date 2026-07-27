@@ -10,6 +10,10 @@ const {
   SMTP_SENDER,
   SMTP_PORT,
   ADMIN_USERNAME,
+  JWT_SECRET,
+  JWT_REFRESH_SECRET,
+  JWT_ACCESS_EXPIRES_IN,
+  JWT_REFRESH_EXPIRES_DAYS,
 } = process.env
 
 export const EConfigKeys = {
@@ -24,4 +28,8 @@ export const EConfigKeys = {
   smtpSender: SMTP_SENDER as string,
   smtpPassword: SMTP_PASSWORD as string,
   adminUsername: ADMIN_USERNAME as string,
+  jwtSecret: JWT_SECRET as string,
+  jwtRefreshSecret: JWT_REFRESH_SECRET as string,
+  jwtAccessExpiresIn: JWT_ACCESS_EXPIRES_IN || '15m',
+  jwtRefreshExpiresDays: Number(JWT_REFRESH_EXPIRES_DAYS || 7),
 } as const

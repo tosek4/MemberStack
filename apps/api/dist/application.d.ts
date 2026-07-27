@@ -269,4 +269,7 @@ declare const MemberstackApiApplication_base: (new (...args: any[]) => {
 }) & typeof RestApplication;
 export declare class MemberstackApiApplication extends MemberstackApiApplication_base {
     constructor(options?: ApplicationConfig);
+    private setupAuth;
+    private setupServices;
+    private setupControllers;
 }
