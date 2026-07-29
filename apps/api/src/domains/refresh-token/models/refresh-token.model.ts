@@ -21,12 +21,12 @@ export class RefreshToken extends Entity {
     type: 'date',
     required: true,
   })
-  expiresAt: string
+  expiresAt: Date
 
   @property({
     type: 'date',
   })
-  revokedAt?: string
+  revokedAt?: Date
 
   // relations
   @belongsTo(() => User)

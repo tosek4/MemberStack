@@ -3,8 +3,8 @@ import { RefreshTokenRelations } from '../types';
 export declare class RefreshToken extends Entity {
     id?: number;
     token: string;
-    expiresAt: string;
-    revokedAt?: string;
+    expiresAt: Date;
+    revokedAt?: Date;
     userId: number;
     [prop: string]: any;
     constructor(data?: Partial<RefreshToken>);

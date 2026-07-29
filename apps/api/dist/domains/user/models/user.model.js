@@ -71,10 +71,32 @@ tslib_1.__decorate([
     (0, repository_1.property)({
         type: 'date',
         defaultFn: 'now',
-        required: true,
+    }),
+    tslib_1.__metadata("design:type", Date)
+], User.prototype, "createdAt", void 0);
+tslib_1.__decorate([
+    (0, repository_1.property)({
+        type: 'string',
+        required: false,
+        name: 'deviceToken',
     }),
     tslib_1.__metadata("design:type", String)
-], User.prototype, "createdAt", void 0);
+], User.prototype, "deviceToken", void 0);
+tslib_1.__decorate([
+    (0, repository_1.property)({
+        type: 'string',
+        required: false,
+    }),
+    tslib_1.__metadata("design:type", String)
+], User.prototype, "pin", void 0);
+tslib_1.__decorate([
+    (0, repository_1.property)({
+        type: 'string',
+        required: false,
+        name: 'pinValid',
+    }),
+    tslib_1.__metadata("design:type", String)
+], User.prototype, "pinValid", void 0);
 tslib_1.__decorate([
     (0, repository_1.belongsTo)(() => models_1.Role),
     tslib_1.__metadata("design:type", Number)

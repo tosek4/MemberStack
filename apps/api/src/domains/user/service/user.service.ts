@@ -7,8 +7,7 @@ import {
   Where,
 } from '@loopback/repository'
 import { HttpErrors } from '@loopback/rest'
-import { AuthBindings } from '../../../authentication/keys'
-import { PasswordHasherService } from '../../../authentication/password-hasher.service'
+import { PasswordHasherService } from '../../auth/services/password-hasher.service'
 import { User } from '../models'
 import { UserRepository } from '../repositories'
 import { CreateUserDto, UpdateUserDto } from '../types'
@@ -18,8 +17,6 @@ export class UserService {
   constructor(
     @repository(UserRepository)
     private userRepository: UserRepository,
-    @inject(AuthBindings.PASSWORD_HASHER)
-    private passwordHasher: PasswordHasherService,
   ) {}
 
   async create(data: CreateUserDto): Promise<User> {
@@ -30,17 +27,23 @@ export class UserService {
       throw new HttpErrors.Conflict('Email already registered')
     }
 
-    const passwordHash = await this.passwordHasher.hashPassword(data.password)
-
     return this.userRepository.create({
       firstName: data.firstName,
       lastName: data.lastName,
       email: data.email,
-      passwordHash,
+      passwordHash: data.password,
       phone: data.phone,
       isActive: data.isActive ?? true,
       roleId: data.roleId,
     })
+  }
+
+  async findByEmail(email: string) {
+    try {
+      return await this.userRepository.findOne({ where: { email } })
+    } catch {
+      throw new HttpErrors.NotFound(`User ${email} not found`)
+    }
   }
 
   find(filter?: Filter<User>): Promise<User[]> {
@@ -62,28 +65,33 @@ export class UserService {
     return this.userRepository.count(where)
   }
 
+  async updateUserToken(userId: number, deviceToken: string) {
+    await this.userRepository.updateById(userId, { deviceToken })
+  }
+
+  async logout(userId: number) {
+    return this.userRepository.updateById(userId, { deviceToken: '' })
+  }
+
   async updateById(id: number, data: UpdateUserDto): Promise<void> {
     await this.findById(id)
+    const { password, ...rest } = data
 
     const update: Partial<User> = {
-      firstName: data.firstName,
-      lastName: data.lastName,
-      email: data.email,
-      phone: data.phone,
-      isActive: data.isActive,
-      roleId: data.roleId,
+      firstName: rest.firstName,
+      lastName: rest.lastName,
+      email: rest.email,
+      phone: rest.phone,
+      isActive: rest.isActive,
+      roleId: rest.roleId,
     }
 
     // Remove undefined keys
-    Object.keys(update).forEach(key => {
+    Object.keys(update).forEach((key) => {
       if (update[key] === undefined) {
         delete update[key]
       }
     })
-
-    if (data.password) {
-      update.passwordHash = await this.passwordHasher.hashPassword(data.password)
-    }
 
     await this.userRepository.updateById(id, update)
   }

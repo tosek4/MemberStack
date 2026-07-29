@@ -37,7 +37,9 @@ tslib_1.__decorate([
         defaultFn: 'now',
         required: true,
     }),
-    tslib_1.__metadata("design:type", String)
+    tslib_1.__metadata("design:type", Date
+    // relations
+    )
 ], MemberPlan.prototype, "createdAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.hasMany)(() => models_1.MemberSubscription, { keyTo: 'membershipPlanId' }),

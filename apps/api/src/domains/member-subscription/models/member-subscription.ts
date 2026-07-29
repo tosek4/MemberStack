@@ -24,13 +24,13 @@ export class MemberSubscription extends Entity {
     type: 'date',
     required: true,
   })
-  startedAt: string
+  startedAt: Date
 
   @property({
     type: 'date',
     required: true,
   })
-  expiresAt: string
+  expiresAt: Date
 
   @property({
     type: 'string',

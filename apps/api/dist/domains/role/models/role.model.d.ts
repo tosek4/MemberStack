@@ -5,7 +5,7 @@ export declare class Role extends Entity {
     id?: number;
     name: string;
     description?: string;
-    createdAt: string;
+    createdAt?: Date;
     users?: User[];
     constructor(data?: Partial<Role>);
 }

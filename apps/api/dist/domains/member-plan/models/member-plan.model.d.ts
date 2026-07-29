@@ -5,7 +5,7 @@ export declare class MemberPlan extends Entity {
     id?: number;
     name: string;
     description?: string;
-    createdAt: string;
+    createdAt: Date;
     subscriptions?: MemberSubscription[];
     constructor(data?: Partial<MemberPlan>);
 }

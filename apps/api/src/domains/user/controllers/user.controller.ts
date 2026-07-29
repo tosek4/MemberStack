@@ -1,87 +1,92 @@
-import { service } from '@loopback/core'
-import { Count, CountSchema, Filter, Where } from '@loopback/repository'
+import { inject, service } from '@loopback/core'
+import { Count, Filter, Where } from '@loopback/repository'
 import {
+  api,
   del,
   get,
-  getModelSchemaRef,
   param,
   patch,
   post,
+  put,
   requestBody,
   response,
-  SchemaObject,
 } from '@loopback/rest'
 import { User } from '../models'
 import { UserService } from '../service'
+import { authenticate } from '@loopback/authentication'
+import { SecurityBindings, securityId, UserProfile } from '@loopback/security'
 import { CreateUserDto, UpdateUserDto } from '../types'
-import { createUserSchema, updateUserSchema } from '../schemas'
+import {
+  CountUserResponseSchema,
+  CreateUserRequestBody,
+  createUserResponseSchema,
+  deleteUserByIdResponseSchema,
+  getUserByIdResponseSchema,
+  getUserResponseSchema,
+  updateUserByIdResponseSchema,
+  UpdateUserRequestBody,
+  UserLogoutResponseSchema,
+} from './user.docs'
 
+@authenticate('jwt')
+@api({ basePath: '/users' })
 export class UserController {
   constructor(
     @service(UserService)
     private userService: UserService,
   ) {}
 
-  @post('/users')
-  @response(200, {
-    description: 'User model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(User) } },
-  })
+  @post('/create')
+  @response(200, createUserResponseSchema)
   create(
-    @requestBody({
-      content: { 'application/json': { schema: createUserSchema } },
-    })
+    @requestBody(CreateUserRequestBody)
     user: CreateUserDto,
   ): Promise<User> {
     return this.userService.create(user)
   }
 
-  @get('/users/count')
-  @response(200, {
-    description: 'User model count',
-    content: { 'application/json': { schema: CountSchema } },
-  })
+  @put('/logout')
+  @response(204, UserLogoutResponseSchema)
+  async logout(
+    @inject(SecurityBindings.USER)
+    currentUser: UserProfile,
+  ): Promise<void> {
+    const userId = Number(currentUser[securityId])
+
+    await this.userService.logout(userId)
+  }
+
+  @get('/count')
+  @response(200, CountUserResponseSchema)
   count(@param.where(User) where?: Where<User>): Promise<Count> {
     return this.userService.count(where)
   }
 
-  @get('/users')
-  @response(200, {
-    description: 'Array of User model instances',
-    content: {
-      'application/json': {
-        schema: { type: 'array', items: getModelSchemaRef(User) },
-      },
-    },
-  })
+  @get('/')
+  @response(200, getUserResponseSchema)
   find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
     return this.userService.find(filter)
   }
 
-  @get('/users/{id}')
-  @response(200, {
-    description: 'User model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(User) } },
-  })
+  @get('/{id}')
+  @response(200, getUserByIdResponseSchema)
   findById(@param.path.number('id') id: number): Promise<User> {
     return this.userService.findById(id)
   }
 
-  @patch('/users/{id}')
-  @response(204, { description: 'User PATCH success' })
+  @del('/{id}')
+  @response(204, deleteUserByIdResponseSchema)
+  async deleteById(@param.path.number('id') id: number): Promise<void> {
+    await this.userService.deleteById(id)
+  }
+
+  @patch('{id}')
+  @response(204, updateUserByIdResponseSchema)
   async updateById(
     @param.path.number('id') id: number,
-    @requestBody({
-      content: { 'application/json': { schema: updateUserSchema } },
-    })
+    @requestBody(UpdateUserRequestBody)
     user: UpdateUserDto,
   ): Promise<void> {
     await this.userService.updateById(id, user)
-  }
-
-  @del('/users/{id}')
-  @response(204, { description: 'User DELETE success' })
-  async deleteById(@param.path.number('id') id: number): Promise<void> {
-    await this.userService.deleteById(id)
   }
 }

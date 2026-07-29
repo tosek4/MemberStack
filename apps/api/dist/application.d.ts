@@ -1,5 +1,6 @@
 import { ApplicationConfig } from '@loopback/core';
 import { RestApplication } from '@loopback/rest';
+import { WinstonLogger } from '@loopback/logging';
 export { ApplicationConfig };
 declare const MemberstackApiApplication_base: (new (...args: any[]) => {
     projectRoot: string;
@@ -268,8 +269,8 @@ declare const MemberstackApiApplication_base: (new (...args: any[]) => {
     eventNames: () => (string | symbol)[];
 }) & typeof RestApplication;
 export declare class MemberstackApiApplication extends MemberstackApiApplication_base {
+    logger: WinstonLogger;
     constructor(options?: ApplicationConfig);
-    private setupAuth;
-    private setupServices;
-    private setupControllers;
+    setupBindings(): void;
+    setupComponents(): void;
 }

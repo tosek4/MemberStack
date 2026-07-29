@@ -51,7 +51,7 @@ export class Member extends Entity {
     type: 'date',
     required: true,
   })
-  birthDate: string
+  birthDate: Date
 
   @property({
     type: 'string',

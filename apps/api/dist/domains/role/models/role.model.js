@@ -35,9 +35,10 @@ tslib_1.__decorate([
     (0, repository_1.property)({
         type: 'date',
         defaultFn: 'now',
-        required: true,
     }),
-    tslib_1.__metadata("design:type", String)
+    tslib_1.__metadata("design:type", Date
+    // relations
+    )
 ], Role.prototype, "createdAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.hasMany)(() => models_1.User),

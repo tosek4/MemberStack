@@ -26,14 +26,14 @@ tslib_1.__decorate([
         type: 'date',
         required: true,
     }),
-    tslib_1.__metadata("design:type", String)
+    tslib_1.__metadata("design:type", Date)
 ], MemberSubscription.prototype, "startedAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
         type: 'date',
         required: true,
     }),
-    tslib_1.__metadata("design:type", String)
+    tslib_1.__metadata("design:type", Date)
 ], MemberSubscription.prototype, "expiresAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({

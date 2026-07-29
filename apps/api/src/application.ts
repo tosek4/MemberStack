@@ -9,119 +9,74 @@ import { RestApplication } from '@loopback/rest'
 import { ServiceMixin } from '@loopback/service-proxy'
 import path from 'path'
 import { MySequence } from './sequence'
-import { EConfigKeys } from './config'
-import { RoleRepository } from './domains/role/repositories'
-import { UserRepository } from './domains/user/repositories'
-import { AttendanceRepository } from './domains/attendance/repositories'
-import { MemberRepository } from './domains/member/repositories'
-import { MemberPlanRepository } from './domains/member-plan/repositories'
-import { MemberSubscriptionRepository } from './domains/member-subscription/repositories'
-import { PaymentRepository } from './domains/payment/repositories'
-import { RefreshTokenRepository } from './domains/refresh-token/repositories'
 import { PostgresDataSource } from './datasources'
-import {
-  AuthBindings,
-  AuthController,
-  AuthService,
-  JwtService,
-  PasswordHasherService,
-} from './authentication'
-import { RoleService } from './domains/role/service'
 import { UserService } from './domains/user/service'
-import { MemberService } from './domains/member/service'
-import { MemberPlanService } from './domains/member-plan/service'
-import { MemberSubscriptionService } from './domains/member-subscription/service'
-import { PaymentService } from './domains/payment/service'
-import { AttendanceService } from './domains/attendance/service'
-import { RoleController } from './domains/role/controllers'
-import { UserController } from './domains/user/controllers'
-import { MemberController } from './domains/member/controllers'
-import { MemberPlanController } from './domains/member-plan/controllers'
-import { MemberSubscriptionController } from './domains/member-subscription/controllers'
-import { PaymentController } from './domains/payment/controllers'
-import { AttendanceController } from './domains/attendance/controllers'
-
+import { AUTH_SERVICE, JWT_EXPIRES_IN, JWT_SECRET, JWT_SERVICE, PASSWORD_HASHER } from './domains/auth/key'
+import { USERS_SERVICE } from './domains/user/keys'
+import { AuthService } from './domains/auth/services/auth.service'
+import { JWTAuthenticationComponent } from '@loopback/authentication-jwt'
+import { WinstonLogger } from '@loopback/logging'
+import { PasswordHasherService } from './domains/auth/services/password-hasher.service'
+import { JwtService } from './domains/auth/services/jwt.service'
+import { RefreshTokenService } from './domains/refresh-token/service/refresh-token.service'
+import { AuthenticationComponent } from '@loopback/authentication'
+import { EConfigKeys } from './config'
 export { ApplicationConfig }
 
 export class MemberstackApiApplication extends BootMixin(
   ServiceMixin(RepositoryMixin(RestApplication)),
 ) {
+  public logger: WinstonLogger
+
   constructor(options: ApplicationConfig = {}) {
     super(options)
 
-    this.repository(AttendanceRepository)
-    this.repository(MemberRepository)
-    this.repository(MemberPlanRepository)
-    this.repository(MemberSubscriptionRepository)
-    this.repository(PaymentRepository)
-    this.repository(RefreshTokenRepository)
-    this.repository(RoleRepository)
-    this.repository(UserRepository)
+    this.sequence(MySequence)
 
-    this.setupAuth()
-    this.setupServices()
-    this.setupControllers()
+    // Customize @loopback/rest-explorer configuration here
+    this.component(RestExplorerComponent)
+
+    this.static('/', path.join(__dirname, '../public'))
+
+    this.configure(RestExplorerBindings.COMPONENT).to({
+      path: '/explorer',
+    })
 
     //Database connection
     this.dataSource(PostgresDataSource, 'postgres')
 
-    // Set up the custom sequence
-    this.sequence(MySequence)
-
-    // Set up default home page
-    this.static('/', path.join(__dirname, '../public'))
-
-    // Customize @loopback/rest-explorer configuration here
-    this.configure(RestExplorerBindings.COMPONENT).to({
-      path: '/explorer',
-    })
-    this.component(RestExplorerComponent)
+    this.setupBindings()
+    this.setupComponents()
 
     this.projectRoot = __dirname
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
-        dirs: ['controllers'],
-        extensions: ['.controller.js'],
+        dirs: ['domains'],
+        extensions: ['.controller.ts'],
+        nested: true,
+      },
+      repositories: {
+        dirs: ['domains'],
+        extensions: ['.repository.ts'],
         nested: true,
       },
     }
   }
 
-  private setupAuth() {
-    this.bind(AuthBindings.TOKEN_SECRET).to(EConfigKeys.jwtSecret)
-    this.bind(AuthBindings.TOKEN_EXPIRES_IN).to(EConfigKeys.jwtAccessExpiresIn)
-    this.bind(AuthBindings.REFRESH_SECRET).to(EConfigKeys.jwtRefreshSecret)
-    this.bind(AuthBindings.REFRESH_EXPIRES_DAYS).to(
-      EConfigKeys.jwtRefreshExpiresDays,
-    )
-
-    this.bind(AuthBindings.PASSWORD_HASHER).toClass(PasswordHasherService)
-    this.bind(AuthBindings.JWT_SERVICE).toClass(JwtService)
-    this.bind(AuthBindings.AUTH_SERVICE).toClass(AuthService)
-    this.service(PasswordHasherService)
-    this.service(JwtService)
-    this.service(AuthService)
+  setupBindings(): void {
+    this.bind(USERS_SERVICE).toClass(UserService)
+    this.bind(AUTH_SERVICE).toClass(AuthService)
+    this.bind(PASSWORD_HASHER).toClass(PasswordHasherService)
+    this.bind(JWT_SERVICE).toClass(JwtService)
+    this.bind('services.refreshToken').toClass(RefreshTokenService)
+    this.bind(JWT_SECRET).to(EConfigKeys.jwtSecret)
+    this.bind(JWT_EXPIRES_IN).to(EConfigKeys.jwtAccessExpiresIn)
   }
 
-  private setupServices() {
-    this.service(RoleService)
-    this.service(UserService)
-    this.service(MemberService)
-    this.service(MemberPlanService)
-    this.service(MemberSubscriptionService)
-    this.service(PaymentService)
-    this.service(AttendanceService)
-  }
-
-  private setupControllers() {
-    this.controller(AuthController)
-    this.controller(RoleController)
-    this.controller(UserController)
-    this.controller(MemberController)
-    this.controller(MemberPlanController)
-    this.controller(MemberSubscriptionController)
-    this.controller(PaymentController)
-    this.controller(AttendanceController)
+  setupComponents() {
+    this.component(RestExplorerComponent)
+    this.component(JWTAuthenticationComponent)
+    this.component(AuthenticationComponent)
   }
 }

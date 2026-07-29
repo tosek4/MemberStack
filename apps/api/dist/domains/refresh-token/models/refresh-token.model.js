@@ -30,13 +30,15 @@ tslib_1.__decorate([
         type: 'date',
         required: true,
     }),
-    tslib_1.__metadata("design:type", String)
+    tslib_1.__metadata("design:type", Date)
 ], RefreshToken.prototype, "expiresAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.property)({
         type: 'date',
     }),
-    tslib_1.__metadata("design:type", String)
+    tslib_1.__metadata("design:type", Date
+    // relations
+    )
 ], RefreshToken.prototype, "revokedAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.belongsTo)(() => models_1.User),

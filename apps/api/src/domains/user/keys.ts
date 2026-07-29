@@ -1,6 +1,4 @@
 import { BindingKey } from '@loopback/core'
-import { UserService } from './service'
+import { UserService } from './service/user.service'
 
-export namespace UserBindings {
-  export const SERVICE = BindingKey.create<UserService>('services.UserService')
-}
+export const USERS_SERVICE = BindingKey.create<UserService>('service.user')

@@ -10,7 +10,7 @@ export declare class Member extends Entity {
     lastName: string;
     email: string;
     phone?: string;
-    birthDate: string;
+    birthDate: Date;
     gender?: string;
     emergency_contact?: string;
     profile_image?: string;

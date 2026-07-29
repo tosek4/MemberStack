@@ -66,6 +66,26 @@ export class User extends Entity {
   })
   createdAt?: Date
 
+  @property({
+    type: 'string',
+    required: false,
+    name: 'deviceToken',
+  })
+  deviceToken: string
+
+  @property({
+    type: 'string',
+    required: false,
+  })
+  pin: string
+
+  @property({
+    type: 'string',
+    required: false,
+    name: 'pinValid',
+  })
+  pinValid: string
+
   // relations
   @belongsTo(() => Role)
   roleId: number

@@ -12,7 +12,10 @@ export declare class User extends Entity {
     passwordHash: string;
     phone?: string;
     isActive: boolean;
-    createdAt: string;
+    createdAt?: Date;
+    deviceToken: string;
+    pin: string;
+    pinValid: string;
     roleId: number;
     refreshTokens?: RefreshToken[];
     members?: Member[];

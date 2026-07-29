@@ -30,7 +30,7 @@ export class MemberPlan extends Entity {
     defaultFn: 'now',
     required: true,
   })
-  createdAt: string
+  createdAt: Date
 
   // relations
   @hasMany(() => MemberSubscription, { keyTo: 'membershipPlanId' })
