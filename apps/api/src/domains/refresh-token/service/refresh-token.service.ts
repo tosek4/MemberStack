@@ -11,11 +11,10 @@ export class RefreshTokenService {
     private refreshTokenRepository: RefreshTokenRepository,
   ) {}
 
-  async generateToken(accessToken: string) {
+  async generateToken() {
     const refreshToken = crypto.randomBytes(64).toString('hex')
 
     return {
-      accessToken,
       refreshToken,
       expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
     }

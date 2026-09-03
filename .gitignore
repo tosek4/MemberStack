@@ -34,8 +34,20 @@ logs
 application.log
 
 #dist
-dist
 dist/
+**/dist/
+**/dist/**/*
+*.d.ts
+*.js.map
+*.js
+!*.js
+!*.d.ts
+!*.js.map
+**/dist/**/*.d.ts
+**/dist/**/*.js
+**/dist/**/*.js.map
+**/dist/**/*.ts
+**/dist/**/*.map
 
 
 # testing

@@ -36,10 +36,20 @@ tslib_1.__decorate([
     (0, repository_1.property)({
         type: 'date',
     }),
-    tslib_1.__metadata("design:type", Date
-    // relations
-    )
+    tslib_1.__metadata("design:type", Date)
 ], RefreshToken.prototype, "revokedAt", void 0);
+tslib_1.__decorate([
+    (0, repository_1.property)({
+        type: 'date',
+    }),
+    tslib_1.__metadata("design:type", String)
+], RefreshToken.prototype, "createdAt", void 0);
+tslib_1.__decorate([
+    (0, repository_1.property)({
+        type: 'date',
+    }),
+    tslib_1.__metadata("design:type", String)
+], RefreshToken.prototype, "updatedAt", void 0);
 tslib_1.__decorate([
     (0, repository_1.belongsTo)(() => models_1.User),
     tslib_1.__metadata("design:type", Number)

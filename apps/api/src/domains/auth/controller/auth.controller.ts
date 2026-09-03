@@ -8,11 +8,10 @@ import {
   RestBindings,
   api,
   get,
-  getModelSchemaRef,
   HttpErrors,
 } from '@loopback/rest'
 import { User } from '../../user/models'
-import { AuthResult, Credentials, CreateUserDto, TokenPair } from '../types/dto'
+import { AuthResult, Credentials, CreateUserDto } from '../types/dto'
 import { UserRepository } from '../../user/repositories'
 import { AuthService } from '../services/auth.service'
 import {
@@ -65,9 +64,9 @@ export class AuthController {
 
     const token = authHeader.slice('Bearer '.length)
 
-    const payload = this.jwtService.verifyAccessToken(token)
+    const payload = await this.jwtService.verifyToken(token)
     try {
-      return await this.userRepository.findById(parseInt(payload.id))
+      return await this.userRepository.findById(parseInt(payload.id as string))
     } catch {
       throw new HttpErrors.Unauthorized('User not found')
     }

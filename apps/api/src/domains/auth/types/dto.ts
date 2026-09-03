@@ -46,6 +46,7 @@ export interface AccessTokenPayload {
   sub: number
   email: string
   roleId: number
+  role: string
 }
 
 export interface AccessTokenResponse {

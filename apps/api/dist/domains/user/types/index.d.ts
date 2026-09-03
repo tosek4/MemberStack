@@ -11,3 +11,4 @@ export interface UserRelations {
     attendances?: AttendanceWithRelations[];
 }
 export * from './dto';
+export * from './user-profile';

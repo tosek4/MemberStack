@@ -40,7 +40,14 @@ export class UserService {
 
   async findByEmail(email: string) {
     try {
-      return await this.userRepository.findOne({ where: { email } })
+      return await this.userRepository.findOne({
+        where: { email },
+        include: [
+          {
+            relation: 'role',
+          },
+        ],
+      })
     } catch {
       throw new HttpErrors.NotFound(`User ${email} not found`)
     }

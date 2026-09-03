@@ -18,9 +18,8 @@ export interface UpdateUserDto {
   roleId?: number
 }
 
-
-
 export interface RefreshTokenPayload {
   sub: number
   tokenId: number
 }
+

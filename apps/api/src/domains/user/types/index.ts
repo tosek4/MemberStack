@@ -13,4 +13,4 @@ export interface UserRelations {
 }
 
 export * from './dto'
-
+export * from './user-profile'

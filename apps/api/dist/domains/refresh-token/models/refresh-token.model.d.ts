@@ -5,6 +5,8 @@ export declare class RefreshToken extends Entity {
     token: string;
     expiresAt: Date;
     revokedAt?: Date;
+    createdAt: string;
+    updatedAt: string;
     userId: number;
     [prop: string]: any;
     constructor(data?: Partial<RefreshToken>);

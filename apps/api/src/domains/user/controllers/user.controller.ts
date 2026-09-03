@@ -13,9 +13,8 @@ import {
 } from '@loopback/rest'
 import { User } from '../models'
 import { UserService } from '../service'
-import { authenticate } from '@loopback/authentication'
-import { SecurityBindings, securityId, UserProfile } from '@loopback/security'
-import { CreateUserDto, UpdateUserDto } from '../types'
+import { SecurityBindings, securityId } from '@loopback/security'
+import { CreateUserDto, UpdateUserDto, UserProfile } from '../types'
 import {
   CountUserResponseSchema,
   CreateUserRequestBody,
@@ -27,8 +26,9 @@ import {
   UpdateUserRequestBody,
   UserLogoutResponseSchema,
 } from './user.docs'
+import { authorize } from '@loopback/authorization'
+import { AppRole } from '../../../enums/app-role.enum'
 
-@authenticate('jwt')
 @api({ basePath: '/users' })
 export class UserController {
   constructor(
@@ -56,6 +56,10 @@ export class UserController {
     await this.userService.logout(userId)
   }
 
+  @authorize({
+    allowedRoles: [AppRole.ADMIN, AppRole.SUPER_ADMIN],
+    voters: ['authorization.authorizers.role'],
+  })
   @get('/count')
   @response(200, CountUserResponseSchema)
   count(@param.where(User) where?: Where<User>): Promise<Count> {

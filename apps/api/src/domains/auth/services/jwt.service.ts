@@ -1,54 +1,71 @@
 import { inject } from '@loopback/core'
 import { HttpErrors } from '@loopback/rest'
-import { TokenServiceBindings } from '@loopback/authentication-jwt'
-import { securityId, UserProfile } from '@loopback/security'
+import { TokenService } from '@loopback/authentication'
+import { securityId } from '@loopback/security'
 import { promisify } from 'util'
-import { AccessTokenPayload, AccessTokenResponse } from '../types/dto'
-import { verify } from 'jsonwebtoken'
-import { JWT_EXPIRES_IN, JWT_SECRET } from '../key'
+import { JWT_SECRET, JWT_EXPIRES_IN } from '../key'
+import { UserProfile } from '../../user/types/user-profile'
 
 const jwt = require('jsonwebtoken')
 const signAsync = promisify(jwt.sign)
 const verifyAsync = promisify(jwt.verify)
 
-export class JwtService {
+export class JwtService implements TokenService {
   constructor(
-    @inject(TokenServiceBindings.TOKEN_SECRET)
+    @inject(JWT_SECRET)
     private jwtSecret: string,
-    @inject(TokenServiceBindings.TOKEN_EXPIRES_IN)
+
+    @inject(JWT_EXPIRES_IN)
     private jwtExpiresIn: string,
   ) {}
 
-  async generateAccessToken(userProfile: UserProfile): Promise<string> {
+  async generateToken(userProfile: UserProfile): Promise<string> {
     if (!userProfile) {
       throw new HttpErrors.Unauthorized(
         'Error generating token : userProfile is null',
       )
     }
+
     const userInfoForToken = {
-      id: userProfile[securityId as typeof securityId],
+      id: userProfile[securityId],
       name: userProfile.name,
       email: userProfile.email,
-      ...userProfile,
+      role: userProfile.role,
     }
-    // Generate a JSON Web Token
-    let token: string
+
     try {
-      token = await signAsync(userInfoForToken, this.jwtSecret, {
-        expiresIn: Number(this.jwtExpiresIn),
+      return await signAsync(userInfoForToken, this.jwtSecret, {
+        expiresIn: this.jwtExpiresIn,
       })
     } catch (error) {
       throw new HttpErrors.Unauthorized(`Error encoding token : ${error}`)
     }
-
-    return token
   }
 
-  verifyAccessToken(token: string): AccessTokenResponse {
+  async verifyToken(token: string): Promise<UserProfile> {
+
+    if (!token) {
+      throw new HttpErrors.Unauthorized(
+        `Error verifying token : 'token' is null`,
+      )
+    }
+
     try {
-      return verify(token, this.jwtSecret) as unknown as AccessTokenResponse
-    } catch {
-      throw new HttpErrors.Unauthorized('Invalid or expired access token')
+      const decodedToken = await verifyAsync(token, this.jwtSecret)
+      const userProfile: UserProfile = {
+        [securityId]: String(decodedToken.id),
+        id: String(decodedToken.id),
+        name: decodedToken.name,
+        email: decodedToken.email,
+        role: decodedToken.role,
+      }
+
+
+      return userProfile
+    } catch (error) {
+      throw new HttpErrors.Unauthorized(
+        `Error verifying token : ${error.message}`,
+      )
     }
   }
 }

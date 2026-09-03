@@ -28,6 +28,16 @@ export class RefreshToken extends Entity {
   })
   revokedAt?: Date
 
+  @property({
+    type: 'string',
+  })
+  createdAt: string
+
+  @property({
+    type: 'string',
+  })
+  updatedAt: string
+
   // relations
   @belongsTo(() => User)
   userId: number;

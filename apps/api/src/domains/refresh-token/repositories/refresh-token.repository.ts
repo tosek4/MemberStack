@@ -15,7 +15,10 @@ export class RefreshTokenRepository extends DefaultCrudRepository<
   typeof RefreshToken.prototype.id,
   RefreshTokenRelations
 > {
-  public readonly user: BelongsToAccessor<User, typeof RefreshToken.prototype.id>
+  public readonly user: BelongsToAccessor<
+    User,
+    typeof RefreshToken.prototype.id
+  >
 
   constructor(
     @inject('datasources.postgres') dataSource: PostgresDataSource,
