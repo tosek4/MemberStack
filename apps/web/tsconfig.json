@@ -9,6 +9,8 @@
     "esModuleInterop": true,
     "module": "esnext",
     "moduleResolution": "bundler",
+    "baseUrl": "./",
+    "ignoreDeprecations": "6.0",
     "resolveJsonModule": true,
     "isolatedModules": true,
     "jsx": "react-jsx",
@@ -19,7 +21,20 @@
       }
     ],
     "paths": {
-      "@/*": ["./src/*"]
+      "@/*": ["./src/*"],
+      "@globals.css": ["./src/styles/globals.css"],
+
+      "@services": ["src/services/index"],
+      "@providers": ["src/providers/index"],
+      "@styles/*": ["src/styles/*"],
+      "@domain/*": ["src/domains/*"],
+      "@components/*": ["src/components/*"],
+      "@components": ["src/components/index"],
+      "@form-fields": ["src/form-fields/index"],
+      "@utils": ["src/utils/index"],
+      "@icons": ["src/icons/index"],
+      "@store": ["src/store/index"],
+      "@hooks": ["src/hooks/index"]
     }
   },
   "include": [
