@@ -2,15 +2,18 @@
 
 import React, { useState } from 'react'
 import { ChevronDown, LogOut, Menu, Moon, Settings, Sun } from 'lucide-react'
+import { useRouter } from 'next/navigation'
 
-import { useAuth, useTheme } from '@providers'
+import { useSidebar, useAuth, useTheme } from '@providers'
 
 import { styles } from './Header.styled'
 import { LABELS } from './utils/labels'
 
 export const Header: React.FC = () => {
+  const { toggleSidebar } = useSidebar()
   const { user, logout } = useAuth()
   const { isDarkMode, toggleTheme } = useTheme()
+  const router = useRouter()
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
@@ -21,6 +24,10 @@ export const Header: React.FC = () => {
     .slice(0, 2)
     .toUpperCase()
 
+  const handleClickEditProfile = () => {
+    router.push('/profile')
+  }
+
   return (
     <header className={styles.root}>
       <div className={styles.left.wrapper}>
@@ -28,6 +35,7 @@ export const Header: React.FC = () => {
           type="button"
           aria-label={LABELS.openMenu}
           className={styles.menuButton}
+          onClick={toggleSidebar}
         >
           <Menu size={22} />
         </button>
@@ -63,7 +71,11 @@ export const Header: React.FC = () => {
 
             {isDropdownOpen && (
               <div className={styles.right.dropdown.root}>
-                <button type="button" className={styles.right.dropdown.item}>
+                <button
+                  type="button"
+                  className={styles.right.dropdown.item}
+                  onClick={handleClickEditProfile}
+                >
                   <Settings size={16} />
                   {LABELS.profile}
                 </button>

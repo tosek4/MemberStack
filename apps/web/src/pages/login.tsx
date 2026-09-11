@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { Login } from '@components/LoginScreen/Login'
+import { Login } from '@/domains/Auth/LoginScreen/Login'
 
 const LogInPage = () => {
   return <Login />

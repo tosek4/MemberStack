@@ -1,5 +1,5 @@
 import React, { ReactElement } from 'react'
-import { Register } from '@/components/RegisterScreen/Register'
+import { Register } from '@/domains/Auth/RegisterScreen/Register'
 
 const LogInPage = () => {
   return <Register />

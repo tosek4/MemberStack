@@ -15,3 +15,9 @@ export interface ThemeContextValue {
   isDarkMode: boolean
   toggleTheme: () => void
 }
+
+export interface SidebarContextValue {
+  isOpen: boolean
+  toggleSidebar: () => void
+  closeSidebar: () => void
+}

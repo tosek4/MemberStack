@@ -2,21 +2,37 @@ import type { AppProps } from 'next/app'
 import { useRouter } from 'next/router'
 
 import '@globals.css'
-import { AuthProvider, ThemeProvider } from '@/providers'
-import { Header } from '@/components/Header'
+
+import { AuthProvider, ThemeProvider, SidebarProvider } from '@/providers'
+
+import { Header } from '@/domains/Layout/Header'
+import { Sidebar } from '@/domains/Layout/Sidebar'
+import { AppLayout } from '@/domains/Layout/AppLayout'
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
 
   const isAuthPage =
-    router.pathname === '/login' || router.pathname === '/register'
+    router.pathname === '/login' ||
+    router.pathname === '/register' ||
+    router.pathname === '/forgot-password'
 
   return (
     <AuthProvider>
       <ThemeProvider>
-        {!isAuthPage && <Header />}
+        <SidebarProvider>
+          {!isAuthPage && (
+            <>
+              <Header />
+              <Sidebar />
 
-        <Component {...pageProps} />
+              <AppLayout>
+                <Component {...pageProps} />
+              </AppLayout>
+            </>
+          )}
+          {isAuthPage && <Component {...pageProps} />}
+        </SidebarProvider>
       </ThemeProvider>
     </AuthProvider>
   )
