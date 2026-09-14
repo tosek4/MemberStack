@@ -23,6 +23,11 @@ export const sidebarItems: SidebarItem[] = [
     icon: createElement(Users),
   },
   {
+    label: LABELS.membershipPlans,
+    href: '/membershipPlans',
+    icon: createElement(ClipboardCheck),
+  },
+  {
     label: LABELS.subscriptions,
     href: '/subscriptions',
     icon: createElement(ClipboardCheck),

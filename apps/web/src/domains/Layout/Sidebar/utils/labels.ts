@@ -10,4 +10,5 @@ export const LABELS = {
   membersSection: 'Members',
   attendanceSection: 'Attendance',
   managementSection: 'Management',
+  membershipPlans: 'Membership Plans',
 } as const
