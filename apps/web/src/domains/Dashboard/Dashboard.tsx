@@ -80,7 +80,7 @@ const attendance = [
 
 export const Dashboard = () => {
   return (
-    <main className="space-y-6">
+    <main className="space-y-6 m-5">
       <Statistics statistics={statistics} />
 
       <div className="grid gap-6 xl:grid-cols-2">
