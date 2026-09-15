@@ -1,7 +1,7 @@
 import { inject } from '@loopback/core'
 import { USERS_SERVICE } from '../../user/keys'
 import { UserService } from '../../user/service'
-import { CreateUserDto, Credentials } from '../types/dto'
+import { CreateUserDto, Credentials, RefreshTokenResult } from '../types/dto'
 import { HttpErrors } from '@loopback/rest'
 import { PasswordHasherService } from './password-hasher.service'
 import { securityId } from '@loopback/security'
@@ -95,6 +95,51 @@ export class AuthService {
       user: {
         ...userData,
       },
+    }
+  }
+
+  async refresh(refreshToken: string): Promise<RefreshTokenResult> {
+    const refreshTokenDB =
+      await this.refreshTokenService.findByToken(refreshToken)
+
+    if (!refreshTokenDB) {
+      throw new HttpErrors.Unauthorized('Invalid refresh token.')
+    }
+
+    if (refreshTokenDB.revokedAt) {
+      throw new HttpErrors.Unauthorized('Refresh token has been revoked.')
+    }
+
+    if (new Date(refreshTokenDB.expiresAt) <= new Date()) {
+      throw new HttpErrors.Unauthorized('Refresh token has expired.')
+    }
+
+    const user = await this.userService.findById(refreshTokenDB.userId)
+
+    if (!user) {
+      throw new HttpErrors.Unauthorized('User not found.')
+    }
+
+    if (!user.isActive) {
+      throw new HttpErrors.Unauthorized('User is not active.')
+    }
+
+    const payload = {
+      name: user.email,
+      email: user.email,
+      role: user.role?.name as AppRole,
+      [securityId]: user.id.toString(),
+    }
+
+    const accessToken = await this.jwtService.generateToken(payload)
+
+    const accessTokenExpiry = getAccessTokenExpiry(
+      parseInt(this.tokenExpiresIn),
+    )
+
+    return {
+      accessToken,
+      accessTokenExpiry,
     }
   }
 }

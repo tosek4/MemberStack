@@ -102,3 +102,27 @@ export const UserMeResponseSchema = {
     },
   },
 }
+
+export const RefreshTokenResponseSchema = {
+  responses: {
+    '200': {
+      description: 'Refresh token and receive new access token',
+      content: {
+        'application/json': {
+          schema: {
+            type: 'object',
+            properties: {
+              refreshToken: { type: 'string' },
+            },
+          },
+        },
+      },
+    },
+  },
+}
+
+export const RefreshTokenRequestBody = {
+  description: 'Required input for refresh token',
+  content: { 'application/json': { schema: refreshSchema } },
+  required: true,
+}

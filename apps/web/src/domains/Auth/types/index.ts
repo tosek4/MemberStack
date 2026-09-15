@@ -24,3 +24,8 @@ export interface LoginResponse {
   accessTokenExpiry: number
   user: AuthUser
 }
+
+export interface RefreshTokenResponse {
+  accessToken: string
+  accessTokenExpiry: number
+}

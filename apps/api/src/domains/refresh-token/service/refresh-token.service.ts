@@ -23,4 +23,10 @@ export class RefreshTokenService {
   async create(data: CreateRefreshTokenDto) {
     await this.refreshTokenRepository.create(data)
   }
+
+  async findByToken(token: string) {
+    return this.refreshTokenRepository.findOne({
+      where: { token },
+    })
+  }
 }

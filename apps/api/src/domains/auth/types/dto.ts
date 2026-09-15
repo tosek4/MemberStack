@@ -56,3 +56,12 @@ export interface AccessTokenResponse {
   iat: number
   exp: number
 }
+
+export interface RefreshTokenRequest {
+  refreshToken: string
+}
+
+export interface RefreshTokenResult {
+  accessToken: string
+  accessTokenExpiry: number
+}

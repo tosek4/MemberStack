@@ -11,7 +11,13 @@ import {
   HttpErrors,
 } from '@loopback/rest'
 import { User } from '../../user/models'
-import { AuthResult, Credentials, CreateUserDto } from '../types/dto'
+import {
+  AuthResult,
+  Credentials,
+  CreateUserDto,
+  RefreshTokenRequest,
+  RefreshTokenResult,
+} from '../types/dto'
 import { UserRepository } from '../../user/repositories'
 import { AuthService } from '../services/auth.service'
 import {
@@ -20,6 +26,8 @@ import {
   UserRegisterResponseSchema,
   UserLoginRequestBody,
   UserMeResponseSchema,
+  RefreshTokenResponseSchema,
+  RefreshTokenRequestBody,
 } from './auth.docs'
 import { JwtService } from '../services/jwt.service'
 
@@ -52,6 +60,15 @@ export class AuthController {
     credentials: Credentials,
   ): Promise<AuthResult> {
     return this.authService.login(credentials)
+  }
+
+  @post('/refresh')
+  @response(200, RefreshTokenResponseSchema)
+  async refresh(
+    @requestBody(RefreshTokenRequestBody)
+    body: RefreshTokenRequest,
+  ): Promise<RefreshTokenResult> {
+    return this.authService.refresh(body.refreshToken)
   }
 
   @get('/me')
