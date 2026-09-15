@@ -21,3 +21,7 @@ export interface SidebarContextValue {
   toggleSidebar: () => void
   closeSidebar: () => void
 }
+
+export interface QueryProviderProps {
+  children: React.ReactNode
+}

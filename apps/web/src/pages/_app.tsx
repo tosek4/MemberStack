@@ -3,7 +3,12 @@ import { useRouter } from 'next/router'
 
 import '@globals.css'
 
-import { AuthProvider, ThemeProvider, SidebarProvider } from '@/providers'
+import {
+  AuthProvider,
+  ThemeProvider,
+  SidebarProvider,
+  QueryProvider,
+} from '@/providers'
 
 import { Header } from '@/domains/Layout/Header'
 import { Sidebar } from '@/domains/Layout/Sidebar'
@@ -20,19 +25,21 @@ export default function App({ Component, pageProps }: AppProps) {
   return (
     <AuthProvider>
       <ThemeProvider>
-        <SidebarProvider>
-          {!isAuthPage && (
-            <>
-              <Header />
-              <Sidebar />
+        <QueryProvider>
+          <SidebarProvider>
+            {!isAuthPage && (
+              <>
+                <Header />
+                <Sidebar />
 
-              <AppLayout>
-                <Component {...pageProps} />
-              </AppLayout>
-            </>
-          )}
-          {isAuthPage && <Component {...pageProps} />}
-        </SidebarProvider>
+                <AppLayout>
+                  <Component {...pageProps} />
+                </AppLayout>
+              </>
+            )}
+            {isAuthPage && <Component {...pageProps} />}
+          </SidebarProvider>
+        </QueryProvider>
       </ThemeProvider>
     </AuthProvider>
   )
