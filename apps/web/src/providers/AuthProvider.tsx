@@ -1,33 +1,52 @@
-import React, { createContext, useContext, useMemo, useState } from 'react'
-import { AuthContextValue, AuthUser } from './types'
+import React, {
+  createContext,
+  useCallback,
+  useContext,
+  useMemo,
+  useState,
+} from 'react'
+
+import { AuthUser, LoginRequest } from '@domain/Auth/types'
+
+import { login as loginRequest } from '@domain/Auth/services'
+
+import { AuthContextValue } from './types'
 
 const AuthContext = createContext<AuthContextValue | undefined>(undefined)
 
 export const AuthProvider: React.FC<React.PropsWithChildren> = ({
   children,
 }) => {
-  const [user, setUser] = useState<AuthUser | null>({
-    name: 'Admin User',
-    email: 'admin@memberstack.com',
-    role: 'Administrator',
-  })
+  const [user, setUser] = useState<AuthUser | null>(null)
+  const [accessToken, setAccessToken] = useState<string | null>(null)
+  const [refreshToken, setRefreshToken] = useState<string | null>(null)
 
-  const login = (authenticatedUser: AuthUser) => {
-    setUser(authenticatedUser)
-  }
+  const login = useCallback(async (data: LoginRequest) => {
+    const response = await loginRequest(data)
 
-  const logout = () => {
+    setUser(response.user)
+    setAccessToken(response.accessToken)
+    setRefreshToken(response.refreshToken)
+
+    return response
+  }, [])
+
+  const logout = useCallback(() => {
     setUser(null)
-  }
+    setAccessToken(null)
+    setRefreshToken(null)
+  }, [])
 
   const value = useMemo(
     () => ({
       user,
+      accessToken,
+      refreshToken,
       isAuthenticated: user !== null,
       login,
       logout,
     }),
-    [user],
+    [user, accessToken, refreshToken, login, logout],
   )
 
   return <AuthContext.Provider value={value}>{children}</AuthContext.Provider>

@@ -18,14 +18,12 @@ export default function ProfilePage() {
     // Connect to API later
   }
 
-  const [firstName, ...lastNameParts] = user.name.split(' ')
-
   return (
     <main className="mx-auto max-w-3xl p-6">
       <EditProfile
         initialData={{
-          firstName,
-          lastName: lastNameParts.join(' '),
+          firstName: user.firstName,
+          lastName: user.lastName,
           email: user.email,
         }}
         onSubmit={handleSubmit}

@@ -1,12 +1,13 @@
 import React, { ReactElement } from 'react'
+
 import { Login } from '@/domains/Auth/LoginScreen/Login'
 
-const LogInPage = () => {
+const LoginPage = () => {
   return <Login />
 }
 
-LogInPage.getLayout = function getLayout(page: ReactElement) {
+LoginPage.getLayout = function getLayout(page: ReactElement) {
   return <>{page}</>
 }
 
-export default LogInPage
+export default LoginPage

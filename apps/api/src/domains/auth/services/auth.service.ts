@@ -86,13 +86,14 @@ export class AuthService {
     const accessTokenExpiryAt = getAccessTokenExpiry(
       parseInt(this.tokenExpiresIn),
     )
+    const { passwordHash, ...userData } = user
 
     return {
       accessToken,
       refreshToken: tokens.refreshToken,
       accessTokenExpiry: accessTokenExpiryAt,
       user: {
-        ...user,
+        ...userData,
       },
     }
   }

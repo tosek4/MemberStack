@@ -17,7 +17,7 @@ export const Header: React.FC = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
-  const initials = user?.name
+  const initials = user?.firstName
     .split(' ')
     .map((name) => name.charAt(0))
     .join('')
@@ -61,9 +61,11 @@ export const Header: React.FC = () => {
               <div className={styles.right.user.avatar}>{initials}</div>
 
               <div className={styles.right.user.info}>
-                <p className={styles.right.user.name}>{user.name}</p>
+                <p className={styles.right.user.name}>
+                  {user?.firstName} {user?.lastName}
+                </p>
 
-                <p className={styles.right.user.role}>{user.role}</p>
+                <p className={styles.right.user.role}>{user?.role?.name}</p>
               </div>
 
               <ChevronDown size={16} />

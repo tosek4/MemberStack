@@ -1,35 +1,51 @@
 import React, { useState } from 'react'
+import { useRouter } from 'next/router'
+
+import { useAuth } from '@providers'
+
 import { styles } from './Login.styled'
 import { LoginScreenProps } from './types'
 import { LABELS } from './utils/labels'
 
-export const Login: React.FC<LoginScreenProps> = ({
-  title = LABELS.title,
-  onSubmit,
-  onForgotPassword,
-  onSignUp,
-  loading = false,
-}) => {
+export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
+  const router = useRouter()
+  const { login } = useAuth()
+
   const [email, setEmail] = useState('')
   const [password, setPassword] = useState('')
   const [remember, setRemember] = useState(false)
+  const [loading, setLoading] = useState(false)
 
   const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    if (onSubmit) {
-      await onSubmit({ email, password, remember })
+
+    try {
+      setLoading(true)
+
+      await login({
+        email,
+        password,
+        remember,
+      })
+
+      await router.push('/dashboard')
+    } catch (error) {
+      console.error('Login failed:', error)
+    } finally {
+      setLoading(false)
     }
   }
 
   const handleForgotPassword = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
-    onForgotPassword?.()
+    router.push('/forgot-password')
   }
 
   const handleSignUp = (e: React.MouseEvent<HTMLAnchorElement>) => {
     e.preventDefault()
-    onSignUp?.()
+    router.push('/register')
   }
+
   return (
     <section className={styles.layout.section}>
       <div className={styles.layout.container}>

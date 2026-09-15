@@ -1,13 +1,13 @@
-export interface AuthUser {
-  name: string
-  email: string
-  role: string
-}
+import { AuthUser, LoginRequest, LoginResponse } from '@/domains/Auth/types'
 
 export interface AuthContextValue {
   user: AuthUser | null
+  accessToken: string | null
+  refreshToken: string | null
   isAuthenticated: boolean
-  login: (user: AuthUser) => void
+
+  login: (data: LoginRequest) => Promise<LoginResponse>
+
   logout: () => void
 }
 
