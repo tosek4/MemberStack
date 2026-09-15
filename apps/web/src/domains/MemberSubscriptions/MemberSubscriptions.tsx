@@ -7,15 +7,12 @@ import { useRouter } from 'next/router'
 import { SubscriptionCard } from './components/SubscriptionCard'
 import { SubscriptionFilters } from './components/SubscriptionFilters'
 
-import {
-  MemberSubscription,
-  SubscriptionStatusFilter,
-} from './types'
+import { MemberSubscription, SubscriptionStatusFilter } from './types'
 
 import { LABELS } from './utils/labels'
 import { styles } from './MemberSubscriptions.styled'
 
-const mockSubscriptions: MemberSubscription[] = [
+export const mockSubscriptions: MemberSubscription[] = [
   {
     id: '1',
     memberId: '1',
@@ -82,8 +79,7 @@ export const MemberSubscriptions: React.FC = () => {
   const router = useRouter()
 
   const [search, setSearch] = useState('')
-  const [status, setStatus] =
-    useState<SubscriptionStatusFilter>('all')
+  const [status, setStatus] = useState<SubscriptionStatusFilter>('all')
 
   const filteredSubscriptions = useMemo(() => {
     const normalizedSearch = search.toLowerCase().trim()
@@ -91,25 +87,17 @@ export const MemberSubscriptions: React.FC = () => {
     return mockSubscriptions.filter((subscription) => {
       const matchesSearch =
         !normalizedSearch ||
-        subscription.memberName
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        subscription.memberEmail
-          .toLowerCase()
-          .includes(normalizedSearch)
+        subscription.memberName.toLowerCase().includes(normalizedSearch) ||
+        subscription.memberEmail.toLowerCase().includes(normalizedSearch)
 
-      const matchesStatus =
-        status === 'all' ||
-        subscription.status === status
+      const matchesStatus = status === 'all' || subscription.status === status
 
       return matchesSearch && matchesStatus
     })
   }, [search, status])
 
   const handleView = (subscription: MemberSubscription) => {
-    router.push(
-      `/subscriptions/${subscription.id}`,
-    )
+    router.push(`/subscriptions/${subscription.id}`)
   }
 
   const handleRenew = (subscription: MemberSubscription) => {
@@ -121,21 +109,15 @@ export const MemberSubscriptions: React.FC = () => {
       <div className={styles.container}>
         <div className={styles.header.wrapper}>
           <div>
-            <h1 className={styles.header.title}>
-              {LABELS.title}
-            </h1>
+            <h1 className={styles.header.title}>{LABELS.title}</h1>
 
-            <p className={styles.header.subtitle}>
-              {LABELS.subtitle}
-            </p>
+            <p className={styles.header.subtitle}>{LABELS.subtitle}</p>
           </div>
 
           <button
             type="button"
             className={styles.header.addButton}
-            onClick={() =>
-              router.push('/subscriptions/new')
-            }
+            onClick={() => router.push('/subscriptions/new')}
           >
             <Plus size={18} />
             {LABELS.addSubscription}
@@ -151,13 +133,9 @@ export const MemberSubscriptions: React.FC = () => {
 
         {filteredSubscriptions.length === 0 ? (
           <div className={styles.empty}>
-            <h2 className={styles.emptyTitle}>
-              {LABELS.emptyTitle}
-            </h2>
+            <h2 className={styles.emptyTitle}>{LABELS.emptyTitle}</h2>
 
-            <p className={styles.emptyText}>
-              {LABELS.emptyText}
-            </p>
+            <p className={styles.emptyText}>{LABELS.emptyText}</p>
           </div>
         ) : (
           <div className={styles.grid}>

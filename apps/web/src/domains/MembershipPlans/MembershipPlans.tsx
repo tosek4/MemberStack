@@ -62,7 +62,7 @@ export const MembershipPlans: React.FC = () => {
   )
 
   const handleEdit = (plan: MembershipPlan) => {
-    router.push(`/membership-plans/${plan.id}`)
+    router.push(`/membershipPlans/${plan.id}`)
   }
 
   const handleDelete = (plan: MembershipPlan) => {
@@ -86,7 +86,7 @@ export const MembershipPlans: React.FC = () => {
           <button
             type="button"
             className={styles.header.addButton}
-            onClick={() => router.push('/membership-plans/new')}
+            onClick={() => router.push('/membershipPlans/new')}
           >
             <Plus size={18} />
             {LABELS.addPlan}
