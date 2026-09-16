@@ -1,8 +1,8 @@
 export interface AddMemberFormData {
-  name: string
+  firstName: string
+  lastName: string
   email: string
   phone: string
-  plan: string
-  startDate: string
-  endDate: string
+  birthDate: string
+  gender: string
 }

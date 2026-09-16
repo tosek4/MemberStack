@@ -3,53 +3,19 @@ import { useRouter } from 'next/router'
 
 import { MemberCard } from './components/MemberCard'
 import { MemberFilters } from './components/MemberFilters'
-import { Member, MemberStatusFilter } from './types'
+import { MemberStatusFilter } from './types'
+
+import { useMembers } from './services'
 
 import { styles } from './Members.styled'
-
-const members: Member[] = [
-  {
-    id: '1',
-    name: 'John Doe',
-    email: 'john@example.com',
-    phone: '+389 70 123 456',
-    plan: 'Premium',
-    startDate: '01 Sep 2026',
-    endDate: '01 Sep 2027',
-    status: 'active',
-  },
-  {
-    id: '2',
-    name: 'Sarah Johnson',
-    email: 'sarah@example.com',
-    phone: '+389 71 234 567',
-    plan: 'Standard',
-    startDate: '15 Mar 2026',
-    endDate: '20 Sep 2026',
-    status: 'expiring',
-  },
-  {
-    id: '3',
-    name: 'Michael Smith',
-    email: 'michael@example.com',
-    plan: 'Premium',
-    startDate: '01 Jan 2026',
-    endDate: '01 Aug 2026',
-    status: 'expired',
-  },
-  {
-    id: '4',
-    name: 'Emily Davis',
-    email: 'emily@example.com',
-    plan: undefined,
-    status: 'no-subscription',
-  },
-]
 
 export const Members: React.FC = () => {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<MemberStatusFilter>('all')
+
   const router = useRouter()
+
+  const { data: members = [], isLoading, isError } = useMembers()
 
   const filteredMembers = useMemo(() => {
     const normalizedSearch = search.toLowerCase().trim()
@@ -57,18 +23,46 @@ export const Members: React.FC = () => {
     return members.filter((member) => {
       const matchesSearch =
         !normalizedSearch ||
-        member.name.toLowerCase().includes(normalizedSearch) ||
+        member.firstName.toLowerCase().includes(normalizedSearch) ||
+        member.lastName.toLowerCase().includes(normalizedSearch) ||
         member.email.toLowerCase().includes(normalizedSearch) ||
         member.phone?.toLowerCase().includes(normalizedSearch)
 
-      const matchesStatus = status === 'all' || member.status === status
+      const matchesStatus =
+        status === 'all' || member.activeSubscription?.status === status
 
       return matchesSearch && matchesStatus
     })
-  }, [search, status])
+  }, [members, search, status])
 
-  const handleViewMember = (member: Member) => {
+  const handleViewMember = (member: (typeof members)[number]) => {
     router.push(`/members/${member.id}`)
+  }
+
+  if (isLoading) {
+    return (
+      <main className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Loading members...</p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (isError) {
+    return (
+      <main className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Failed to load members</p>
+
+            <p className={styles.emptyText}>Please try again later.</p>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   return (

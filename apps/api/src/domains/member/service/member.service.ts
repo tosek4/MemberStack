@@ -9,6 +9,7 @@ import {
 import { HttpErrors } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberRepository } from '../repositories'
+import { MemberListItem } from '../types'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class MemberService {
@@ -21,8 +22,32 @@ export class MemberService {
     return this.memberRepository.create(data)
   }
 
-  find(filter?: Filter<Member>): Promise<Member[]> {
-    return this.memberRepository.find(filter)
+  async getAllMembers(filter?: Filter<Member>): Promise<MemberListItem[]> {
+    const members = await this.memberRepository.find({
+      include: [
+        {
+          relation: 'subscriptions',
+          scope: {
+            where: {
+              status: 'active',
+            },
+            order: ['expiresAt DESC'],
+            limit: 1,
+            include: ['membershipPlan'],
+          },
+        },
+      ],
+      ...filter,
+    })
+
+    return members.map((member) => {
+      const { subscriptions, ...memberData } = member
+
+      return {
+        ...memberData,
+        activeSubscription: subscriptions?.[0] ?? null,
+      }
+    })
   }
 
   async findById(

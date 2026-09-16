@@ -3,25 +3,26 @@
 import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 
+import { useCreateMember } from '../../services'
 import { AddMemberFormData } from './types'
 import { styles } from './AddMember.styled'
 
 export const AddMember: React.FC = () => {
   const router = useRouter()
 
+  const createMember = useCreateMember()
+
   const [form, setForm] = useState<AddMemberFormData>({
-    name: '',
+    firstName: '',
+    lastName: '',
     email: '',
     phone: '',
-    plan: '',
-    startDate: '',
-    endDate: '',
+    birthDate: '',
+    gender: '',
   })
 
   const handleChange = (
-    event: React.ChangeEvent<
-      HTMLInputElement | HTMLSelectElement
-    >,
+    event: React.ChangeEvent<HTMLInputElement | HTMLSelectElement>,
   ) => {
     const { name, value } = event.target
 
@@ -34,9 +35,22 @@ export const AddMember: React.FC = () => {
   const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault()
 
-    console.log('Create member:', form)
-
-    router.push('/members')
+    createMember.mutate(
+      {
+        firstName: form.firstName,
+        lastName: form.lastName,
+        email: form.email,
+        phone: form.phone || undefined,
+        birthDate: new Date(`${form.birthDate}T00:00:00.000Z`).toISOString(),
+        gender: form.gender || undefined,
+        status: 'active',
+      },
+      {
+        onSuccess: () => {
+          router.push('/members')
+        },
+      },
+    )
   }
 
   return (
@@ -45,42 +59,48 @@ export const AddMember: React.FC = () => {
         <div className={styles.header.wrapper}>
           <h1 className={styles.header.title}>Add member</h1>
 
-          <p className={styles.header.subtitle}>
-            Create a new member and assign their membership.
-          </p>
+          <p className={styles.header.subtitle}>Create a new member.</p>
         </div>
 
         <div className={styles.card}>
-          <form
-            className={styles.form.root}
-            onSubmit={handleSubmit}
-          >
+          <form className={styles.form.root} onSubmit={handleSubmit}>
             <div className={styles.form.grid}>
               <div className={styles.form.field}>
-                <label
-                  htmlFor="name"
-                  className={styles.form.label}
-                >
-                  Full name
+                <label htmlFor="firstName" className={styles.form.label}>
+                  First name
                 </label>
 
                 <input
-                  id="name"
-                  name="name"
+                  id="firstName"
+                  name="firstName"
                   type="text"
-                  value={form.name}
+                  value={form.firstName}
                   onChange={handleChange}
-                  placeholder="John Doe"
+                  placeholder="John"
                   className={styles.form.input}
                   required
                 />
               </div>
 
               <div className={styles.form.field}>
-                <label
-                  htmlFor="email"
-                  className={styles.form.label}
-                >
+                <label htmlFor="lastName" className={styles.form.label}>
+                  Last name
+                </label>
+
+                <input
+                  id="lastName"
+                  name="lastName"
+                  type="text"
+                  value={form.lastName}
+                  onChange={handleChange}
+                  placeholder="Doe"
+                  className={styles.form.input}
+                  required
+                />
+              </div>
+
+              <div className={styles.form.field}>
+                <label htmlFor="email" className={styles.form.label}>
                   Email
                 </label>
 
@@ -97,10 +117,7 @@ export const AddMember: React.FC = () => {
               </div>
 
               <div className={styles.form.field}>
-                <label
-                  htmlFor="phone"
-                  className={styles.form.label}
-                >
+                <label htmlFor="phone" className={styles.form.label}>
                   Phone
                 </label>
 
@@ -116,72 +133,53 @@ export const AddMember: React.FC = () => {
               </div>
 
               <div className={styles.form.field}>
-                <label
-                  htmlFor="plan"
-                  className={styles.form.label}
-                >
-                  Membership plan
+                <label htmlFor="birthDate" className={styles.form.label}>
+                  Birth date
+                </label>
+
+                <input
+                  id="birthDate"
+                  name="birthDate"
+                  type="date"
+                  value={form.birthDate}
+                  onChange={handleChange}
+                  className={styles.form.input}
+                  required
+                />
+              </div>
+
+              <div className={styles.form.field}>
+                <label htmlFor="gender" className={styles.form.label}>
+                  Gender
                 </label>
 
                 <select
-                  id="plan"
-                  name="plan"
-                  value={form.plan}
+                  id="gender"
+                  name="gender"
+                  value={form.gender}
                   onChange={handleChange}
                   className={styles.form.select}
-                  required
                 >
-                  <option value="">Select a plan</option>
-                  <option value="basic">Basic</option>
-                  <option value="standard">Standard</option>
-                  <option value="premium">Premium</option>
+                  <option value="">Select gender</option>
+                  <option value="male">Male</option>
+                  <option value="female">Female</option>
                 </select>
               </div>
-
-              <div className={styles.form.field}>
-                <label
-                  htmlFor="startDate"
-                  className={styles.form.label}
-                >
-                  Start date
-                </label>
-
-                <input
-                  id="startDate"
-                  name="startDate"
-                  type="date"
-                  value={form.startDate}
-                  onChange={handleChange}
-                  className={styles.form.input}
-                  required
-                />
-              </div>
-
-              <div className={styles.form.field}>
-                <label
-                  htmlFor="endDate"
-                  className={styles.form.label}
-                >
-                  End date
-                </label>
-
-                <input
-                  id="endDate"
-                  name="endDate"
-                  type="date"
-                  value={form.endDate}
-                  onChange={handleChange}
-                  className={styles.form.input}
-                  required
-                />
-              </div>
             </div>
+
+            {createMember.isError && (
+              <p className={styles.error.text}>
+                Failed to create member. Please check the information and try
+                again.
+              </p>
+            )}
 
             <div className={styles.actions.wrapper}>
               <button
                 type="button"
                 className={styles.actions.cancel}
                 onClick={() => router.push('/members')}
+                disabled={createMember.isPending}
               >
                 Cancel
               </button>
@@ -189,8 +187,9 @@ export const AddMember: React.FC = () => {
               <button
                 type="submit"
                 className={styles.actions.submit}
+                disabled={createMember.isPending}
               >
-                Create member
+                {createMember.isPending ? 'Creating...' : 'Create member'}
               </button>
             </div>
           </form>

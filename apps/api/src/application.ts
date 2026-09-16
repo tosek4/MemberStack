@@ -32,6 +32,8 @@ import { EConfigKeys } from './config'
 import { AuthorizationComponent } from '@loopback/authorization'
 import { RoleAuthorizerProvider } from './domains/auth/services/role-authorizer.provider'
 import { RefreshTokenService } from './domains/refresh-token/service/refresh-token.service'
+import { MEMBER_SERVICE } from './domains/member/keys'
+import { MemberService } from './domains/member/service'
 
 export { ApplicationConfig }
 export class MemberstackApiApplication extends BootMixin(
@@ -97,6 +99,8 @@ export class MemberstackApiApplication extends BootMixin(
     )
 
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toAlias(JWT_SERVICE)
+
+    this.bind(MEMBER_SERVICE).toClass(MemberService)
   }
 
   setupComponents() {

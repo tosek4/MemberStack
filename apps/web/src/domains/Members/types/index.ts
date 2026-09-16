@@ -2,16 +2,51 @@ export type MemberStatus = 'active' | 'expiring' | 'expired' | 'no-subscription'
 
 export type MemberStatusFilter = 'all' | MemberStatus
 
+export interface MemberSubscription {
+  id: number
+  startedAt: string
+  expiresAt: string
+  status: string
+  remainingVisits: number | null
+  memberId: number
+  membershipPlanId: number
+  membershipPlan?: {
+    id: number
+    name: string
+    description?: string
+  }
+}
+
 export interface Member {
-  id: string
-  name: string
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  birthDate?: string | null
+  gender?: string
+  emergency_contact?: string | null
+  profile_image?: string | null
+  status: string
+  activeSubscription: MemberSubscription | null
+}
+
+export interface CreateMemberPayload {
+  firstName: string
+  lastName: string
   email: string
   phone?: string
-  photoUrl?: string
-  plan?: string
-  startDate?: string
-  endDate?: string
-  status: MemberStatus
+  birthDate: string
+  gender?: string
+  status: 'active'
+}
+
+export interface UpdateMemberData {
+  firstName?: string
+  lastName?: string
+  email?: string
+  phone?: string
+  isActive?: boolean
 }
 
 export interface MemberCardProps {

@@ -1,16 +1,2 @@
 
 [2m$ lb-tsc[22m
-[96msrc/domains/auth/services/role-authorizer.provider.ts[0m:[93m48[0m:[93m13[0m - [91merror[0m[90m TS2742: [0mThe inferred type of 'request' cannot be named without a reference to '.pnpm/@types+express-serve-static-core@4.19.8/node_modules/@types/express-serve-static-core'. This is likely not portable. A type annotation is necessary.
-
-[7m48[0m     private request?: Request,
-[7m  [0m [91m            ~~~~~~~[0m
-
-[96msrc/domains/auth/services/role-authorizer.provider.ts[0m:[93m48[0m:[93m13[0m - [91merror[0m[90m TS2742: [0mThe inferred type of 'request' cannot be named without a reference to '.pnpm/@types+qs@6.15.1/node_modules/@types/qs'. This is likely not portable. A type annotation is necessary.
-
-[7m48[0m     private request?: Request,
-[7m  [0m [91m            ~~~~~~~[0m
-
-
-Found 2 errors in the same file, starting at: src/domains/auth/services/role-authorizer.provider.ts[90m:48[0m
-
-[41m[31m[[39m[49m[41m[30mELIFECYCLE[39m[49m[41m[31m][39m[49m [31mCommand failed with exit code 1.[39m

@@ -28,35 +28,37 @@ const getInitials = (name: string) =>
     .toUpperCase()
 
 export const MemberCard: React.FC<MemberCardProps> = ({ member, onView }) => {
+  const status = member.status as MemberStatus
+
   return (
     <article className={styles.root.base}>
       <div className={styles.header.wrapper}>
         <div className={styles.member.wrapper}>
           <div className={styles.member.avatar}>
-            {member.photoUrl ? (
+            {member.profile_image ? (
               <img
-                src={member.photoUrl}
-                alt={member.name}
+                src={member.profile_image}
+                alt={member.firstName}
                 className={styles.member.avatarImage}
               />
             ) : (
               <span className={styles.member.initials}>
-                {getInitials(member.name)}
+                {getInitials(member.firstName)}
               </span>
             )}
           </div>
 
           <div className={styles.member.info.wrapper}>
-            <h3 className={styles.member.info.name}>{member.name}</h3>
+            <h3 className={styles.member.info.name}>
+              {member.firstName + ' ' + member.lastName}
+            </h3>
 
             <p className={styles.member.info.email}>{member.email}</p>
           </div>
         </div>
 
-        <span
-          className={`${styles.status.base} ${statusStyles[member.status]}`}
-        >
-          {statusLabels[member.status]}
+        <span className={`${styles.status.base} ${statusStyles[status]}`}>
+          {statusLabels[status]}
         </span>
       </div>
 
@@ -64,15 +66,18 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onView }) => {
         <div className={styles.details.item.wrapper}>
           <p className={styles.details.item.label}>{LABELS.plan}</p>
 
-          <p className={styles.details.item.value}>{member.plan ?? '—'}</p>
+          <p className={styles.details.item.value}>
+            {member?.activeSubscription?.membershipPlan?.name ?? '—'}
+          </p>
         </div>
 
         <div className={styles.details.item.wrapper}>
           <p className={styles.details.item.label}>{LABELS.membership}</p>
 
           <p className={styles.details.item.value}>
-            {member.startDate && member.endDate
-              ? `${member.startDate} → ${member.endDate}`
+            {member?.activeSubscription?.startedAt &&
+            member?.activeSubscription?.expiresAt
+              ? `${member?.activeSubscription?.startedAt} → ${member?.activeSubscription?.expiresAt}`
               : '—'}
           </p>
         </div>

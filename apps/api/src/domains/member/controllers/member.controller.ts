@@ -1,6 +1,7 @@
 import { service } from '@loopback/core'
 import { Count, CountSchema, Filter, Where } from '@loopback/repository'
 import {
+  api,
   del,
   get,
   getModelSchemaRef,
@@ -12,14 +13,24 @@ import {
 } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberService } from '../service'
+import { UserMeResponseSchema } from './members.docs'
+import { MemberListItem } from '../types'
 
+@api({ basePath: '/members' })
 export class MemberController {
   constructor(
     @service(MemberService)
     private memberService: MemberService,
   ) {}
 
-  @post('/members')
+  @get('/')
+  getAllMembers(
+    @param.filter(Member) filter?: Filter<Member>,
+  ): Promise<MemberListItem[]> {
+    return this.memberService.getAllMembers(filter)
+  }
+
+  @post('/')
   @response(200, {
     description: 'Member model instance',
     content: { 'application/json': { schema: getModelSchemaRef(Member) } },
@@ -37,10 +48,10 @@ export class MemberController {
     })
     member: Omit<Member, 'id'>,
   ): Promise<Member> {
-    return this.memberService.create(member)
+    return this.memberService.create(member)  
   }
 
-  @get('/members/count')
+  @get('/count')
   @response(200, {
     description: 'Member model count',
     content: { 'application/json': { schema: CountSchema } },
@@ -49,20 +60,7 @@ export class MemberController {
     return this.memberService.count(where)
   }
 
-  @get('/members')
-  @response(200, {
-    description: 'Array of Member model instances',
-    content: {
-      'application/json': {
-        schema: { type: 'array', items: getModelSchemaRef(Member) },
-      },
-    },
-  })
-  find(@param.filter(Member) filter?: Filter<Member>): Promise<Member[]> {
-    return this.memberService.find(filter)
-  }
-
-  @get('/members/{id}')
+  @get('/{id}')
   @response(200, {
     description: 'Member model instance',
     content: { 'application/json': { schema: getModelSchemaRef(Member) } },
@@ -71,7 +69,7 @@ export class MemberController {
     return this.memberService.findById(id)
   }
 
-  @patch('/members/{id}')
+  @patch('/{id}')
   @response(204, { description: 'Member PATCH success' })
   async updateById(
     @param.path.number('id') id: number,
@@ -87,7 +85,7 @@ export class MemberController {
     await this.memberService.updateById(id, member)
   }
 
-  @del('/members/{id}')
+  @del('/{id}')
   @response(204, { description: 'Member DELETE success' })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.memberService.deleteById(id)
