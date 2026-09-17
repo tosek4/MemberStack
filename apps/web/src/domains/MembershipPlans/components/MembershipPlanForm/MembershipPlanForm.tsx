@@ -1,111 +1,174 @@
-import React from 'react'
-import { useForm } from 'react-hook-form'
+import React, { useState } from 'react'
+import { useRouter } from 'next/router'
 
 import { MembershipPlanFormData, MembershipPlanFormProps } from './types'
 
 import { styles } from './MembershipPlanForm.styled'
 
+import {
+  useCreateMembershipPlan,
+  useUpdateMembershipPlan,
+} from '../../services'
+
 export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
   initialValues,
-  loading = false,
-  submitLabel,
-  loadingLabel,
-  onSubmit,
+  planId,
 }) => {
-  const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<MembershipPlanFormData>({
-    defaultValues: {
-      name: initialValues?.name ?? '',
-      price: initialValues?.price,
-      durationDays: initialValues?.durationDays,
-      description: initialValues?.description ?? '',
-    },
+  const router = useRouter()
+  const isEdit = planId !== undefined
+
+  const createMembershipPlan = useCreateMembershipPlan()
+  const updateMembershipPlan = useUpdateMembershipPlan()
+
+  const isPending =
+    createMembershipPlan.isPending || updateMembershipPlan.isPending
+
+  const [form, setForm] = useState<MembershipPlanFormData>({
+    name: initialValues?.name ?? '',
+    price: initialValues?.price ?? 0,
+    duration: initialValues?.duration ?? 0,
+    description: initialValues?.description ?? '',
   })
 
+  const handleChange = (
+    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+  ) => {
+    const { name, value } = e.target
+
+    if (name === 'price' || name === 'duration') {
+      setForm((prev) => ({
+        ...prev,
+        [name]: Number(value),
+      }))
+
+      return
+    }
+
+    setForm((prev) => ({
+      ...prev,
+      [name]: value,
+    }))
+  }
+
+  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+    event.preventDefault()
+
+    const data = {
+      name: form.name,
+      price: form.price,
+      duration: form.duration,
+      description: form.description || undefined,
+      status: 'active' as const,
+    }
+
+    if (isEdit) {
+      updateMembershipPlan.mutate(
+        {
+          id: planId,
+          data,
+        },
+        {
+          onSuccess: () => {
+            router.push('/membershipPlans')
+          },
+        },
+      )
+
+      return
+    }
+
+    createMembershipPlan.mutate(data, {
+      onSuccess: () => {
+        router.push('/membershipPlans')
+      },
+    })
+  }
+
   return (
-    <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
+    <form className={styles.form} onSubmit={handleSubmit}>
       <div className={styles.field}>
-        <label className={styles.label}>Plan name</label>
+        <label htmlFor="plan-name" className={styles.label}>
+          Plan name
+        </label>
 
         <input
-          {...register('name', {
-            required: 'Plan name is required',
-          })}
+          id="plan-name"
+          name="name"
+          value={form.name}
+          onChange={handleChange}
           className={styles.input}
           placeholder="e.g. Premium"
+          disabled={isPending}
         />
-
-        {errors.name && <p className={styles.error}>{errors.name.message}</p>}
       </div>
 
       <div className={styles.row}>
         <div className={styles.field}>
-          <label className={styles.label}>Price (€)</label>
+          <label htmlFor="plan-price" className={styles.label}>
+            Price (€)
+          </label>
 
           <input
+            id="plan-price"
+            name="price"
+            onChange={handleChange}
+            value={form.price}
             type="number"
             step="0.01"
-            {...register('price', {
-              required: 'Price is required',
-              valueAsNumber: true,
-              min: {
-                value: 0,
-                message: 'Price cannot be negative',
-              },
-            })}
             className={styles.input}
             placeholder="40"
+            disabled={isPending}
           />
-
-          {errors.price && (
-            <p className={styles.error}>{errors.price.message}</p>
-          )}
         </div>
 
         <div className={styles.field}>
-          <label className={styles.label}>Duration (days)</label>
+          <label htmlFor="plan-duration" className={styles.label}>
+            Duration (days)
+          </label>
 
           <input
+            id="plan-duration"
+            name="duration"
+            onChange={handleChange}
+            value={form.duration}
             type="number"
-            {...register('durationDays', {
-              required: 'Duration is required',
-              valueAsNumber: true,
-              min: {
-                value: 1,
-                message: 'Duration must be at least 1 day',
-              },
-            })}
             className={styles.input}
             placeholder="30"
+            disabled={isPending}
           />
-
-          {errors.durationDays && (
-            <p className={styles.error}>{errors.durationDays.message}</p>
-          )}
         </div>
       </div>
 
       <div className={styles.field}>
-        <label className={styles.label}>Description</label>
+        <label htmlFor="plan-description" className={styles.label}>
+          Description
+        </label>
 
         <textarea
-          {...register('description')}
+          id="plan-description"
+          name="description"
+          value={form.description}
+          onChange={handleChange}
           className={styles.textarea}
           placeholder="Describe what this plan includes..."
           rows={4}
+          disabled={isPending}
         />
       </div>
 
       <div className={styles.actions}>
         <button
           type="submit"
-          disabled={loading}
+          disabled={isPending}
           className={styles.submitButton}
         >
-          {loading ? loadingLabel : submitLabel}
+          {isPending
+            ? isEdit
+              ? 'Updating...'
+              : 'Creating...'
+            : isEdit
+              ? 'Update plan'
+              : 'Create plan'}
         </button>
       </div>
     </form>

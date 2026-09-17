@@ -1,11 +1,11 @@
 export type MembershipPlanStatus = 'active' | 'inactive'
 
 export interface MembershipPlan {
-  id: string
+  id: number
   name: string
   price: number
   currency: string
-  durationDays: number
+  duration: number
   description?: string
   status: MembershipPlanStatus
   activeMembers: number
@@ -14,5 +14,22 @@ export interface MembershipPlan {
 export interface MembershipPlanCardProps {
   plan: MembershipPlan
   onEdit?: (plan: MembershipPlan) => void
-  onDelete?: (plan: MembershipPlan) => void
+  onDelete?: (planId: number) => void
+  openDeleteModal?: () => void
+}
+
+export interface CreateMembershipPlanPayload {
+  name: string
+  description?: string
+  price: number
+  duration: number
+  status: MembershipPlanStatus
+}
+
+export interface UpdateMembershipPlanData {
+  name?: string
+  description?: string
+  price?: number
+  duration?: number
+  status?: MembershipPlanStatus
 }

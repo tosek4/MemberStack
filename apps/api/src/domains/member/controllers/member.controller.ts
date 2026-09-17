@@ -1,10 +1,9 @@
 import { service } from '@loopback/core'
-import { Count, CountSchema, Filter, Where } from '@loopback/repository'
+import { Count, Filter, Where } from '@loopback/repository'
 import {
   api,
   del,
   get,
-  getModelSchemaRef,
   param,
   patch,
   post,
@@ -13,8 +12,15 @@ import {
 } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberService } from '../service'
-import { UserMeResponseSchema } from './members.docs'
 import { MemberListItem } from '../types'
+import {
+  CreateMemberRequestSchema,
+  CreateMemberResponseSchema,
+  MemberGetByIdResponseSchema,
+  MembersCountResponseSchema,
+  MemberUpdateResponseSchema,
+  UpdateMemberRequestSchema,
+} from './members.docs'
 
 @api({ basePath: '/members' })
 export class MemberController {
@@ -31,55 +37,31 @@ export class MemberController {
   }
 
   @post('/')
-  @response(200, {
-    description: 'Member model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(Member) } },
-  })
+  @response(200, CreateMemberResponseSchema)
   create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Member, {
-            title: 'NewMember',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
+    @requestBody(CreateMemberRequestSchema)
     member: Omit<Member, 'id'>,
   ): Promise<Member> {
-    return this.memberService.create(member)  
+    return this.memberService.create(member)
   }
 
   @get('/count')
-  @response(200, {
-    description: 'Member model count',
-    content: { 'application/json': { schema: CountSchema } },
-  })
+  @response(200, MembersCountResponseSchema)
   count(@param.where(Member) where?: Where<Member>): Promise<Count> {
     return this.memberService.count(where)
   }
 
   @get('/{id}')
-  @response(200, {
-    description: 'Member model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(Member) } },
-  })
+  @response(200, MemberGetByIdResponseSchema)
   findById(@param.path.number('id') id: number): Promise<Member> {
     return this.memberService.findById(id)
   }
 
   @patch('/{id}')
-  @response(204, { description: 'Member PATCH success' })
+  @response(204, MemberUpdateResponseSchema)
   async updateById(
     @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Member, { partial: true }),
-        },
-      },
-    })
+    @requestBody(UpdateMemberRequestSchema)
     member: Partial<Member>,
   ): Promise<void> {
     await this.memberService.updateById(id, member)

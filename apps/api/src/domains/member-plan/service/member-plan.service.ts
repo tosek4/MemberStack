@@ -21,8 +21,11 @@ export class MemberPlanService {
     return this.memberPlanRepository.create(data)
   }
 
-  find(filter?: Filter<MemberPlan>): Promise<MemberPlan[]> {
-    return this.memberPlanRepository.find(filter)
+  getAllMemberPlans(filter?: Filter<MemberPlan>): Promise<MemberPlan[]> {
+    return this.memberPlanRepository.find({
+      order: ['price ASC'],
+      ...filter,
+    })
   }
 
   async findById(

@@ -7,69 +7,70 @@ import { MembershipPlan } from './types'
 import { LABELS } from './utils/labels'
 
 import { styles } from './MembershipPlans.styled'
-
-const mockPlans: MembershipPlan[] = [
-  {
-    id: '1',
-    name: 'Basic',
-    price: 25,
-    currency: '€',
-    durationDays: 30,
-    description: 'Basic access to the gym',
-    status: 'active',
-    activeMembers: 214,
-  },
-  {
-    id: '2',
-    name: 'Standard',
-    price: 32,
-    currency: '€',
-    durationDays: 30,
-    description: 'Full gym access with additional benefits',
-    status: 'active',
-    activeMembers: 321,
-  },
-  {
-    id: '3',
-    name: 'Premium',
-    price: 40,
-    currency: '€',
-    durationDays: 30,
-    description: 'Full access with premium benefits',
-    status: 'active',
-    activeMembers: 186,
-  },
-  {
-    id: '4',
-    name: 'Annual',
-    price: 350,
-    currency: '€',
-    durationDays: 365,
-    description: 'Best value for long-term members',
-    status: 'inactive',
-    activeMembers: 0,
-  },
-]
+import { useDeleteMembershipPlan, useMembershipPlans } from './services'
+import { Modal } from '@/components/Modal'
 
 export const MembershipPlans: React.FC = () => {
   const router = useRouter()
-
-  const [plans, setPlans] = useState<MembershipPlan[]>(mockPlans)
+  const [deleteModalOpen, setDeleteModalOpen] = useState(false)
+  const [deleteMemberPlanId, setDeleteMemberPlanId] = useState(
+    null as number | null,
+  )
+  const { data: membersPlans = [], isLoading, isError } = useMembershipPlans()
+  const deleteMembershipPlan = useDeleteMembershipPlan()
 
   const activePlans = useMemo(
-    () => plans.filter((plan) => plan.status === 'active'),
-    [plans],
+    () => membersPlans.filter((plan) => plan.status === 'active'),
+    [membersPlans],
   )
 
   const handleEdit = (plan: MembershipPlan) => {
     router.push(`/membershipPlans/${plan.id}`)
   }
 
-  const handleDelete = (plan: MembershipPlan) => {
-    setPlans((current) =>
-      current.map((item) =>
-        item.id === plan.id ? { ...item, status: 'inactive' } : item,
-      ),
+  const handleDelete = (planId: number) => {
+    setDeleteMemberPlanId(planId)
+    setDeleteModalOpen(true)
+  }
+
+  const handleConfirmDelete = (planId: number) => {
+    setDeleteModalOpen(false)
+    deleteMembershipPlan.mutate(planId, {
+      onSuccess: () => {
+        setDeleteModalOpen(false)
+        setDeleteMemberPlanId(null)
+      },
+    })
+  }
+
+  const handleCancelDelete = () => {
+    setDeleteModalOpen(false)
+    setDeleteMemberPlanId(null)
+  }
+
+  if (isLoading) {
+    return (
+      <main className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Loading membership plans...</p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (isError) {
+    return (
+      <main className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Failed to load membership plans</p>
+
+            <p className={styles.emptyText}>Please try again later.</p>
+          </div>
+        </div>
+      </main>
     )
   }
 
@@ -101,17 +102,28 @@ export const MembershipPlans: React.FC = () => {
           </div>
         ) : (
           <div className={styles.grid}>
-            {plans.map((plan) => (
+            {membersPlans.map((plan) => (
               <MembershipPlanCard
                 key={plan.id}
                 plan={plan}
                 onEdit={handleEdit}
                 onDelete={handleDelete}
+                openDeleteModal={() => setDeleteModalOpen(true)}
               />
             ))}
           </div>
         )}
       </div>
+      <Modal
+        open={deleteModalOpen}
+        title="Delete membership plan"
+        description={`Are you sure you want to delete? This action cannot be undone.`}
+        confirmLabel="Delete"
+        cancelLabel="Cancel"
+        loading={deleteMembershipPlan.isPending}
+        onConfirm={() => handleConfirmDelete(deleteMemberPlanId!)}
+        onCancel={() => handleCancelDelete()}
+      />
     </main>
   )
 }

@@ -3,7 +3,7 @@ import {
   MemberSubscription,
   MemberSubscriptionWithRelations,
 } from '../../member-subscription/models'
-import { MemberPlanRelations } from '../types'
+import { MemberPlanRelations, MemberPlanStatus } from '../types'
 
 @model()
 export class MemberPlan extends Entity {
@@ -24,6 +24,33 @@ export class MemberPlan extends Entity {
     type: 'string',
   })
   description?: string
+
+  @property({
+    type: 'number',
+    required: true,
+    jsonSchema: {
+      minimum: 0,
+    },
+  })
+  price: number
+
+  @property({
+    type: 'number',
+    required: true,
+    jsonSchema: {
+      minimum: 1,
+    },
+  })
+  duration: number
+
+  @property({
+    type: 'string',
+    required: true,
+    jsonSchema: {
+      enum: Object.values(MemberPlanStatus),
+    },
+  })
+  status: MemberPlanStatus
 
   @property({
     type: 'date',

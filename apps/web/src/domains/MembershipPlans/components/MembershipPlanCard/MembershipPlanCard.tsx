@@ -10,6 +10,7 @@ export const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
   plan,
   onEdit,
   onDelete,
+  openDeleteModal,
 }) => {
   const isActive = plan.status === 'active'
 
@@ -36,10 +37,7 @@ export const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
       </div>
 
       <div className={styles.price.wrapper}>
-        <span className={styles.price.amount}>
-          {plan.currency}
-          {plan.price}
-        </span>
+        <span className={styles.price.amount}>€{plan.price}</span>
 
         <span className={styles.price.period}>/ {LABELS.month}</span>
       </div>
@@ -49,7 +47,7 @@ export const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
           <span className={styles.details.label}>{LABELS.duration}</span>
 
           <span className={styles.details.value}>
-            {plan.durationDays} {LABELS.days}
+            {plan.duration} {LABELS.days}
           </span>
         </div>
 
@@ -73,7 +71,10 @@ export const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
         <button
           type="button"
           className={styles.actions.delete}
-          onClick={() => onDelete?.(plan)}
+          onClick={() => {
+            openDeleteModal?.()
+            onDelete?.(plan?.id)
+          }}
         >
           <Trash2 size={16} />
           {LABELS.delete}

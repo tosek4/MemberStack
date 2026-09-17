@@ -2,6 +2,7 @@ import {
   ClipboardCheck,
   CreditCard,
   LayoutDashboard,
+  RefreshCw,
   Settings,
   UserRound,
   Users,
@@ -30,7 +31,7 @@ export const sidebarItems: SidebarItem[] = [
   {
     label: LABELS.subscriptions,
     href: '/subscriptions',
-    icon: createElement(ClipboardCheck),
+    icon: createElement(RefreshCw),
   },
   {
     label: LABELS.attendance,

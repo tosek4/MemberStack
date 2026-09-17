@@ -3,3 +3,7 @@ import { MemberSubscriptionWithRelations } from '../../member-subscription/model
 export interface MemberPlanRelations {
   subscriptions?: MemberSubscriptionWithRelations[]
 }
+export enum MemberPlanStatus {
+  ACTIVE = 'active',
+  INACTIVE = 'inactive',
+}

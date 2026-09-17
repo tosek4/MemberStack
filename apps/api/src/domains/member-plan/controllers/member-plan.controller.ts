@@ -1,9 +1,9 @@
 import { service } from '@loopback/core'
-import { Count, CountSchema, Filter, Where } from '@loopback/repository'
+import { Count, Filter, Where } from '@loopback/repository'
 import {
+  api,
   del,
   get,
-  getModelSchemaRef,
   param,
   patch,
   post,
@@ -12,84 +12,69 @@ import {
 } from '@loopback/rest'
 import { MemberPlan } from '../models'
 import { MemberPlanService } from '../service'
+import { authorize } from '@loopback/authorization'
+import { AppRole } from '../../../enums/app-role.enum'
+import {
+  CreateMemberPlanRequestSchema,
+  CreateMemberPlanResponseSchema,
+  MemberPlanCountResponseSchema,
+  MemberPlanGetByIdResponseSchema,
+  MemberPlanResponseSchema,
+  MemberPlanUpdateResponseSchema,
+  UpdateMemberPlanRequestSchema,
+} from './member-plan.docs'
 
+@api({ basePath: '/member-plans' })
+@authorize({
+  allowedRoles: [AppRole.ADMIN, AppRole.SUPER_ADMIN],
+  voters: ['authorization.authorizers.role'],
+})
 export class MemberPlanController {
   constructor(
     @service(MemberPlanService)
     private memberPlanService: MemberPlanService,
   ) {}
 
-  @post('/member-plans')
-  @response(200, {
-    description: 'MemberPlan model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(MemberPlan) } },
-  })
+  @get('/')
+  @response(200, MemberPlanResponseSchema)
+  find(
+    @param.filter(MemberPlan) filter?: Filter<MemberPlan>,
+  ): Promise<MemberPlan[]> {
+    return this.memberPlanService.getAllMemberPlans(filter)
+  }
+
+  @post('/')
+  @response(200, CreateMemberPlanResponseSchema)
   create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(MemberPlan, {
-            title: 'NewMemberPlan',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
+    @requestBody(CreateMemberPlanRequestSchema)
     plan: Omit<MemberPlan, 'id'>,
   ): Promise<MemberPlan> {
     return this.memberPlanService.create(plan)
   }
 
-  @get('/member-plans/count')
-  @response(200, {
-    description: 'MemberPlan model count',
-    content: { 'application/json': { schema: CountSchema } },
-  })
+  @get('/count')
+  @response(200, MemberPlanCountResponseSchema)
   count(@param.where(MemberPlan) where?: Where<MemberPlan>): Promise<Count> {
     return this.memberPlanService.count(where)
   }
 
-  @get('/member-plans')
-  @response(200, {
-    description: 'Array of MemberPlan model instances',
-    content: {
-      'application/json': {
-        schema: { type: 'array', items: getModelSchemaRef(MemberPlan) },
-      },
-    },
-  })
-  find(
-    @param.filter(MemberPlan) filter?: Filter<MemberPlan>,
-  ): Promise<MemberPlan[]> {
-    return this.memberPlanService.find(filter)
-  }
-
-  @get('/member-plans/{id}')
-  @response(200, {
-    description: 'MemberPlan model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(MemberPlan) } },
-  })
+  @get('/{id}')
+  @response(200, MemberPlanGetByIdResponseSchema)
   findById(@param.path.number('id') id: number): Promise<MemberPlan> {
     return this.memberPlanService.findById(id)
   }
 
-  @patch('/member-plans/{id}')
-  @response(204, { description: 'MemberPlan PATCH success' })
+  @patch('/{id}')
+  @response(204, MemberPlanUpdateResponseSchema)
   async updateById(
     @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(MemberPlan, { partial: true }),
-        },
-      },
-    })
+    @requestBody(UpdateMemberPlanRequestSchema)
     plan: Partial<MemberPlan>,
   ): Promise<void> {
     await this.memberPlanService.updateById(id, plan)
   }
 
-  @del('/member-plans/{id}')
+  @del('/{id}')
   @response(204, { description: 'MemberPlan DELETE success' })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.memberPlanService.deleteById(id)

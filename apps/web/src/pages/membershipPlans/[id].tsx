@@ -1,30 +1,32 @@
 import { useRouter } from 'next/router'
 
-import {
-  MembershipPlanForm,
-  MembershipPlanFormData,
-} from '@domain/MembershipPlans/components/MembershipPlanForm'
+import { MembershipPlanForm } from '@domain/MembershipPlans/components/MembershipPlanForm'
+import { useMembershipPlan } from '@/domains/MembershipPlans/services'
 
 export default function EditMembershipPlanPage() {
   const router = useRouter()
+
   const { id } = router.query
 
-  // Later this will come from API
-  const plan = {
-    id: id as string,
-    name: 'Premium',
-    price: 50,
-    durationDays: 30,
-    description: 'Full access to the gym.',
+  const planId = Number(id)
+
+  const { data: membershipPlan, isLoading, isError } = useMembershipPlan(planId)
+
+  if (!router.isReady || isLoading) {
+    return (
+      <main className="m-4">
+        <p>Loading membership plan...</p>
+      </main>
+    )
   }
 
-  const handleSubmit = async (data: MembershipPlanFormData) => {
-    console.log('UPDATE', id, data)
-
-    // Later:
-    // await membershipPlanService.update(id, data)
-
-    router.push('/membership-plans')
+  if (isError || !membershipPlan) {
+    return (
+      <main className="m-4">
+        <h1>Membership plan not found</h1>
+        <p>The membership plan could not be loaded.</p>
+      </main>
+    )
   }
 
   return (
@@ -34,15 +36,13 @@ export default function EditMembershipPlanPage() {
       <p>Update the membership plan details.</p>
 
       <MembershipPlanForm
+        planId={membershipPlan.id}
         initialValues={{
-          name: plan.name,
-          price: plan.price,
-          durationDays: plan.durationDays,
-          description: plan.description,
+          name: membershipPlan.name,
+          price: membershipPlan.price,
+          duration: membershipPlan.duration,
+          description: membershipPlan.description ?? '',
         }}
-        submitLabel="Save changes"
-        loadingLabel="Saving..."
-        onSubmit={handleSubmit}
       />
     </main>
   )
