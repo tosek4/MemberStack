@@ -5,8 +5,11 @@ export const LABELS = {
   addSubscription: 'Add subscription',
 
   active: 'Active',
+  inactive: 'Inactive',
   expiring: 'Expiring soon',
   expired: 'Expired',
+  suspended: 'Suspended',
+  blocked: 'Blocked',
 
   all: 'All subscriptions',
 

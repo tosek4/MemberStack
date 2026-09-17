@@ -22,7 +22,10 @@ export class MemberSubscriptionService {
   }
 
   find(filter?: Filter<MemberSubscription>): Promise<MemberSubscription[]> {
-    return this.memberSubscriptionRepository.find(filter)
+    return this.memberSubscriptionRepository.find({
+      include: ['member', 'membershipPlan'],
+      ...filter,
+    })
   }
 
   async findById(
@@ -30,7 +33,10 @@ export class MemberSubscriptionService {
     filter?: FilterExcludingWhere<MemberSubscription>,
   ): Promise<MemberSubscription> {
     try {
-      return await this.memberSubscriptionRepository.findById(id, filter)
+      return await this.memberSubscriptionRepository.findById(id, {
+        include: ['member', 'membershipPlan'],
+        ...filter,
+      })
     } catch {
       throw new HttpErrors.NotFound(`MemberSubscription ${id} not found`)
     }

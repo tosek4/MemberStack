@@ -1,18 +1,47 @@
-export type SubscriptionStatus = 'active' | 'expiring' | 'expired'
-
 export type SubscriptionStatusFilter = 'all' | SubscriptionStatus
 
-export interface MemberSubscription {
-  id: string
-  memberId: string
-  memberName: string
-  memberEmail: string
-  planName: string
+export type SubscriptionStatus =
+  | 'active'
+  | 'inactive'
+  | 'expired'
+  | 'suspended'
+  | 'blocked'
+
+export interface SubscriptionMember {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  phone?: string | null
+  birthDate: string
+  gender?: string | null
+  emergency_contact?: string | null
+  profile_image?: string | null
+  status: string
+  createdByUserId: number
+}
+
+export interface SubscriptionMembershipPlan {
+  id: number
+  name: string
+  description?: string | null
   price: number
-  currency: string
-  startDate: string
-  endDate: string
+  duration: number
+  status: 'active' | 'inactive'
+  createdAt: string
+}
+
+export interface MemberSubscription {
+  id: number
+  startedAt: string
+  expiresAt: string
   status: SubscriptionStatus
+  remainingVisits: number | null
+  memberId: number
+  membershipPlanId: number
+  createdByUserId: number
+  member: SubscriptionMember
+  membershipPlan: SubscriptionMembershipPlan
 }
 
 export interface SubscriptionCardProps {
@@ -29,8 +58,9 @@ export interface SubscriptionFiltersProps {
 }
 
 export interface AddSubscriptionFormData {
-  memberId: string
-  planId: string
+  memberId: number
+  membershipPlanId: number
+  planId: number
   startDate: string
   endDate: string
 }
@@ -38,4 +68,22 @@ export interface AddSubscriptionFormData {
 export interface AddSubscriptionProps {
   loading?: boolean
   onSubmit?: (data: AddSubscriptionFormData) => Promise<void> | void
+}
+
+export interface CreateSubscriptionPayload {
+  startedAt: string
+  expiresAt: string
+  status: SubscriptionStatus
+  remainingVisits?: number | null
+  memberId: number
+  membershipPlanId: number
+}
+
+export interface UpdateSubscriptionPayload {
+  startedAt?: string
+  expiresAt?: string
+  status?: SubscriptionStatus
+  remainingVisits?: number | null
+  memberId?: number
+  membershipPlanId?: number
 }

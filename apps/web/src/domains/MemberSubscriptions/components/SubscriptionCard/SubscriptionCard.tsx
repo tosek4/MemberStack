@@ -1,12 +1,11 @@
 import React from 'react'
 import { CalendarDays, Eye, RefreshCw } from 'lucide-react'
 
-import {
-  SubscriptionCardProps,
-} from '../../types'
+import { SubscriptionCardProps } from '../../types'
 
 import { styles } from './SubscriptionCard.styled'
 import { LABELS } from '../../utils/labels'
+import { formatDate } from '@/utils/dateFormat'
 
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   subscription,
@@ -15,14 +14,18 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 }) => {
   const statusStyles = {
     active: styles.status.active,
-    expiring: styles.status.expiring,
+    inactive: styles.status.inactive,
     expired: styles.status.expired,
+    suspended: styles.status.suspended,
+    blocked: styles.status.blocked,
   }
 
   const statusLabels = {
     active: LABELS.active,
-    expiring: LABELS.expiring,
+    inactive: LABELS.inactive,
     expired: LABELS.expired,
+    suspended: LABELS.suspended,
+    blocked: LABELS.blocked,
   }
 
   return (
@@ -30,7 +33,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
       <div className={styles.header.wrapper}>
         <div className={styles.member.wrapper}>
           <div className={styles.member.avatar}>
-            {subscription.memberName
+            {subscription.member.firstName
               .split(' ')
               .map((name) => name.charAt(0))
               .join('')
@@ -40,12 +43,10 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
 
           <div className={styles.member.info}>
             <h2 className={styles.member.name}>
-              {subscription.memberName}
+              {subscription.member.firstName} {subscription.member.lastName}
             </h2>
 
-            <p className={styles.member.email}>
-              {subscription.memberEmail}
-            </p>
+            <p className={styles.member.email}>{subscription.member.email}</p>
           </div>
         </div>
 
@@ -62,14 +63,11 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <div>
           <p className={styles.plan.label}>{LABELS.plan}</p>
 
-          <p className={styles.plan.name}>
-            {subscription.planName}
-          </p>
+          <p className={styles.plan.name}>{subscription.membershipPlan?.name}</p>
         </div>
 
         <div className={styles.plan.price}>
-          {subscription.currency}
-          {subscription.price}
+          €{subscription.membershipPlan.price}
         </div>
       </div>
 
@@ -78,12 +76,10 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           <CalendarDays size={16} />
 
           <div>
-            <p className={styles.dates.label}>
-              {LABELS.startDate}
-            </p>
+            <p className={styles.dates.label}>{LABELS.startDate}</p>
 
             <p className={styles.dates.value}>
-              {subscription.startDate}
+              {formatDate(subscription.startedAt)}
             </p>
           </div>
         </div>
@@ -92,12 +88,10 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           <CalendarDays size={16} />
 
           <div>
-            <p className={styles.dates.label}>
-              {LABELS.endDate}
-            </p>
+            <p className={styles.dates.label}>{LABELS.endDate}</p>
 
             <p className={styles.dates.value}>
-              {subscription.endDate}
+              {formatDate(subscription.expiresAt)}
             </p>
           </div>
         </div>

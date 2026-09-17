@@ -1,10 +1,7 @@
 import React from 'react'
 import { Search } from 'lucide-react'
 
-import {
-  SubscriptionFiltersProps,
-  SubscriptionStatusFilter,
-} from '../../types'
+import { SubscriptionFiltersProps, SubscriptionStatusFilter } from '../../types'
 import { LABELS } from '../../utils/labels'
 
 import { styles } from './SubscriptionFilters.styled'
@@ -15,13 +12,13 @@ const statusOptions: {
 }[] = [
   { value: 'all', label: LABELS.all },
   { value: 'active', label: LABELS.active },
-  { value: 'expiring', label: LABELS.expiring },
+  { value: 'inactive', label: LABELS.inactive },
   { value: 'expired', label: LABELS.expired },
+  { value: 'suspended', label: LABELS.suspended },
+  { value: 'blocked', label: LABELS.blocked },
 ]
 
-export const SubscriptionFilters: React.FC<
-  SubscriptionFiltersProps
-> = ({
+export const SubscriptionFilters: React.FC<SubscriptionFiltersProps> = ({
   search,
   status,
   onSearchChange,
@@ -35,9 +32,7 @@ export const SubscriptionFilters: React.FC<
         <input
           type="text"
           value={search}
-          onChange={(event) =>
-            onSearchChange(event.target.value)
-          }
+          onChange={(event) => onSearchChange(event.target.value)}
           placeholder={LABELS.searchPlaceholder}
           className={styles.search.input}
         />

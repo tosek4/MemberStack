@@ -1,10 +1,11 @@
 import React from 'react'
 import { useRouter } from 'next/router'
-import { ArrowLeft, CalendarDays, RefreshCw } from 'lucide-react'
+import { ArrowLeft, RefreshCw } from 'lucide-react'
 
 import { SubscriptionDetailsProps } from './types'
 import { styles } from './SubscriptionDetails.styled'
 import { LABELS } from '../../utils/labels'
+import { formatDate } from '../../../../utils/dateFormat'
 
 export const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
   subscription,
@@ -21,20 +22,23 @@ export const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
 
     router.push('/subscriptions')
   }
-
   const statusStyles = {
-    active: styles.statusStyles.active,
-    expiring: styles.statusStyles.expiring,
-    expired: styles.statusStyles.expired,
+    active: styles.status.active,
+    inactive: styles.status.inactive,
+    expired: styles.status.expired,
+    suspended: styles.status.suspended,
+    blocked: styles.status.blocked,
   }
 
   const statusLabels = {
     active: LABELS.active,
-    expiring: LABELS.expiring,
+    inactive: LABELS.inactive,
     expired: LABELS.expired,
+    suspended: LABELS.suspended,
+    blocked: LABELS.blocked,
   }
 
-  const initials = subscription.memberName
+  const initials = subscription.member.firstName
     .split(' ')
     .map((name) => name.charAt(0))
     .join('')
@@ -70,11 +74,11 @@ export const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
 
               <div className={styles.member.info}>
                 <h2 className={styles.member.name}>
-                  {subscription.memberName}
+                  {subscription.member.firstName} {subscription.member.lastName}
                 </h2>
 
                 <p className={styles.member.email}>
-                  {subscription.memberEmail}
+                  {subscription.member.email}
                 </p>
               </div>
 
@@ -95,28 +99,33 @@ export const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
               <div>
                 <p className={styles.detail.label}>Plan</p>
 
-                <p className={styles.detail.value}>{subscription.planName}</p>
+                <p className={styles.detail.value}>
+                  {subscription.membershipPlan.name}
+                </p>
               </div>
 
               <div>
                 <p className={styles.detail.label}>Price</p>
 
                 <p className={styles.detail.value}>
-                  {subscription.currency}
-                  {subscription.price}
+                  €{subscription.membershipPlan.price}
                 </p>
               </div>
 
               <div>
                 <p className={styles.detail.label}>Start date</p>
 
-                <p className={styles.detail.value}>{subscription.startDate}</p>
+                <p className={styles.detail.value}>
+                  {formatDate(subscription.startedAt)}
+                </p>
               </div>
 
               <div>
                 <p className={styles.detail.label}>End date</p>
 
-                <p className={styles.detail.value}>{subscription.endDate}</p>
+                <p className={styles.detail.value}>
+                  {formatDate(subscription.expiresAt)}
+                </p>
               </div>
 
               <div>

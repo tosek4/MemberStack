@@ -30,8 +30,6 @@ export const styles = {
     email: 'mt-1 text-sm text-gray-500 dark:text-gray-400',
   },
 
-  status: 'inline-flex rounded-full px-3 py-1 text-sm font-medium',
-
   statusStyles: {
     active:
       'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
@@ -51,5 +49,24 @@ export const styles = {
     wrapper: 'mt-6 flex justify-end gap-3',
     renew:
       'rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50',
+  },
+  status: {
+    base: 'shrink-0 rounded-full px-2.5 py-1 text-xs font-medium',
+
+    active:
+      'bg-green-100 text-green-700 dark:bg-green-900/30 dark:text-green-400',
+
+    inactive:
+      'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
+
+    expiring:
+      'bg-yellow-100 text-yellow-700 dark:bg-yellow-900/30 dark:text-yellow-400',
+
+    expired: 'bg-red-100 text-red-700 dark:bg-red-900/30 dark:text-red-400',
+
+    suspended:
+      'bg-orange-100 text-orange-700 dark:bg-orange-900/30 dark:text-orange-400',
+
+    blocked: 'bg-gray-100 text-gray-700 dark:bg-gray-900/30 dark:text-gray-400',
   },
 }

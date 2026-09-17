@@ -36,6 +36,8 @@ import { MEMBER_SERVICE } from './domains/member/keys'
 import { MemberService } from './domains/member/service'
 import { MEMBER_PLAN_SERVICE } from './domains/member-plan/keys'
 import { MemberPlanService } from './domains/member-plan/service'
+import { MEMBER_SUBSCRIPTION_SERVICE } from './domains/member-subscription/keys'
+import { MemberSubscriptionService } from './domains/member-subscription/service'
 
 export { ApplicationConfig }
 export class MemberstackApiApplication extends BootMixin(
@@ -104,6 +106,7 @@ export class MemberstackApiApplication extends BootMixin(
 
     this.bind(MEMBER_SERVICE).toClass(MemberService)
     this.bind(MEMBER_PLAN_SERVICE).toClass(MemberPlanService)
+    this.bind(MEMBER_SUBSCRIPTION_SERVICE).toClass(MemberSubscriptionService)
   }
 
   setupComponents() {

@@ -11,69 +11,7 @@ import { MemberSubscription, SubscriptionStatusFilter } from './types'
 
 import { LABELS } from './utils/labels'
 import { styles } from './MemberSubscriptions.styled'
-
-export const mockSubscriptions: MemberSubscription[] = [
-  {
-    id: '1',
-    memberId: '1',
-    memberName: 'John Doe',
-    memberEmail: 'john@example.com',
-    planName: 'Premium',
-    price: 40,
-    currency: '€',
-    startDate: '01 Sep 2026',
-    endDate: '01 Oct 2026',
-    status: 'active',
-  },
-  {
-    id: '2',
-    memberId: '2',
-    memberName: 'Sarah Wilson',
-    memberEmail: 'sarah@example.com',
-    planName: 'Standard',
-    price: 32,
-    currency: '€',
-    startDate: '20 Aug 2026',
-    endDate: '20 Sep 2026',
-    status: 'expiring',
-  },
-  {
-    id: '3',
-    memberId: '3',
-    memberName: 'Michael Brown',
-    memberEmail: 'michael@example.com',
-    planName: 'Basic',
-    price: 25,
-    currency: '€',
-    startDate: '01 Aug 2026',
-    endDate: '31 Aug 2026',
-    status: 'expired',
-  },
-  {
-    id: '4',
-    memberId: '4',
-    memberName: 'Emily Davis',
-    memberEmail: 'emily@example.com',
-    planName: 'Premium',
-    price: 40,
-    currency: '€',
-    startDate: '05 Sep 2026',
-    endDate: '05 Oct 2026',
-    status: 'active',
-  },
-  {
-    id: '5',
-    memberId: '5',
-    memberName: 'David Miller',
-    memberEmail: 'david@example.com',
-    planName: 'Standard',
-    price: 32,
-    currency: '€',
-    startDate: '15 Aug 2026',
-    endDate: '15 Sep 2026',
-    status: 'expiring',
-  },
-]
+import { useSubscriptions } from './services'
 
 export const MemberSubscriptions: React.FC = () => {
   const router = useRouter()
@@ -81,20 +19,24 @@ export const MemberSubscriptions: React.FC = () => {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<SubscriptionStatusFilter>('all')
 
+  const { data: memberSubscriptions, isLoading, isError } = useSubscriptions()
+
   const filteredSubscriptions = useMemo(() => {
     const normalizedSearch = search.toLowerCase().trim()
 
-    return mockSubscriptions.filter((subscription) => {
+    return memberSubscriptions?.filter((subscription) => {
       const matchesSearch =
         !normalizedSearch ||
-        subscription.memberName.toLowerCase().includes(normalizedSearch) ||
-        subscription.memberEmail.toLowerCase().includes(normalizedSearch)
+        subscription.member.firstName
+          .toLowerCase()
+          .includes(normalizedSearch) ||
+        subscription.member.lastName.toLowerCase().includes(normalizedSearch) ||
+        subscription.member.email.toLowerCase().includes(normalizedSearch)
 
       const matchesStatus = status === 'all' || subscription.status === status
-
       return matchesSearch && matchesStatus
     })
-  }, [search, status])
+  }, [memberSubscriptions, search, status])
 
   const handleView = (subscription: MemberSubscription) => {
     router.push(`/subscriptions/${subscription.id}`)
@@ -102,6 +44,34 @@ export const MemberSubscriptions: React.FC = () => {
 
   const handleRenew = (subscription: MemberSubscription) => {
     console.log('Renew subscription:', subscription)
+  }
+
+  if (isLoading) {
+    return (
+      <main className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Loading member subscriptions...</p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (isError) {
+    return (
+      <main className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>
+              Failed to load member subscriptions
+            </p>
+
+            <p className={styles.emptyText}>Please try again later.</p>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -131,7 +101,7 @@ export const MemberSubscriptions: React.FC = () => {
           onStatusChange={setStatus}
         />
 
-        {filteredSubscriptions.length === 0 ? (
+        {filteredSubscriptions?.length === 0 ? (
           <div className={styles.empty}>
             <h2 className={styles.emptyTitle}>{LABELS.emptyTitle}</h2>
 
@@ -139,7 +109,7 @@ export const MemberSubscriptions: React.FC = () => {
           </div>
         ) : (
           <div className={styles.grid}>
-            {filteredSubscriptions.map((subscription) => (
+            {filteredSubscriptions?.map((subscription) => (
               <SubscriptionCard
                 key={subscription.id}
                 subscription={subscription}
