@@ -32,6 +32,15 @@ export class Attendance extends Entity {
   })
   attendanceMethod: string
 
+  @property({
+    type: 'string',
+    required: true,
+    jsonSchema: {
+      enum: ['checked-in', 'checked-out'],
+    },
+  })
+  status: string
+
   // relations
   @belongsTo(() => Member)
   memberId: number

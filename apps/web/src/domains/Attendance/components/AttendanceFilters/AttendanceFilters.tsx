@@ -17,6 +17,8 @@ export const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
   onSearchChange,
   onStatusChange,
   onDateChange,
+  onToday,
+  onYesterday,
 }) => {
   return (
     <div className={styles.container}>
@@ -33,6 +35,17 @@ export const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
       </div>
 
       <div className={styles.filters}>
+        <button type="button" onClick={onToday} className={styles.dateButton}>
+          Today
+        </button>
+
+        <button
+          type="button"
+          onClick={onYesterday}
+          className={styles.dateButton}
+        >
+          Yesterday
+        </button>
         <select
           value={status}
           onChange={(event) =>

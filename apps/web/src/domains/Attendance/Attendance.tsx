@@ -10,74 +10,36 @@ import type {
 } from './types'
 
 import { styles } from './Attendance.styled'
-
-const MOCK_ATTENDANCE: AttendanceRecord[] = [
-  {
-    id: 'attendance-1',
-    memberId: 'member-1',
-    memberName: 'John Smith',
-    memberEmail: 'john@example.com',
-    memberSubscriptionId: 'subscription-1',
-    planName: 'Monthly Membership',
-    checkIn: '2026-09-14T08:15:00',
-    status: 'checked-in',
-  },
-  {
-    id: 'attendance-2',
-    memberId: 'member-2',
-    memberName: 'Sarah Johnson',
-    memberEmail: 'sarah@example.com',
-    memberSubscriptionId: 'subscription-2',
-    planName: 'Monthly Membership',
-    checkIn: '2026-09-14T09:30:00',
-    checkOut: '2026-09-14T11:05:00',
-    status: 'checked-out',
-  },
-  {
-    id: 'attendance-3',
-    memberId: 'member-3',
-    memberName: 'Michael Brown',
-    memberEmail: 'michael@example.com',
-    memberSubscriptionId: 'subscription-3',
-    planName: 'Annual Membership',
-    checkIn: '2026-09-14T10:10:00',
-    status: 'checked-in',
-  },
-  {
-    id: 'attendance-4',
-    memberId: 'member-4',
-    memberName: 'David Wilson',
-    memberEmail: 'david@example.com',
-    memberSubscriptionId: 'subscription-4',
-    planName: 'Premium Membership',
-    checkIn: '2026-09-14T07:45:00',
-    checkOut: '2026-09-14T09:20:00',
-    status: 'checked-out',
-  },
-  {
-    id: 'attendance-5',
-    memberId: 'member-5',
-    memberName: 'Emma Davis',
-    memberEmail: 'emma@example.com',
-    memberSubscriptionId: 'subscription-5',
-    planName: 'Monthly Membership',
-    checkIn: '2026-09-14T11:20:00',
-    status: 'checked-in',
-  },
-]
+import {
+  useAttendances,
+  useAttendanceStats,
+  useCreateAttendance,
+  useUpdateAttendance,
+} from './services'
+import { getLocalDateString } from '@/utils/date'
 
 export const Attendance: React.FC = () => {
-  const [attendance] = useState<AttendanceRecord[]>(MOCK_ATTENDANCE)
-
+  const today = getLocalDateString()
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<AttendanceStatusFilter>('all')
+  const [date, setDate] = useState(today)
+  const [checkInModalOpen, setCheckInModalOpen] = useState(false)
 
-  const [date, setDate] = useState('2026-09-14')
+  const { data: attendances = [], isLoading, isError } = useAttendances()
+
+  const {
+    data: attendanceStats,
+    isLoading: statsLoading,
+    isError: statsError,
+  } = useAttendanceStats(date)
+
+  const createAttendance = useCreateAttendance()
+  const updateAttendance = useUpdateAttendance()
 
   const filteredAttendance = useMemo(() => {
     const normalizedSearch = search.toLowerCase().trim()
 
-    return attendance.filter((item) => {
+    return attendances.filter((item) => {
       const matchesSearch =
         !normalizedSearch ||
         item.memberName.toLowerCase().includes(normalizedSearch) ||
@@ -89,26 +51,71 @@ export const Attendance: React.FC = () => {
 
       return matchesSearch && matchesStatus && matchesDate
     })
-  }, [attendance, search, status, date])
-
-  const currentlyInGym = attendance.filter(
-    (item) => item.checkIn.startsWith(date) && item.status === 'checked-in',
-  ).length
-
-  const totalVisits = attendance.filter((item) =>
-    item.checkIn.startsWith(date),
-  ).length
-
-  const checkedOutToday = attendance.filter(
-    (item) => item.checkIn.startsWith(date) && item.status === 'checked-out',
-  ).length
+  }, [attendances, search, status, date])
 
   const handleCheckIn = async (data: CheckInFormData) => {
-    console.log('Check in:', data)
+    const formattedData = {
+      memberId: data.memberId,
+      checkedInAt: new Date().toISOString(),
+      attendanceMethod: 'manual' as const,
+      status: 'checked-in' as const,
+    }
+
+    createAttendance.mutate(formattedData)
   }
 
-  const handleCheckOut = (item: AttendanceRecord) => {
-    console.log('Check out:', item)
+  const handleCheckOut = (id: number) => {
+    const formattedData = {
+      checkedOutAt: new Date().toISOString(),
+      status: 'checked-out' as const,
+    }
+
+    updateAttendance.mutate({ id: id, attendance: formattedData })
+  }
+
+  const getDateString = (date: Date) => {
+    return date.toISOString().split('T')[0]
+  }
+
+  const handleToday = () => {
+    setDate(getDateString(new Date()))
+  }
+
+  const handleYesterday = () => {
+    const yesterday = new Date()
+
+    yesterday.setDate(yesterday.getDate() - 1)
+
+    setDate(getLocalDateString(yesterday))
+  }
+
+  if (isLoading) {
+    return (
+      <main className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Loading attendance data...</p>
+            <p className={styles.emptyText}>
+              Please wait while we fetch the latest information.
+            </p>
+          </div>
+        </div>
+      </main>
+    )
+  }
+
+  if (isError) {
+    return (
+      <main className={styles.root}>
+        <div className={styles.container}>
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Failed to load attendance data</p>
+
+            <p className={styles.emptyText}>Please try again later.</p>
+          </div>
+        </div>
+      </main>
+    )
   }
 
   return (
@@ -122,6 +129,14 @@ export const Attendance: React.FC = () => {
               Track member check-ins and check-outs.
             </p>
           </div>
+          <button
+            type="button"
+            className={styles.checkInButton}
+            onClick={() => setCheckInModalOpen(true)}
+          >
+            <LogIn size={18} />
+            Check In Member
+          </button>{' '}
         </header>
 
         <section className={styles.stats}>
@@ -133,7 +148,9 @@ export const Attendance: React.FC = () => {
             <div>
               <p className={styles.statLabel}>Today&apos;s Visits</p>
 
-              <p className={styles.statValue}>{totalVisits}</p>
+              <p className={styles.statValue}>
+                {attendanceStats?.totalVisits || 0}
+              </p>
             </div>
           </div>
 
@@ -145,7 +162,9 @@ export const Attendance: React.FC = () => {
             <div>
               <p className={styles.statLabel}>Currently In Gym</p>
 
-              <p className={styles.statValue}>{currentlyInGym}</p>
+              <p className={styles.statValue}>
+                {attendanceStats?.currentlyInGym || 0}
+              </p>
             </div>
           </div>
 
@@ -157,7 +176,9 @@ export const Attendance: React.FC = () => {
             <div>
               <p className={styles.statLabel}>Check-ins</p>
 
-              <p className={styles.statValue}>{totalVisits}</p>
+              <p className={styles.statValue}>
+                {attendanceStats?.checkIns || 0}
+              </p>
             </div>
           </div>
 
@@ -169,13 +190,11 @@ export const Attendance: React.FC = () => {
             <div>
               <p className={styles.statLabel}>Check-outs</p>
 
-              <p className={styles.statValue}>{checkedOutToday}</p>
+              <p className={styles.statValue}>
+                {attendanceStats?.checkOuts || 0}
+              </p>
             </div>
           </div>
-        </section>
-
-        <section className={styles.checkInSection}>
-          <CheckIn onSubmit={handleCheckIn} />
         </section>
 
         <section className={styles.history}>
@@ -190,6 +209,8 @@ export const Attendance: React.FC = () => {
             onSearchChange={setSearch}
             onStatusChange={setStatus}
             onDateChange={setDate}
+            onToday={handleToday}
+            onYesterday={handleYesterday}
           />
 
           {filteredAttendance.length > 0 ? (
@@ -213,6 +234,12 @@ export const Attendance: React.FC = () => {
           )}
         </section>
       </div>
+      <CheckIn
+        open={checkInModalOpen}
+        loading={false}
+        onClose={() => setCheckInModalOpen(false)}
+        onSubmit={handleCheckIn}
+      />
     </main>
   )
 }

@@ -1,17 +1,14 @@
 export type AttendanceStatus = 'checked-in' | 'checked-out'
 
 export interface Attendance {
-  id: string
-  memberId: string
+  id: number
+  memberId: number
   memberName: string
   memberEmail: string
-
-  memberSubscriptionId: string
-  planName: string
-
+  memberSubscriptionId: number | null
+  planName: string | null
   checkIn: string
-  checkOut?: string
-
+  checkOut: string | null
   status: AttendanceStatus
 }
 
@@ -25,34 +22,45 @@ export interface AttendanceFiltersProps {
   onSearchChange: (value: string) => void
   onStatusChange: (value: AttendanceStatusFilter) => void
   onDateChange: (value: string) => void
+  onToday: () => void
+  onYesterday: () => void
 }
 
 export interface AttendanceCardProps {
   attendance: Attendance
 
-  onCheckOut?: (attendance: Attendance) => void
+  onCheckOut?: (id: number) => void
 }
 
 export interface CheckInFormData {
-  memberId: string
-  memberSubscriptionId: string
+  memberId: number
 }
 
 export interface CheckInProps {
+  open: boolean
   loading?: boolean
-
-  onSubmit?: (data: CheckInFormData) => Promise<void> | void
-}
-export interface MockMember {
-  id: string
-  name: string
-  email: string
+  onClose: () => void
+  onSubmit: (data: CheckInFormData) => Promise<void> | void
 }
 
-export interface MockSubscription {
-  id: string
-  memberId: string
-  planName: string
-  validUntil: string
-  status: 'active' | 'expiring' | 'expired'
+export interface AttendanceStats {
+  date: string
+  totalVisits: number
+  currentlyInGym: number
+  checkIns: number
+  checkOuts: number
+}
+
+export interface CreateAttendancePayload {
+  memberId: number
+  checkedInAt: string
+  attendanceMethod: 'qr' | 'nfc' | 'manual'
+  status: AttendanceStatus
+}
+
+export interface UpdateAttendancePayload {
+  checkedInAt?: string
+  checkedOutAt?: string | null
+  attendanceMethod?: 'qr' | 'nfc' | 'manual'
+  status?: AttendanceStatus
 }

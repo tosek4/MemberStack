@@ -1,9 +1,6 @@
 import React from 'react'
-
 import type { AttendanceCardProps } from '../../types'
-
 import { ATTENDANCE_STATUS_LABELS } from '../../utils/labels'
-
 import { styles } from './AttendanceCard.styled'
 
 export const AttendanceCard: React.FC<AttendanceCardProps> = ({
@@ -84,7 +81,7 @@ export const AttendanceCard: React.FC<AttendanceCardProps> = ({
           <button
             type="button"
             className={styles.action}
-            onClick={() => onCheckOut(attendance)}
+            onClick={() => onCheckOut(attendance.id)}
           >
             Check Out
           </button>

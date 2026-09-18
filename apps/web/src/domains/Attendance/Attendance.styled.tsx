@@ -1,9 +1,11 @@
 export const styles = {
+  root: 'min-h-screen bg-gray-50 dark:bg-gray-900',
+
   page: 'min-h-screen bg-gray-50 p-6 dark:bg-gray-900',
 
   container: 'mx-auto max-w-7xl',
 
-  header: 'mb-6',
+  header: 'mb-6 flex items-center justify-between gap-4',
 
   title: 'text-2xl font-bold text-gray-900 dark:text-white',
 
@@ -37,4 +39,9 @@ export const styles = {
   emptyTitle: 'text-sm font-semibold text-gray-900 dark:text-white',
 
   emptyDescription: 'mt-1 text-sm text-gray-500 dark:text-gray-400',
+
+  emptyText: 'mt-1 text-sm text-gray-500 dark:text-gray-400',
+
+  checkInButton:
+    'flex items-center gap-2 rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50',
 } as const

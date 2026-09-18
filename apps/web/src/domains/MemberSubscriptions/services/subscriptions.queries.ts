@@ -28,7 +28,8 @@ export const useCreateSubscription = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: CreateSubscriptionPayload) => createSubscription(data),
+    mutationFn: (data: CreateSubscriptionPayload) => 
+      createSubscription(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
