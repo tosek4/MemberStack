@@ -7,3 +7,9 @@ export const formatDate = (
     year: 'numeric',
   }).format(new Date(value))
 }
+
+export const getCurrentDate = (): string => {
+  const date = new Date()
+
+  return date.toISOString().split('T')[0]
+}

@@ -6,95 +6,15 @@ import type { Payment, PaymentMethodFilter, PaymentStatusFilter } from './types'
 
 import { styles } from './Payments.styled'
 import { PaymentCard, PaymentFilters } from './components'
-
-const MOCK_PAYMENTS: Payment[] = [
-  {
-    id: 'payment-1',
-    memberId: 'member-1',
-    memberName: 'John Smith',
-    memberEmail: 'john@example.com',
-    memberSubscriptionId: 'subscription-1',
-    planName: 'Monthly Membership',
-    amount: 40,
-    currency: 'EUR',
-    method: 'card',
-    status: 'paid',
-    paymentDate: '2026-09-14',
-    reference: 'POS-1024',
-  },
-  {
-    id: 'payment-2',
-    memberId: 'member-2',
-    memberName: 'Sarah Johnson',
-    memberEmail: 'sarah@example.com',
-    memberSubscriptionId: 'subscription-3',
-    planName: 'Monthly Membership',
-    amount: 40,
-    currency: 'EUR',
-    method: 'cash',
-    status: 'paid',
-    paymentDate: '2026-09-13',
-  },
-  {
-    id: 'payment-3',
-    memberId: 'member-3',
-    memberName: 'Michael Brown',
-    memberEmail: 'michael@example.com',
-    memberSubscriptionId: 'subscription-4',
-    planName: 'Annual Membership',
-    amount: 400,
-    currency: 'EUR',
-    method: 'bank-transfer',
-    status: 'paid',
-    paymentDate: '2026-09-12',
-    reference: 'TRX-89342',
-  },
-  {
-    id: 'payment-4',
-    memberId: 'member-4',
-    memberName: 'David Wilson',
-    memberEmail: 'david@example.com',
-    memberSubscriptionId: 'subscription-5',
-    planName: 'Premium Membership',
-    amount: 60,
-    currency: 'EUR',
-    method: 'card',
-    status: 'pending',
-    paymentDate: '2026-09-11',
-  },
-  {
-    id: 'payment-5',
-    memberId: 'member-5',
-    memberName: 'Emma Davis',
-    memberEmail: 'emma@example.com',
-    memberSubscriptionId: 'subscription-6',
-    planName: 'Monthly Membership',
-    amount: 40,
-    currency: 'EUR',
-    method: 'cash',
-    status: 'paid',
-    paymentDate: '2026-09-10',
-  },
-  {
-    id: 'payment-6',
-    memberId: 'member-6',
-    memberName: 'Alex Taylor',
-    memberEmail: 'alex@example.com',
-    memberSubscriptionId: 'subscription-7',
-    planName: 'Monthly Membership',
-    amount: 40,
-    currency: 'EUR',
-    method: 'card',
-    status: 'refunded',
-    paymentDate: '2026-09-08',
-    reference: 'REF-1122',
-  },
-]
+import { usePayments } from './services'
 
 export const Payments: React.FC = () => {
   const router = useRouter()
+  const now = new Date()
+  const currentYear = now.getFullYear()
+  const currentMonth = now.getMonth()
 
-  const [payments] = useState<Payment[]>(MOCK_PAYMENTS)
+  const { data: payments = [] } = usePayments()
 
   const [search, setSearch] = useState('')
   const [method, setMethod] = useState<PaymentMethodFilter>('all')
@@ -123,8 +43,12 @@ export const Payments: React.FC = () => {
 
   const thisMonth = payments
     .filter((payment) => {
+      const paymentDate = new Date(payment.paymentDate)
+
       return (
-        payment.status === 'paid' && payment.paymentDate.startsWith('2026-09')
+        payment.status === 'paid' &&
+        paymentDate.getFullYear() === currentYear &&
+        paymentDate.getMonth() === currentMonth
       )
     })
     .reduce((total, payment) => total + payment.amount, 0)
@@ -178,7 +102,6 @@ export const Payments: React.FC = () => {
 
           <div className={styles.statCard}>
             <p className={styles.statLabel}>This Month</p>
-
             <p className={styles.statValue}>€{thisMonth.toFixed(2)}</p>
 
             <p className={styles.statDescription}>September 2026</p>

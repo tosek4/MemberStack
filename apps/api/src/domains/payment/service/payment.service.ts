@@ -9,6 +9,7 @@ import {
 import { HttpErrors } from '@loopback/rest'
 import { Payment } from '../models'
 import { PaymentRepository } from '../repositories'
+import { PaymentListItem } from '../types'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class PaymentService {
@@ -21,8 +22,40 @@ export class PaymentService {
     return this.paymentRepository.create(data)
   }
 
-  find(filter?: Filter<Payment>): Promise<Payment[]> {
-    return this.paymentRepository.find(filter)
+  async find(filter?: Filter<Payment>): Promise<PaymentListItem[]> {
+    const payments = await this.paymentRepository.find({
+      include: [
+        'member',
+        {
+          relation: 'memberSubscription',
+          scope: {
+            include: ['membershipPlan'],
+          },
+        },
+      ],
+      ...filter,
+    })
+
+    return payments.map((payment) => {
+      const member = payment.member
+      const subscription = payment.memberSubscription
+      const membershipPlan = subscription?.membershipPlan
+
+      return {
+        id: payment.id!,
+        memberId: payment.memberId,
+        memberName: member ? `${member.firstName} ${member.lastName}` : '',
+        memberEmail: member?.email ?? '',
+        memberSubscriptionId: payment.memberSubscriptionId,
+        planName: membershipPlan?.name ?? '',
+        amount: payment.amount as number,
+        currency: 'EUR',
+        method: payment.paymentMethod,
+        status: payment.status as string,
+        paymentDate: payment.paidAt as Date,
+        reference: payment.transactionReference ?? undefined,
+      }
+    })
   }
 
   async findById(

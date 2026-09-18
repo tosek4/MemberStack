@@ -1,6 +1,7 @@
 import { service } from '@loopback/core'
 import { Count, CountSchema, Filter, Where } from '@loopback/repository'
 import {
+  api,
   del,
   get,
   getModelSchemaRef,
@@ -12,76 +13,56 @@ import {
 } from '@loopback/rest'
 import { Payment } from '../models'
 import { PaymentService } from '../service'
+import {
+  CreatePaymentRequestSchema,
+  CreatePaymentResponseSchema,
+  PaymentCountResponseSchema,
+  PaymentGetByIdResponseSchema,
+  PaymentResponseSchema,
+  PaymentUpdateResponseSchema,
+  UpdatePaymentRequestSchema,
+} from './payment.docs'
+import { PaymentListItem } from '../types'
 
+@api({ basePath: '/payments' })
 export class PaymentController {
   constructor(
     @service(PaymentService)
     private paymentService: PaymentService,
   ) {}
 
-  @post('/payments')
-  @response(200, {
-    description: 'Payment model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(Payment) } },
-  })
+  @get('/')
+  @response(200, PaymentResponseSchema)
+  find(@param.filter(Payment) filter?: Filter<Payment>): Promise<PaymentListItem[]> {
+    return this.paymentService.find(filter)
+  }
+
+  @post('/')
+  @response(200, CreatePaymentResponseSchema)
   create(
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Payment, {
-            title: 'NewPayment',
-            exclude: ['id'],
-          }),
-        },
-      },
-    })
+    @requestBody(CreatePaymentRequestSchema)
     payment: Omit<Payment, 'id'>,
   ): Promise<Payment> {
     return this.paymentService.create(payment)
   }
 
-  @get('/payments/count')
-  @response(200, {
-    description: 'Payment model count',
-    content: { 'application/json': { schema: CountSchema } },
-  })
+  @get('/count')
+  @response(200, PaymentCountResponseSchema)
   count(@param.where(Payment) where?: Where<Payment>): Promise<Count> {
     return this.paymentService.count(where)
   }
 
-  @get('/payments')
-  @response(200, {
-    description: 'Array of Payment model instances',
-    content: {
-      'application/json': {
-        schema: { type: 'array', items: getModelSchemaRef(Payment) },
-      },
-    },
-  })
-  find(@param.filter(Payment) filter?: Filter<Payment>): Promise<Payment[]> {
-    return this.paymentService.find(filter)
-  }
-
-  @get('/payments/{id}')
-  @response(200, {
-    description: 'Payment model instance',
-    content: { 'application/json': { schema: getModelSchemaRef(Payment) } },
-  })
+  @get('/{id}')
+  @response(200, PaymentGetByIdResponseSchema)
   findById(@param.path.number('id') id: number): Promise<Payment> {
     return this.paymentService.findById(id)
   }
 
-  @patch('/payments/{id}')
-  @response(204, { description: 'Payment PATCH success' })
+  @patch('/{id}')
+  @response(204, PaymentUpdateResponseSchema)
   async updateById(
     @param.path.number('id') id: number,
-    @requestBody({
-      content: {
-        'application/json': {
-          schema: getModelSchemaRef(Payment, { partial: true }),
-        },
-      },
-    })
+    @requestBody(UpdatePaymentRequestSchema)
     payment: Partial<Payment>,
   ): Promise<void> {
     await this.paymentService.updateById(id, payment)

@@ -1,13 +1,8 @@
 import React from 'react'
-
-import {
-  PAYMENT_METHOD_LABELS,
-  PAYMENT_STATUS_LABELS,
-} from '../../utils/labels'
-
 import type { PaymentCardProps } from './types'
 
 import { styles } from './PaymentCard.styled'
+import { formatDate } from '@/utils/dateFormat'
 
 export const PaymentCard: React.FC<PaymentCardProps> = ({
   payment,
@@ -20,14 +15,6 @@ export const PaymentCard: React.FC<PaymentCardProps> = ({
       .join('')
       .slice(0, 2)
       .toUpperCase()
-  }
-
-  const formatDate = (date: string) => {
-    return new Intl.DateTimeFormat('en-GB', {
-      day: '2-digit',
-      month: 'short',
-      year: 'numeric',
-    }).format(new Date(date))
   }
 
   const statusClassName = {
@@ -73,16 +60,14 @@ export const PaymentCard: React.FC<PaymentCardProps> = ({
         <div className={styles.details.item}>
           <p className={styles.details.label}>Payment Method</p>
 
-          <p className={styles.method.base}>
-            {PAYMENT_METHOD_LABELS[payment.method]}
-          </p>
+          <p className={styles.method.base}>{payment.method}</p>
         </div>
 
         <div className={styles.details.item}>
           <p className={styles.details.label}>Status</p>
 
           <span className={`${styles.badge.base} ${statusClassName}`}>
-            {PAYMENT_STATUS_LABELS[payment.status]}
+            {payment.status}
           </span>
         </div>
 

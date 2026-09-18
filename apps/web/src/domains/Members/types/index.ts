@@ -14,6 +14,7 @@ export interface MemberSubscription {
     id: number
     name: string
     description?: string
+    price: number
   }
 }
 

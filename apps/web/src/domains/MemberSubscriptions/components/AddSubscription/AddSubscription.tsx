@@ -36,7 +36,6 @@ export const AddSubscription: React.FC = () => {
     membersLoading || plansLoading || createSubscription.isPending
 
   const submit = (data: AddSubscriptionFormData) => {
-    console.log('data', data)
     createSubscription.mutate(
       {
         memberId: data.memberId,

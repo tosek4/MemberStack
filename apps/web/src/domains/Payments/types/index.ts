@@ -3,21 +3,17 @@ export type PaymentMethod = 'cash' | 'card' | 'bank-transfer'
 export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'refunded'
 
 export interface Payment {
-  id: string
-  memberId: string
+  id: number
+  memberId: number
   memberName: string
   memberEmail: string
-
-  memberSubscriptionId: string
+  memberSubscriptionId: number
   planName: string
-
   amount: number
   currency: string
-
-  method: PaymentMethod
-  status: PaymentStatus
-
-  paymentDate: string
+  method: string
+  status: string
+  paymentDate: Date
   reference?: string
 }
 
@@ -41,16 +37,30 @@ export interface PaymentCardProps {
 }
 
 export interface AddPaymentFormData {
-  memberId: string
-  memberSubscriptionId: string
+  memberId: number
+  memberSubscriptionId: number
   amount: number
-  method: PaymentMethod
-  status: PaymentStatus
+  paymentMethod: string
+  status: string
   paymentDate: string
-  reference?: string
+  transactionReference?: string
 }
 
-export interface AddPaymentProps {
-  loading?: boolean
-  onSubmit?: (data: AddPaymentFormData) => Promise<void> | void
+export interface CreatePaymentPayload {
+  memberId: number
+  memberSubscriptionId: number
+  amount: number
+  paymentMethod: string
+  status: string
+  paidAt: string
+  transactionReference?: string
+}
+export interface UpdatePaymentPayload {
+  memberId?: number
+  memberSubscriptionId?: number
+  amount?: number
+  paymentMethod?: string
+  status?: string
+  paidAt?: string
+  transactionReference?: string
 }

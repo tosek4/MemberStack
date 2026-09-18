@@ -1,9 +1,12 @@
 import React, { useMemo, useState } from 'react'
+import { Search } from 'lucide-react'
 import { useForm } from 'react-hook-form'
+
+import { useMembers } from '@/domains/Members/services'
+import { useMembershipPlans } from '@/domains/MembershipPlans/services'
 
 import type {
   AddPaymentFormData,
-  AddPaymentProps,
   PaymentMethod,
   PaymentStatus,
 } from '../../types'
@@ -14,66 +17,16 @@ import {
 } from '../../utils/labels'
 
 import { styles } from './AddPayment.styled'
-import { MockMember, MockSubscription } from './types'
+import { useCreatePayment } from '../../services'
+import { useRouter } from 'next/router'
+import { getCurrentDate } from '@/utils/dateFormat'
 
-const MOCK_MEMBERS: MockMember[] = [
-  {
-    id: 'member-1',
-    name: 'John Smith',
-    email: 'john@example.com',
-  },
-  {
-    id: 'member-2',
-    name: 'Sarah Johnson',
-    email: 'sarah@example.com',
-  },
-  {
-    id: 'member-3',
-    name: 'Michael Brown',
-    email: 'michael@example.com',
-  },
-]
+export const AddPayment: React.FC = () => {
+  const router = useRouter()
+  const [search, setSearch] = useState('')
+  const [selectedMemberId, setSelectedMemberId] = useState<number | null>(null)
 
-const MOCK_SUBSCRIPTIONS: MockSubscription[] = [
-  {
-    id: 'subscription-1',
-    memberId: 'member-1',
-    planName: 'Monthly Membership',
-    price: 40,
-    currency: 'EUR',
-    status: 'active',
-  },
-  {
-    id: 'subscription-2',
-    memberId: 'member-1',
-    planName: 'Premium Membership',
-    price: 60,
-    currency: 'EUR',
-    status: 'active',
-  },
-  {
-    id: 'subscription-3',
-    memberId: 'member-2',
-    planName: 'Monthly Membership',
-    price: 40,
-    currency: 'EUR',
-    status: 'expiring',
-  },
-  {
-    id: 'subscription-4',
-    memberId: 'member-3',
-    planName: 'Annual Membership',
-    price: 400,
-    currency: 'EUR',
-    status: 'active',
-  },
-]
-
-export const AddPayment: React.FC<AddPaymentProps> = ({
-  loading = false,
-  onSubmit,
-}) => {
-  const [selectedMemberId, setSelectedMemberId] = useState('')
+  const createPayment = useCreatePayment()
 
   const {
     register,
@@ -83,49 +36,116 @@ export const AddPayment: React.FC<AddPaymentProps> = ({
     formState: { errors },
   } = useForm<AddPaymentFormData>({
     defaultValues: {
-      memberId: '',
-      memberSubscriptionId: '',
       amount: 0,
-      method: 'cash',
+      paymentMethod: 'cash',
       status: 'paid',
-      paymentDate: new Date().toISOString().split('T')[0],
-      reference: '',
+      paymentDate: getCurrentDate(),
+      transactionReference: '',
     },
   })
+  console.log('getCurrentDate', getCurrentDate())
+  const {
+    data: members = [],
+    isLoading: membersLoading,
+    isError: membersError,
+  } = useMembers()
 
-  const selectedSubscriptionId = watch('memberSubscriptionId')
+  const {
+    data: membershipPlans = [],
+    isLoading: plansLoading,
+    isError: plansError,
+  } = useMembershipPlans()
 
-  const availableSubscriptions = useMemo(() => {
-    return MOCK_SUBSCRIPTIONS.filter(
-      (subscription) =>
-        subscription.memberId === selectedMemberId &&
-        subscription.status !== 'expired',
+  const selectedPlanId = watch('memberSubscriptionId')
+
+  const selectedMember = useMemo(() => {
+    return members.find((member) => member.id === selectedMemberId)
+  }, [members, selectedMemberId])
+
+  const selectedPlan = useMemo(() => {
+    return membershipPlans.find(
+      (plan) => String(plan.id) === String(selectedPlanId),
     )
-  }, [selectedMemberId])
+  }, [membershipPlans, selectedPlanId])
 
-  const handleMemberChange = (memberId: string) => {
+  const filteredMembers = useMemo(() => {
+    const normalizedSearch = search.toLowerCase().trim()
+
+    if (!normalizedSearch) {
+      return members
+    }
+
+    return members.filter((member) => {
+      const fullName = `${member.firstName} ${member.lastName}`.toLowerCase()
+
+      return (
+        fullName.includes(normalizedSearch) ||
+        member.email.toLowerCase().includes(normalizedSearch) ||
+        member.phone?.toLowerCase().includes(normalizedSearch)
+      )
+    })
+  }, [members, search])
+
+  const activePlans = useMemo(() => {
+    return membershipPlans.filter((plan) => plan.status === 'active')
+  }, [membershipPlans])
+
+  const handleMemberChange = (memberId: number) => {
+    const member = members.find((item) => item.id === memberId)
+
     setSelectedMemberId(memberId)
 
-    setValue('memberId', memberId)
-    setValue('memberSubscriptionId', '')
-    setValue('amount', 0)
-  }
+    setValue('memberId', memberId, {
+      shouldValidate: true,
+    })
 
-  const handleSubscriptionChange = (subscriptionId: string) => {
-    setValue('memberSubscriptionId', subscriptionId)
+    const activePlanId = member?.activeSubscription?.membershipPlan?.id
 
-    const subscription = MOCK_SUBSCRIPTIONS.find(
-      (item) => item.id === subscriptionId,
-    )
+    if (activePlanId) {
+      handlePlanChange(String(activePlanId))
+    } else {
+      setValue('memberSubscriptionId', 0, {
+        shouldValidate: true,
+      })
 
-    if (subscription) {
-      setValue('amount', subscription.price)
+      setValue('amount', 0, {
+        shouldValidate: true,
+      })
     }
   }
 
-  const handleFormSubmit = async (data: AddPaymentFormData) => {
-    await onSubmit?.(data)
+  const handlePlanChange = (planId: string) => {
+    setValue('memberSubscriptionId', Number(planId), {
+      shouldValidate: true,
+    })
+
+    const plan = membershipPlans.find((item) => String(item.id) === planId)
+
+    setValue('amount', plan?.price ?? 0, {
+      shouldValidate: true,
+    })
   }
+
+  const submit = async (data: AddPaymentFormData) => {
+    createPayment.mutate(
+      {
+        amount: data.amount,
+        paymentMethod: data.paymentMethod,
+        paidAt: data.paymentDate,
+        status: data.status,
+        memberId: Number(data.memberId),
+        memberSubscriptionId: Number(data.memberSubscriptionId),
+        transactionReference: data.transactionReference || undefined,
+      },
+      {
+        onSuccess: () => {
+          router.push('/payments')
+        },
+      },
+    )
+  }
+
+  const isLoading = membersLoading || plansLoading || createPayment.isPending
 
   return (
     <div className={styles.container}>
@@ -133,30 +153,88 @@ export const AddPayment: React.FC<AddPaymentProps> = ({
         <h2 className={styles.header.title}>Add Payment</h2>
 
         <p className={styles.header.description}>
-          Record a payment received from a gym member.
+          Record a payment and create or renew the member subscription.
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(handleFormSubmit)} className={styles.form}>
+      <form onSubmit={handleSubmit(submit)} className={styles.form}>
+        {/* Member */}
         <div className={styles.field.wrapper}>
           <label className={styles.field.label}>Member</label>
 
-          <select
+          <div className={styles.searchWrapper}>
+            <Search size={18} className={styles.searchIcon} />
+
+            <input
+              type="text"
+              value={search}
+              onChange={(event) => setSearch(event.target.value)}
+              placeholder="Search by name, email or phone..."
+              className={styles.searchInput}
+              disabled={isLoading || membersError}
+            />
+          </div>
+
+          <div className={styles.memberList}>
+            {membersLoading && (
+              <div className={styles.emptyState}>Loading members...</div>
+            )}
+
+            {membersError && (
+              <div className={styles.emptyState}>Failed to load members.</div>
+            )}
+
+            {!membersLoading &&
+              !membersError &&
+              filteredMembers.length === 0 && (
+                <div className={styles.emptyState}>No members found.</div>
+              )}
+
+            {!membersLoading &&
+              !membersError &&
+              filteredMembers.map((member) => {
+                const isSelected = member.id === selectedMemberId
+
+                return (
+                  <button
+                    key={member.id}
+                    type="button"
+                    className={`${styles.memberOption} ${
+                      isSelected ? styles.memberOptionSelected : ''
+                    }`}
+                    onClick={() => handleMemberChange(member.id)}
+                    disabled={isLoading}
+                  >
+                    <div className={styles.memberInfo}>
+                      <span className={styles.memberName}>
+                        {member.firstName} {member.lastName}
+                      </span>
+
+                      <span className={styles.memberEmail}>{member.email}</span>
+
+                      {member.phone && (
+                        <span className={styles.memberPhone}>
+                          {member.phone}
+                        </span>
+                      )}
+                    </div>
+
+                    {member.activeSubscription && (
+                      <span className={styles.memberPlan}>
+                        {member?.activeSubscription?.membershipPlan?.name}
+                      </span>
+                    )}
+                  </button>
+                )
+              })}
+          </div>
+
+          <input
+            type="hidden"
             {...register('memberId', {
               required: 'Member is required',
             })}
-            value={selectedMemberId}
-            onChange={(event) => handleMemberChange(event.target.value)}
-            className={styles.field.select}
-          >
-            <option value="">Select member</option>
-
-            {MOCK_MEMBERS.map((member) => (
-              <option key={member.id} value={member.id}>
-                {member.name} — {member.email}
-              </option>
-            ))}
-          </select>
+          />
 
           {errors.memberId && (
             <span className={styles.field.error}>
@@ -166,36 +244,104 @@ export const AddPayment: React.FC<AddPaymentProps> = ({
         </div>
 
         <div className={styles.field.wrapper}>
-          <label className={styles.field.label}>Subscription</label>
-
+          <label className={styles.field.label}>Membership Plan</label>
           <select
             {...register('memberSubscriptionId', {
-              required: 'Subscription is required',
+              required: 'Membership plan is required',
             })}
-            value={selectedSubscriptionId}
-            onChange={(event) => handleSubscriptionChange(event.target.value)}
-            disabled={!selectedMemberId}
+            value={selectedPlanId}
+            onChange={(event) => handlePlanChange(event.target.value)}
+            disabled={!selectedMember || isLoading}
             className={styles.field.select}
           >
             <option value="">
-              {selectedMemberId ? 'Select subscription' : 'Select member first'}
+              {!selectedMember
+                ? 'Select member first'
+                : plansLoading
+                  ? 'Loading plans...'
+                  : 'Select membership plan'}
             </option>
 
-            {availableSubscriptions.map((subscription) => (
-              <option key={subscription.id} value={subscription.id}>
-                {subscription.planName} — {subscription.price}{' '}
-                {subscription.currency}
+            {activePlans.map((plan) => (
+              <option key={plan.id} value={plan.id}>
+                {plan.name} — €{plan.price.toFixed(2)} / {plan.duration} days
               </option>
             ))}
           </select>
+          {selectedMember?.activeSubscription && (
+            <div className={styles.currentSubscription}>
+              <div>
+                <span className={styles.currentSubscriptionLabel}>
+                  Current subscription
+                </span>
 
+                <span className={styles.currentSubscriptionPlan}>
+                  {selectedMember.activeSubscription?.membershipPlan?.name}
+                </span>
+              </div>
+
+              <div className={styles.currentSubscriptionDate}>
+                Valid until{' '}
+                {new Date(
+                  selectedMember.activeSubscription.expiresAt,
+                ).toLocaleDateString('en-GB')}
+              </div>
+            </div>
+          )}
+          {plansError && (
+            <span className={styles.field.error}>
+              Failed to load membership plans.
+            </span>
+          )}
           {errors.memberSubscriptionId && (
             <span className={styles.field.error}>
               {errors.memberSubscriptionId.message}
             </span>
           )}
         </div>
+        {selectedPlan && (
+          <div className={`${styles.subscription} ${styles.field.full}`}>
+            <div className={styles.subscriptionHeader}>
+              Selected Membership Plan
+            </div>
 
+            <div className={styles.subscriptionDetails}>
+              <div>
+                <span className={styles.subscriptionLabel}>Plan</span>
+
+                <span className={styles.subscriptionValue}>
+                  {selectedPlan.name}
+                </span>
+              </div>
+
+              <div>
+                <span className={styles.subscriptionLabel}>Price</span>
+
+                <span className={styles.subscriptionValue}>
+                  €{selectedPlan.price.toFixed(2)}
+                </span>
+              </div>
+
+              <div>
+                <span className={styles.subscriptionLabel}>Duration</span>
+
+                <span className={styles.subscriptionValue}>
+                  {selectedPlan.duration} days
+                </span>
+              </div>
+
+              {selectedPlan.description && (
+                <div>
+                  <span className={styles.subscriptionLabel}>Description</span>
+
+                  <span className={styles.subscriptionValue}>
+                    {selectedPlan.description}
+                  </span>
+                </div>
+              )}
+            </div>
+          </div>
+        )}
         <div className={styles.field.wrapper}>
           <label className={styles.field.label}>Amount</label>
 
@@ -203,6 +349,7 @@ export const AddPayment: React.FC<AddPaymentProps> = ({
             type="number"
             step="0.01"
             min="0"
+            readOnly
             {...register('amount', {
               required: 'Amount is required',
               valueAsNumber: true,
@@ -211,7 +358,7 @@ export const AddPayment: React.FC<AddPaymentProps> = ({
                 message: 'Amount must be greater than 0',
               },
             })}
-            className={styles.field.input}
+            className={`${styles.field.input} ${styles.field.readOnly}`}
           />
 
           {errors.amount && (
@@ -222,7 +369,10 @@ export const AddPayment: React.FC<AddPaymentProps> = ({
         <div className={styles.field.wrapper}>
           <label className={styles.field.label}>Payment Method</label>
 
-          <select {...register('method')} className={styles.field.select}>
+          <select
+            {...register('paymentMethod')}
+            className={styles.field.select}
+          >
             {(
               Object.entries(PAYMENT_METHOD_LABELS) as [PaymentMethod, string][]
             ).map(([value, label]) => (
@@ -264,29 +414,32 @@ export const AddPayment: React.FC<AddPaymentProps> = ({
             </span>
           )}
         </div>
-
         <div className={`${styles.field.wrapper} ${styles.field.full}`}>
-          <label className={styles.field.label}>Reference</label>
+          <label className={styles.field.label}>Transaction Reference</label>
 
           <input
             type="text"
-            {...register('reference')}
+            {...register('transactionReference')}
             placeholder="Optional transaction or receipt reference"
             className={styles.field.input}
           />
         </div>
-
         <div className={`${styles.field.full} ${styles.actions}`}>
           <button
             type="button"
             className={styles.cancel}
             onClick={() => window.history.back()}
+            disabled={isLoading}
           >
             Cancel
           </button>
 
-          <button type="submit" disabled={loading} className={styles.submit}>
-            {loading ? 'Saving...' : 'Add Payment'}
+          <button
+            type="submit"
+            disabled={isLoading || !selectedMember || !selectedPlan}
+            className={styles.submit}
+          >
+            {isLoading ? 'Saving...' : 'Add Payment'}
           </button>
         </div>
       </form>

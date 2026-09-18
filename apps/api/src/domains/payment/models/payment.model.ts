@@ -38,6 +38,14 @@ export class Payment extends Entity {
   })
   transactionReference?: string
 
+  @property({
+    type: 'string',
+    jsonSchema: {
+      enum: ['paid', 'pending', 'failed', 'refunded'],
+    },
+  })
+  status?: string
+
   // relations
   @belongsTo(() => Member)
   memberId: number

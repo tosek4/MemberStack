@@ -4,16 +4,21 @@ import {
   api,
   del,
   get,
-  getModelSchemaRef,
   param,
-  patch,
   post,
   requestBody,
   response,
 } from '@loopback/rest'
 import { MemberSubscription } from '../models'
 import { MemberSubscriptionService } from '../service'
-import { CreateMemberSubscriptionRequestSchema, CreateMemberSubscriptionResponseSchema, MemberSubscriptionCountResponseSchema, MemberSubscriptionGetByIdResponseSchema, MemberSubscriptionsResponseSchema, MemberSubscriptionUpdateResponseSchema } from './member-subscription.docs'
+import {
+  CreateMemberSubscriptionRequestSchema,
+  CreateMemberSubscriptionResponseSchema,
+  MemberSubscriptionCountResponseSchema,
+  MemberSubscriptionGetByIdResponseSchema,
+  MemberSubscriptionsResponseSchema,
+  MemberSubscriptionUpdateResponseSchema,
+} from './member-subscription.docs'
 
 @api({ basePath: '/member-subscriptions' })
 export class MemberSubscriptionController {
