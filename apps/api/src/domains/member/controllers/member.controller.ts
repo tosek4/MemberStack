@@ -12,7 +12,7 @@ import {
 } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberService } from '../service'
-import { MemberListItem } from '../types'
+import { MemberListItem, MemberListStatus } from '../types'
 import {
   CreateMemberRequestSchema,
   CreateMemberResponseSchema,
@@ -31,9 +31,13 @@ export class MemberController {
 
   @get('/')
   getAllMembers(
-    @param.filter(Member) filter?: Filter<Member>,
+    @param.query.string('search') search?: string,
+    @param.query.string('status') status?: string,
   ): Promise<MemberListItem[]> {
-    return this.memberService.getAllMembers(filter)
+    return this.memberService.getAllMembers({
+      search,
+      status: status as MemberListStatus | undefined,
+    })
   }
 
   @post('/')
@@ -53,7 +57,7 @@ export class MemberController {
 
   @get('/{id}')
   @response(200, MemberGetByIdResponseSchema)
-  findById(@param.path.number('id') id: number): Promise<Member> {
+  findById(@param.path.number('id') id: number): Promise<MemberListItem> {
     return this.memberService.findById(id)
   }
 

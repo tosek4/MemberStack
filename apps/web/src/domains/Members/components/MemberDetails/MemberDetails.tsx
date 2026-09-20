@@ -49,8 +49,7 @@ export const MemberDetails: React.FC = () => {
     0,
   )}${member.lastName.charAt(0)}`.toUpperCase()
 
-  const subscription = member.activeSubscription
-
+  const subscription = member.latestSubscription
   return (
     <main className={styles.root}>
       <div className={styles.container}>

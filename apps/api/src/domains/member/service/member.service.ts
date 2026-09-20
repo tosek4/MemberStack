@@ -9,7 +9,7 @@ import {
 import { HttpErrors } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberRepository } from '../repositories'
-import { MemberListItem } from '../types'
+import { MemberListFilters, MemberListItem } from '../types'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class MemberService {
@@ -21,23 +21,29 @@ export class MemberService {
   create(data: Omit<Member, 'id'>): Promise<Member> {
     return this.memberRepository.create(data)
   }
+  async getAllMembers(filters?: MemberListFilters): Promise<MemberListItem[]> {
+    const memberIds = await this.memberRepository.findIdsForList(filters)
 
-  async getAllMembers(filter?: Filter<Member>): Promise<MemberListItem[]> {
+    if (memberIds.length === 0) {
+      return []
+    }
+
     const members = await this.memberRepository.find({
+      where: {
+        id: {
+          inq: memberIds,
+        },
+      },
       include: [
         {
           relation: 'subscriptions',
           scope: {
-            where: {
-              status: 'active',
-            },
-            order: ['expiresAt DESC'],
+            order: ['startedAt DESC', 'expiresAt DESC'],
             limit: 1,
             include: ['membershipPlan'],
           },
         },
       ],
-      ...filter,
     })
 
     return members.map((member) => {
@@ -45,17 +51,29 @@ export class MemberService {
 
       return {
         ...memberData,
-        activeSubscription: subscriptions?.[0] ?? null,
+        latestSubscription: subscriptions?.[0] ?? null,
       }
     })
   }
-
-  async findById(
-    id: number,
-    filter?: FilterExcludingWhere<Member>,
-  ): Promise<Member> {
+  async findById(id: number): Promise<MemberListItem> {
     try {
-      return await this.memberRepository.findById(id, filter)
+      const member = await this.memberRepository.findById(id, {
+        include: [
+          {
+            relation: 'subscriptions',
+            scope: {
+              order: ['startedAt DESC', 'expiresAt DESC'],
+              limit: 1,
+              include: ['membershipPlan'],
+            },
+          },
+        ],
+      })
+      const { subscriptions, ...memberData } = member
+      return {
+        latestSubscription: member.subscriptions?.[0] ?? null,
+        ...memberData,
+      }
     } catch {
       throw new HttpErrors.NotFound(`Member ${id} not found`)
     }

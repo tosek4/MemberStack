@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 
 import { MemberCard } from './components/MemberCard'
@@ -9,60 +9,28 @@ import { useMembers } from './services'
 
 import { styles } from './Members.styled'
 
+import { useDebounce } from '@/hooks/useDebounce'
+
 export const Members: React.FC = () => {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<MemberStatusFilter>('all')
 
+  const debouncedSearch = useDebounce(search, 400)
+
   const router = useRouter()
 
-  const { data: members = [], isLoading, isError } = useMembers()
-
-  const filteredMembers = useMemo(() => {
-    const normalizedSearch = search.toLowerCase().trim()
-
-    return members.filter((member) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        member.firstName.toLowerCase().includes(normalizedSearch) ||
-        member.lastName.toLowerCase().includes(normalizedSearch) ||
-        member.email.toLowerCase().includes(normalizedSearch) ||
-        member.phone?.toLowerCase().includes(normalizedSearch)
-
-      const matchesStatus =
-        status === 'all' || member.activeSubscription?.status === status
-
-      return matchesSearch && matchesStatus
-    })
-  }, [members, search, status])
+  const {
+    data: members = [],
+    isPending,
+    isFetching,
+    isError,
+  } = useMembers({
+    search: debouncedSearch,
+    status,
+  })
 
   const handleViewMember = (member: (typeof members)[number]) => {
     router.push(`/members/${member.id}`)
-  }
-
-  if (isLoading) {
-    return (
-      <main className={styles.root}>
-        <div className={styles.container}>
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>Loading members...</p>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (isError) {
-    return (
-      <main className={styles.root}>
-        <div className={styles.container}>
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>Failed to load members</p>
-
-            <p className={styles.emptyText}>Please try again later.</p>
-          </div>
-        </div>
-      </main>
-    )
   }
 
   return (
@@ -93,9 +61,19 @@ export const Members: React.FC = () => {
           onStatusChange={setStatus}
         />
 
-        {filteredMembers.length > 0 ? (
+        {isPending ? (
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Loading members...</p>
+          </div>
+        ) : isError ? (
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Failed to load members</p>
+
+            <p className={styles.emptyText}>Please try again later.</p>
+          </div>
+        ) : members.length > 0 ? (
           <div className={styles.grid}>
-            {filteredMembers.map((member) => (
+            {members.map((member) => (
               <MemberCard
                 key={member.id}
                 member={member}
@@ -111,6 +89,10 @@ export const Members: React.FC = () => {
               Try changing your search or filter.
             </p>
           </div>
+        )}
+
+        {isFetching && !isPending && (
+          <div className={styles.searchLoading}>Searching...</div>
         )}
       </div>
     </main>

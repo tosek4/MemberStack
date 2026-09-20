@@ -1,38 +1,8 @@
 import React from 'react'
 import { Search } from 'lucide-react'
-
-import {
-  MemberFiltersProps,
-  MemberStatusFilter,
-} from '../../types'
-
+import { MemberFiltersProps } from '../../types'
 import { styles } from './MemberFilters.styled'
-
-const statusOptions: {
-  value: MemberStatusFilter
-  label: string
-}[] = [
-  {
-    value: 'all',
-    label: 'All members',
-  },
-  {
-    value: 'active',
-    label: 'Active',
-  },
-  {
-    value: 'expiring',
-    label: 'Expiring soon',
-  },
-  {
-    value: 'expired',
-    label: 'Expired',
-  },
-  {
-    value: 'no-subscription',
-    label: 'No subscription',
-  },
-]
+import { statusOptions } from './utils'
 
 export const MemberFilters: React.FC<MemberFiltersProps> = ({
   search,

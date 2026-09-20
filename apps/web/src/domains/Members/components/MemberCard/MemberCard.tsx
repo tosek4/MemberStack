@@ -67,7 +67,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onView }) => {
           <p className={styles.details.item.label}>{LABELS.plan}</p>
 
           <p className={styles.details.item.value}>
-            {member?.activeSubscription?.membershipPlan?.name ?? '—'}
+            {member?.latestSubscription?.membershipPlan?.name ?? '—'}
           </p>
         </div>
 
@@ -75,9 +75,9 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onView }) => {
           <p className={styles.details.item.label}>{LABELS.membership}</p>
 
           <p className={styles.details.item.value}>
-            {member?.activeSubscription?.startedAt &&
-            member?.activeSubscription?.expiresAt
-              ? `${member?.activeSubscription?.startedAt} → ${member?.activeSubscription?.expiresAt}`
+            {member?.latestSubscription?.startedAt &&
+            member?.latestSubscription?.expiresAt
+              ? `${member?.latestSubscription?.startedAt} → ${member?.latestSubscription?.expiresAt}`
               : '—'}
           </p>
         </div>

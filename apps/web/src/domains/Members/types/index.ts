@@ -29,7 +29,7 @@ export interface Member {
   emergency_contact?: string | null
   profile_image?: string | null
   status: string
-  activeSubscription: MemberSubscription | null
+  latestSubscription: MemberSubscription | null
 }
 
 export interface CreateMemberPayload {
@@ -60,4 +60,9 @@ export interface MemberFiltersProps {
   status: MemberStatusFilter
   onSearchChange: (value: string) => void
   onStatusChange: (value: MemberStatusFilter) => void
+}
+
+export interface MemberFilters {
+  search?: string
+  status?: MemberStatusFilter
 }

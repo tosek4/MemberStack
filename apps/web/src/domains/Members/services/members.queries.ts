@@ -1,6 +1,11 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
-import { CreateMemberPayload, UpdateMemberData } from '../types'
+import { CreateMemberPayload, MemberFilters, UpdateMemberData } from '../types'
 
 import { membersService } from './members.service'
 
@@ -9,13 +14,16 @@ export const memberKeys = {
 
   lists: () => [...memberKeys.all, 'list'] as const,
 
+  list: (filters: MemberFilters) => [...memberKeys.lists(), filters] as const,
+
   detail: (id: number) => [...memberKeys.all, 'detail', id] as const,
 }
 
-export const useMembers = () => {
+export const useMembers = (filters?: MemberFilters) => {
   return useQuery({
-    queryKey: memberKeys.lists(),
-    queryFn: membersService.getAll,
+    queryKey: memberKeys.list(filters ?? {}),
+    queryFn: () => membersService.getAll(filters),
+    placeholderData: keepPreviousData,
   })
 }
 

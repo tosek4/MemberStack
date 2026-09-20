@@ -31,5 +31,17 @@ export type MemberListItem = Omit<Member, keyof Member> & {
   profile_image?: string
   status: string
   createdByUserId: number
-  activeSubscription: ActiveSubscription | null
+  latestSubscription: ActiveSubscription | null
+}
+
+export type MemberListStatus =
+  | 'all'
+  | 'active'
+  | 'expiring'
+  | 'expired'
+  | 'no-subscription'
+
+export interface MemberListFilters {
+  search?: string
+  status?: MemberListStatus
 }
