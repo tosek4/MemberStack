@@ -1,4 +1,6 @@
 export const styles = {
+  title: 'flex items-center space-x-2',
+
   form: 'space-y-5',
 
   field: 'space-y-1',

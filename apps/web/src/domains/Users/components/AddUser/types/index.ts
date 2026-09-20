@@ -1,9 +1,9 @@
-import { UserRole } from '../../../types'
-
 export interface AddUserFormData {
-  name: string
+  firstName: string
+  lastName: string
   email: string
-  phone: string
-  role: UserRole
+  phone?: string
+  roleId: number
+  status: boolean
   password: string
 }

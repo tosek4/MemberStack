@@ -41,16 +41,18 @@ export const UserCard: React.FC<UserCardProps> = ({
             {user.avatar ? (
               <img
                 src={user.avatar}
-                alt={user.name}
+                alt={user.firstName}
                 className="h-full w-full rounded-full object-cover"
               />
             ) : (
-              getInitials(user.name)
+              getInitials(user.firstName + ' ' + user.lastName)
             )}
           </div>
 
           <div className={styles.card.user.info.wrapper}>
-            <p className={styles.card.user.info.name}>{user.name}</p>
+            <p className={styles.card.user.info.name}>
+              {user.firstName} {user.lastName}
+            </p>
 
             <p className={styles.card.user.info.email}>{user.email}</p>
           </div>
@@ -58,12 +60,12 @@ export const UserCard: React.FC<UserCardProps> = ({
 
         <span
           className={`${styles.card.status.base} ${
-            user.status === 'active'
+            user.isActive === true
               ? styles.card.status.active
               : styles.card.status.inactive
           }`}
         >
-          {LABELS.statuses[user.status]}
+          {LABELS.statuses[user.isActive === true ? 'active' : 'inactive']}
         </span>
       </div>
 
@@ -101,9 +103,11 @@ export const UserCard: React.FC<UserCardProps> = ({
         <button
           type="button"
           className={`${styles.actions.button} ${styles.actions.toggle}`}
-          onClick={() => onToggleStatus?.(user)}
+          onClick={() =>
+            onToggleStatus?.({ id: user.id, status: !user.isActive })
+          }
         >
-          {user.status === 'active' ? LABELS.deactivate : LABELS.activate}
+          {user.isActive === true ? LABELS.deactivate : LABELS.activate}
         </button>
       </div>
     </div>

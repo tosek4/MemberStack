@@ -1,6 +1,7 @@
 import { service } from '@loopback/core'
 import { Count, CountSchema, Filter, Where } from '@loopback/repository'
 import {
+  api,
   del,
   get,
   getModelSchemaRef,
@@ -13,13 +14,27 @@ import {
 import { Role } from '../models'
 import { RoleService } from '../service'
 
+@api({ basePath: 'roles' })
 export class RoleController {
   constructor(
     @service(RoleService)
     private roleService: RoleService,
   ) {}
 
-  @post('/roles')
+  @get('/')
+  @response(200, {
+    description: 'Array of Role model instances',
+    content: {
+      'application/json': {
+        schema: { type: 'array', items: getModelSchemaRef(Role) },
+      },
+    },
+  })
+  find(@param.filter(Role) filter?: Filter<Role>): Promise<Role[]> {
+    return this.roleService.find(filter)
+  }
+
+  @post('/')
   @response(200, {
     description: 'Role model instance',
     content: { 'application/json': { schema: getModelSchemaRef(Role) } },
@@ -40,7 +55,7 @@ export class RoleController {
     return this.roleService.create(role)
   }
 
-  @get('/roles/count')
+  @get('/count')
   @response(200, {
     description: 'Role model count',
     content: { 'application/json': { schema: CountSchema } },
@@ -49,20 +64,7 @@ export class RoleController {
     return this.roleService.count(where)
   }
 
-  @get('/roles')
-  @response(200, {
-    description: 'Array of Role model instances',
-    content: {
-      'application/json': {
-        schema: { type: 'array', items: getModelSchemaRef(Role) },
-      },
-    },
-  })
-  find(@param.filter(Role) filter?: Filter<Role>): Promise<Role[]> {
-    return this.roleService.find(filter)
-  }
-
-  @get('/roles/{id}')
+  @get('/{id}')
   @response(200, {
     description: 'Role model instance',
     content: { 'application/json': { schema: getModelSchemaRef(Role) } },
@@ -71,7 +73,7 @@ export class RoleController {
     return this.roleService.findById(id)
   }
 
-  @patch('/roles/{id}')
+  @patch('/{id}')
   @response(204, { description: 'Role PATCH success' })
   async updateById(
     @param.path.number('id') id: number,
@@ -87,7 +89,7 @@ export class RoleController {
     await this.roleService.updateById(id, role)
   }
 
-  @del('/roles/{id}')
+  @del('/{id}')
   @response(204, { description: 'Role DELETE success' })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.roleService.deleteById(id)
