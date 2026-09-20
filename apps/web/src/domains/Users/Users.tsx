@@ -1,42 +1,37 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 
-import { User, UserFilters as UserFiltersState } from './types'
+import { User, UserFilters as UserFiltersState, UserRole } from './types'
 import { UserCard } from './components'
 import { LABELS } from './utils/labels'
 import { styles } from './Users.styled'
 import { UserFilters } from './components/UserFilters/UserFilters'
-import { useUsers } from './services'
+import { useRoles, useUsers } from './services'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export const Users: React.FC = () => {
   const router = useRouter()
 
-  const { data: users = [] } = useUsers()
   const [filters, setFilters] = useState<UserFiltersState>({
     search: '',
     role: 'all',
     status: 'all',
   })
 
-  const filteredUsers = useMemo(() => {
-    return users.filter((user) => {
-      const search = filters.search.toLowerCase()
+  const debouncedSearch = useDebounce(filters.search, 400)
 
-      const matchesSearch =
-        !search ||
-        user.firstName.toLowerCase().includes(search) ||
-        user.lastName.toLowerCase().includes(search) ||
-        user.email.toLowerCase().includes(search)
+  const {
+    data: users = [],
+    isPending,
+    isFetching,
+    isError,
+  } = useUsers({
+    search: debouncedSearch,
+    role: filters.role,
+    status: filters.status,
+  })
 
-      const matchesRole = filters.role === 'all' || user.role === filters.role
-
-      const matchesStatus =
-        filters.status === 'all' ||
-        user.isActive === (filters.status === 'active')
-
-      return matchesSearch && matchesRole && matchesStatus
-    })
-  }, [users, filters])
+  const { data: roles = [] } = useRoles()
 
   const stats = {
     total: users.length,
@@ -64,6 +59,17 @@ export const Users: React.FC = () => {
   const handleEdit = (user: User) => {
     console.log('Edit staff member:', user)
   }
+
+  const rolesFilters = [
+    {
+      value: 'all',
+      label: LABELS.allRoles,
+    },
+    ...roles.map((role) => ({
+      value: role.id,
+      label: LABELS.roles[role.name as UserRole],
+    })),
+  ]
 
   return (
     <main className={styles.root}>
@@ -107,22 +113,38 @@ export const Users: React.FC = () => {
         </div>
       </div>
 
-      <UserFilters filters={filters} onChange={setFilters} />
+      <UserFilters
+        filters={filters}
+        onChange={setFilters}
+        roles={rolesFilters}
+      />
+      {isFetching && !isPending && (
+        <p className={styles.emptyDescription}>Searching...</p>
+      )}
+      {isPending ? (
+        <div className={styles.empty}>
+          <p className={styles.emptyTitle}>Loading payments...</p>
+        </div>
+      ) : isError ? (
+        <div className={styles.empty}>
+          <p className={styles.emptyTitle}>Failed to load payments</p>
 
-      <div className={styles.grid}>
-        {filteredUsers.length > 0 ? (
-          filteredUsers.map((user) => (
+          <p className={styles.emptyDescription}>Please try again later.</p>
+        </div>
+      ) : users.length > 0 ? (
+        <div className={styles.grid}>
+          {users.map((user) => (
             <UserCard
               key={user.id}
               user={user}
               onEdit={handleEdit}
               onToggleStatus={handleToggleStatus}
             />
-          ))
-        ) : (
-          <div className={styles.empty}>{LABELS.noUsers}</div>
-        )}
-      </div>
+          ))}
+        </div>
+      ) : (
+        <div className={styles.empty}>{LABELS.noUsers}</div>
+      )}
     </main>
   )
 }

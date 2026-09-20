@@ -1,13 +1,9 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { Users, UserCheck, LogIn, LogOut } from 'lucide-react'
 
 import { AttendanceCard, AttendanceFilters, CheckIn } from './components'
 
-import type {
-  Attendance as AttendanceRecord,
-  AttendanceStatusFilter,
-  CheckInFormData,
-} from './types'
+import type { AttendanceStatusFilter, CheckInFormData } from './types'
 
 import { styles } from './Attendance.styled'
 import {
@@ -17,6 +13,7 @@ import {
   useUpdateAttendance,
 } from './services'
 import { getLocalDateString } from '@/utils/date'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export const Attendance: React.FC = () => {
   const today = getLocalDateString()
@@ -25,33 +22,23 @@ export const Attendance: React.FC = () => {
   const [date, setDate] = useState(today)
   const [checkInModalOpen, setCheckInModalOpen] = useState(false)
 
-  const { data: attendances = [], isLoading, isError } = useAttendances()
+  const debouncedSearch = useDebounce(search, 400)
 
   const {
-    data: attendanceStats,
-    isLoading: statsLoading,
-    isError: statsError,
-  } = useAttendanceStats(date)
+    data: attendances = [],
+    isPending,
+    isFetching,
+    isError,
+  } = useAttendances({
+    search: debouncedSearch,
+    status,
+    date,
+  })
+
+  const { data: attendanceStats } = useAttendanceStats(date)
 
   const createAttendance = useCreateAttendance()
   const updateAttendance = useUpdateAttendance()
-
-  const filteredAttendance = useMemo(() => {
-    const normalizedSearch = search.toLowerCase().trim()
-
-    return attendances.filter((item) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        item.memberName.toLowerCase().includes(normalizedSearch) ||
-        item.memberEmail.toLowerCase().includes(normalizedSearch)
-
-      const matchesStatus = status === 'all' || item.status === status
-
-      const matchesDate = item.checkIn.startsWith(date)
-
-      return matchesSearch && matchesStatus && matchesDate
-    })
-  }, [attendances, search, status, date])
 
   const handleCheckIn = async (data: CheckInFormData) => {
     const formattedData = {
@@ -89,7 +76,7 @@ export const Attendance: React.FC = () => {
     setDate(getLocalDateString(yesterday))
   }
 
-  if (isLoading) {
+  if (isPending) {
     return (
       <main className={styles.root}>
         <div className={styles.container}>
@@ -213,9 +200,13 @@ export const Attendance: React.FC = () => {
             onYesterday={handleYesterday}
           />
 
-          {filteredAttendance.length > 0 ? (
+          {isFetching && !isPending && (
+            <p className={styles.emptyText}>Searching...</p>
+          )}
+
+          {attendances.length > 0 ? (
             <div className={styles.grid}>
-              {filteredAttendance.map((item) => (
+              {attendances.map((item) => (
                 <AttendanceCard
                   key={item.id}
                   attendance={item}

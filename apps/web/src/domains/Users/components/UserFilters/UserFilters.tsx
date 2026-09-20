@@ -8,6 +8,7 @@ import { styles } from './UserFilters.styled'
 export const UserFilters: React.FC<UserFiltersProps> = ({
   filters,
   onChange,
+  roles,
 }) => {
   return (
     <div className={styles.root}>
@@ -34,11 +35,11 @@ export const UserFilters: React.FC<UserFiltersProps> = ({
           })
         }
       >
-        <option value="all">{LABELS.allRoles}</option>
-        <option value="super_admin">{LABELS.roles.super_admin}</option>
-        <option value="admin">{LABELS.roles.admin}</option>
-        <option value="receptionist">{LABELS.roles.receptionist}</option>
-        <option value="trainer">{LABELS.roles.trainer}</option>
+        {roles.map((role) => (
+          <option key={role.value} value={role.value}>
+            {role.label}
+          </option>
+        ))}
       </select>
 
       <select

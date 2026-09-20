@@ -2,7 +2,8 @@ export const styles = {
   root: 'min-h-screen bg-gray-50 p-6 dark:bg-gray-900',
 
   header: {
-    wrapper: 'mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between',
+    wrapper:
+      'mb-6 flex flex-col gap-4 sm:flex-row sm:items-center sm:justify-between',
 
     title: 'text-2xl font-bold text-gray-900 dark:text-white',
 
@@ -25,5 +26,9 @@ export const styles = {
   grid: 'grid grid-cols-1 gap-5 md:grid-cols-2 xl:grid-cols-3',
 
   empty:
-    'col-span-full rounded-lg border border-dashed border-gray-300 bg-white p-10 text-center text-sm text-gray-500 dark:border-gray-700 dark:bg-gray-800 dark:text-gray-400',
+    'rounded-xl border border-dashed border-gray-300 bg-white p-10 text-center dark:border-gray-600 dark:bg-gray-800',
+
+  emptyTitle: 'text-sm font-semibold text-gray-900 dark:text-white',
+
+  emptyDescription: 'mt-1 text-sm text-gray-500 dark:text-gray-400',
 } as const

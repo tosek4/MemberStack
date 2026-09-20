@@ -21,6 +21,12 @@ export type PaymentMethodFilter = 'all' | PaymentMethod
 
 export type PaymentStatusFilter = 'all' | PaymentStatus
 
+export interface PaymentFilters {
+  search?: string
+  method?: PaymentMethodFilter
+  status?: PaymentStatusFilter
+}
+
 export interface PaymentFiltersProps {
   search: string
   method: PaymentMethodFilter

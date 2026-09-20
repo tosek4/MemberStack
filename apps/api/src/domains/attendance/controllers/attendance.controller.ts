@@ -4,7 +4,6 @@ import {
   api,
   del,
   get,
-  getModelSchemaRef,
   param,
   patch,
   post,
@@ -24,7 +23,11 @@ import {
   CreateAttendanceResponseSchema,
   UpdateAttendanceRequestSchema,
 } from './attendance.docs'
-import { AttendanceListItem, AttendanceStats } from '../types'
+import {
+  AttendanceListItem,
+  AttendanceListStatus,
+  AttendanceStats,
+} from '../types'
 
 @api({ basePath: '/attendances' })
 export class AttendanceController {
@@ -36,9 +39,15 @@ export class AttendanceController {
   @get('/')
   @response(200, AttendanceResponseSchema)
   find(
-    @param.filter(Attendance) filter?: Filter<Attendance>,
+    @param.query.string('search') search?: string,
+    @param.query.string('status') status?: string,
+    @param.query.string('date') date?: string,
   ): Promise<AttendanceListItem[]> {
-    return this.attendanceService.find(filter)
+    return this.attendanceService.find({
+      search,
+      status: status as AttendanceListStatus | undefined,
+      date,
+    })
   }
 
   @get('/stats')

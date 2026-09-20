@@ -25,3 +25,11 @@ export interface AttendanceStats {
   checkIns: number
   checkOuts: number
 }
+
+export type AttendanceListStatus = 'all' | 'checked-in' | 'checked-out'
+
+export interface AttendanceListFilters {
+  search?: string
+  status?: AttendanceListStatus
+  date?: string
+}

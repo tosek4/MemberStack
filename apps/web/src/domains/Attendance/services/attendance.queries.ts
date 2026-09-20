@@ -1,4 +1,9 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 import {
   createAttendance,
@@ -8,20 +13,35 @@ import {
   updateAttendance,
 } from './attendance.service'
 import {
+  AttendanceFilters,
   CreateAttendancePayload,
   UpdateAttendancePayload,
 } from '../types'
 
-export const useAttendances = () => {
+export const attendanceKeys = {
+  all: ['attendances'] as const,
+
+  lists: () => [...attendanceKeys.all, 'list'] as const,
+
+  list: (filters: AttendanceFilters) =>
+    [...attendanceKeys.lists(), filters] as const,
+
+  detail: (id: number) => [...attendanceKeys.all, 'detail', id] as const,
+
+  stats: (date: string) => [...attendanceKeys.all, 'stats', date] as const,
+}
+
+export const useAttendances = (filters?: AttendanceFilters) => {
   return useQuery({
-    queryKey: ['attendances'],
-    queryFn: getAttendances,
+    queryKey: attendanceKeys.list(filters ?? {}),
+    queryFn: () => getAttendances(filters),
+    placeholderData: keepPreviousData,
   })
 }
 
 export const useAttendance = (id: number) => {
   return useQuery({
-    queryKey: ['attendance', id],
+    queryKey: attendanceKeys.detail(id),
     queryFn: () => getAttendanceById(id),
     enabled: Number.isFinite(id),
   })
@@ -29,7 +49,7 @@ export const useAttendance = (id: number) => {
 
 export const useAttendanceStats = (date: string) => {
   return useQuery({
-    queryKey: ['attendance-stats', date],
+    queryKey: attendanceKeys.stats(date),
     queryFn: () => getAttendanceStats(date),
     enabled: Boolean(date),
   })
@@ -43,7 +63,7 @@ export const useCreateAttendance = () => {
       createAttendance(attendance),
 
     onSuccess: () => {
-      queryClient.invalidateQueries({ queryKey: ['attendances'] })
+      queryClient.invalidateQueries({ queryKey: attendanceKeys.all })
     },
   })
 }
@@ -61,8 +81,10 @@ export const useUpdateAttendance = () => {
     }) => updateAttendance(id, attendance),
 
     onSuccess: (_, variables) => {
-      queryClient.invalidateQueries({ queryKey: ['attendances'] })
-      queryClient.invalidateQueries({ queryKey: ['attendance', variables.id] })
+      queryClient.invalidateQueries({ queryKey: attendanceKeys.all })
+      queryClient.invalidateQueries({
+        queryKey: attendanceKeys.detail(variables.id),
+      })
     },
   })
 }

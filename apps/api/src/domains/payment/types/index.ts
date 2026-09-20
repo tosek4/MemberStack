@@ -26,3 +26,13 @@ export interface PaymentListItem {
   paymentDate: Date
   reference?: string
 }
+
+export type PaymentListMethod = 'all' | PaymentMethod
+
+export type PaymentListStatus = 'all' | PaymentStatus
+
+export interface PaymentListFilters {
+  search?: string
+  method?: PaymentListMethod
+  status?: PaymentListStatus
+}

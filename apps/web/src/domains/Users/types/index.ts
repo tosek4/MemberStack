@@ -15,9 +15,9 @@ export interface User {
 }
 
 export interface UserFilters {
-  search: string
-  role: UserRole | 'all'
-  status: UserStatus | 'all'
+  search?: string
+  role?: string | 'all'
+  status?: UserStatus | 'all'
 }
 
 export interface CreateUserPayload {

@@ -14,6 +14,12 @@ export interface Attendance {
 
 export type AttendanceStatusFilter = 'all' | AttendanceStatus
 
+export interface AttendanceFilters {
+  search?: string
+  status?: AttendanceStatusFilter
+  date?: string
+}
+
 export interface AttendanceFiltersProps {
   search: string
   status: AttendanceStatusFilter

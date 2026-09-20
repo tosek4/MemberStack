@@ -14,7 +14,13 @@ import {
 import { User } from '../models'
 import { UserService } from '../service'
 import { SecurityBindings, securityId } from '@loopback/security'
-import { CreateUserDto, UpdateUserDto, UserProfile } from '../types'
+import {
+  CreateUserDto,
+  UpdateUserDto,
+  UserListFilters,
+  UserProfile,
+  UserStatus,
+} from '../types'
 import {
   CountUserResponseSchema,
   CreateUserRequestBody,
@@ -68,8 +74,16 @@ export class UserController {
 
   @get('/')
   @response(200, getUserResponseSchema)
-  find(@param.filter(User) filter?: Filter<User>): Promise<User[]> {
-    return this.userService.find(filter)
+  find(
+    @param.query.string('search') search?: string,
+    @param.query.string('role') role?: string,
+    @param.query.string('status') status?: UserStatus,
+  ): Promise<User[]> {
+    return this.userService.find({
+      search,
+      role,
+      status,
+    })
   }
 
   @get('/{id}')

@@ -1,8 +1,34 @@
 import { api } from '@/services'
-import { Attendance, AttendanceStats, CreateAttendancePayload, UpdateAttendancePayload } from '../types'
+import {
+  Attendance,
+  AttendanceFilters,
+  AttendanceStats,
+  CreateAttendancePayload,
+  UpdateAttendancePayload,
+} from '../types'
 
-export const getAttendances = async (): Promise<Attendance[]> => {
-  const response = await api.get<Attendance[]>('/attendances')
+export const getAttendances = async (
+  filters?: AttendanceFilters,
+): Promise<Attendance[]> => {
+  const params = new URLSearchParams()
+
+  if (filters?.search?.trim()) {
+    params.set('search', filters.search.trim())
+  }
+
+  if (filters?.status && filters.status !== 'all') {
+    params.set('status', filters.status)
+  }
+
+  if (filters?.date?.trim()) {
+    params.set('date', filters.date.trim())
+  }
+
+  const query = params.toString()
+
+  const response = await api.get<Attendance[]>(
+    `/attendances${query ? `?${query}` : ''}`,
+  )
 
   return response.data
 }
@@ -35,7 +61,7 @@ export const createAttendance = async (
 
 export const updateAttendance = async (
   id: number,
-  data: UpdateAttendancePayload
+  data: UpdateAttendancePayload,
 ): Promise<void> => {
   await api.patch(`/attendances/${id}`, data)
 }

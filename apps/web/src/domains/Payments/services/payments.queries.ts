@@ -1,20 +1,33 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
+import {
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
 import { paymentsService } from './payments.service'
-import { CreatePaymentPayload, UpdatePaymentPayload } from '../types'
+import {
+  CreatePaymentPayload,
+  PaymentFilters,
+  UpdatePaymentPayload,
+} from '../types'
 
 export const PaymentKeys = {
   all: ['payments'] as const,
 
   lists: () => [...PaymentKeys.all, 'list'] as const,
 
+  list: (filters: PaymentFilters) =>
+    [...PaymentKeys.lists(), filters] as const,
+
   detail: (id: number) => [...PaymentKeys.all, 'detail', id] as const,
 }
 
-export const usePayments = () => {
+export const usePayments = (filters?: PaymentFilters) => {
   return useQuery({
-    queryKey: PaymentKeys.lists(),
-    queryFn: paymentsService.getAll,
+    queryKey: PaymentKeys.list(filters ?? {}),
+    queryFn: () => paymentsService.getAll(filters),
+    placeholderData: keepPreviousData,
   })
 }
 

@@ -1,4 +1,4 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/router'
 
@@ -7,6 +7,7 @@ import type { Payment, PaymentMethodFilter, PaymentStatusFilter } from './types'
 import { styles } from './Payments.styled'
 import { PaymentCard, PaymentFilters } from './components'
 import { usePayments } from './services'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export const Payments: React.FC = () => {
   const router = useRouter()
@@ -14,34 +15,30 @@ export const Payments: React.FC = () => {
   const currentYear = now.getFullYear()
   const currentMonth = now.getMonth()
 
-  const { data: payments = [] } = usePayments()
-
   const [search, setSearch] = useState('')
   const [method, setMethod] = useState<PaymentMethodFilter>('all')
   const [status, setStatus] = useState<PaymentStatusFilter>('all')
 
-  const filteredPayments = useMemo(() => {
-    const normalizedSearch = search.toLowerCase().trim()
+  const debouncedSearch = useDebounce(search, 400)
 
-    return payments.filter((payment) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        payment.memberName.toLowerCase().includes(normalizedSearch) ||
-        payment.memberEmail.toLowerCase().includes(normalizedSearch)
+  const { data: allPayments = [] } = usePayments()
 
-      const matchesMethod = method === 'all' || payment.method === method
+  const {
+    data: payments = [],
+    isPending,
+    isFetching,
+    isError,
+  } = usePayments({
+    search: debouncedSearch,
+    method,
+    status,
+  })
 
-      const matchesStatus = status === 'all' || payment.status === status
-
-      return matchesSearch && matchesMethod && matchesStatus
-    })
-  }, [payments, search, method, status])
-
-  const totalRevenue = payments
+  const totalRevenue = allPayments
     .filter((payment) => payment.status === 'paid')
     .reduce((total, payment) => total + payment.amount, 0)
 
-  const thisMonth = payments
+  const thisMonth = allPayments
     .filter((payment) => {
       const paymentDate = new Date(payment.paymentDate)
 
@@ -53,11 +50,11 @@ export const Payments: React.FC = () => {
     })
     .reduce((total, payment) => total + payment.amount, 0)
 
-  const paidCount = payments.filter(
+  const paidCount = allPayments.filter(
     (payment) => payment.status === 'paid',
   ).length
 
-  const pendingCount = payments.filter(
+  const pendingCount = allPayments.filter(
     (payment) => payment.status === 'pending',
   ).length
 
@@ -135,14 +132,28 @@ export const Payments: React.FC = () => {
           onStatusChange={setStatus}
         />
 
+        {isFetching && !isPending && (
+          <p className={styles.emptyDescription}>Searching...</p>
+        )}
+
         <section className={styles.paymentsSection}>
           <div className={styles.sectionHeader}>
             <h2 className={styles.sectionTitle}>Payment History</h2>
           </div>
 
-          {filteredPayments.length > 0 ? (
+          {isPending ? (
+            <div className={styles.empty}>
+              <p className={styles.emptyTitle}>Loading payments...</p>
+            </div>
+          ) : isError ? (
+            <div className={styles.empty}>
+              <p className={styles.emptyTitle}>Failed to load payments</p>
+
+              <p className={styles.emptyDescription}>Please try again later.</p>
+            </div>
+          ) : payments.length > 0 ? (
             <div className={styles.paymentGrid}>
-              {filteredPayments.map((payment) => (
+              {payments.map((payment) => (
                 <PaymentCard
                   key={payment.id}
                   payment={payment}

@@ -28,6 +28,10 @@ export class MemberSubscriptionService {
     const subscriptionIds =
       await this.memberSubscriptionRepository.findIdsForList(filters)
 
+    if (subscriptionIds.length === 0) {
+      return []
+    }
+
     return this.memberSubscriptionRepository.find({
       where: {
         id: { inq: subscriptionIds },

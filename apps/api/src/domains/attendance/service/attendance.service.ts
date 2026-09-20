@@ -1,7 +1,6 @@
 import { BindingScope, injectable } from '@loopback/core'
 import {
   Count,
-  Filter,
   FilterExcludingWhere,
   repository,
   Where,
@@ -9,7 +8,11 @@ import {
 import { HttpErrors } from '@loopback/rest'
 import { Attendance } from '../models'
 import { AttendanceRepository } from '../repositories'
-import { AttendanceListItem, AttendanceStats } from '../types'
+import {
+  AttendanceListFilters,
+  AttendanceListItem,
+  AttendanceStats,
+} from '../types'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class AttendanceService {
@@ -18,8 +21,20 @@ export class AttendanceService {
     private attendanceRepository: AttendanceRepository,
   ) {}
 
-  async find(filter?: Filter<Attendance>): Promise<AttendanceListItem[]> {
+  async find(filters?: AttendanceListFilters): Promise<AttendanceListItem[]> {
+    const attendanceIds =
+      await this.attendanceRepository.findIdsForList(filters)
+
+    if (attendanceIds.length === 0) {
+      return []
+    }
+
     const attendances = await this.attendanceRepository.find({
+      where: {
+        id: {
+          inq: attendanceIds,
+        },
+      },
       include: [
         {
           relation: 'member',
@@ -40,7 +55,7 @@ export class AttendanceService {
           },
         },
       ],
-      ...filter,
+      order: ['checkedInAt DESC'],
     })
 
     return attendances.map((attendance) => {

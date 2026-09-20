@@ -1,10 +1,9 @@
 import { service } from '@loopback/core'
-import { Count, CountSchema, Filter, Where } from '@loopback/repository'
+import { Count,  Where } from '@loopback/repository'
 import {
   api,
   del,
   get,
-  getModelSchemaRef,
   param,
   patch,
   post,
@@ -22,7 +21,11 @@ import {
   PaymentUpdateResponseSchema,
   UpdatePaymentRequestSchema,
 } from './payment.docs'
-import { PaymentListItem } from '../types'
+import {
+  PaymentListItem,
+  PaymentListMethod,
+  PaymentListStatus,
+} from '../types'
 
 @api({ basePath: '/payments' })
 export class PaymentController {
@@ -33,8 +36,16 @@ export class PaymentController {
 
   @get('/')
   @response(200, PaymentResponseSchema)
-  find(@param.filter(Payment) filter?: Filter<Payment>): Promise<PaymentListItem[]> {
-    return this.paymentService.find(filter)
+  find(
+    @param.query.string('search') search?: string,
+    @param.query.string('method') method?: string,
+    @param.query.string('status') status?: string,
+  ): Promise<PaymentListItem[]> {
+    return this.paymentService.find({
+      search,
+      method: method as PaymentListMethod | undefined,
+      status: status as PaymentListStatus | undefined,
+    })
   }
 
   @post('/')

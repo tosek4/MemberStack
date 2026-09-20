@@ -17,7 +17,7 @@ import { Payment } from '../../payment/models'
 import { PaymentRepository } from '../../payment/repositories'
 import { Attendance } from '../../attendance/models'
 import { AttendanceRepository } from '../../attendance/repositories'
-import { UserRelations } from '../types'
+import { UserListFilters, UserRelations } from '../types'
 
 export class UserRepository extends DefaultCrudRepository<
   User,
@@ -93,5 +93,62 @@ export class UserRepository extends DefaultCrudRepository<
       'attendances',
       this.attendances.inclusionResolver,
     )
+  }
+
+  async findIdsForList(filters?: UserListFilters): Promise<number[]> {
+    const search = filters?.search?.trim()
+    const role = filters?.role ?? 'all'
+    const status = filters?.status ?? 'all'
+    const params: unknown[] = []
+    const conditions: string[] = []
+
+    if (search) {
+      params.push(`%${search}%`)
+
+      conditions.push(`
+        (
+          u."firstname" ILIKE $${params.length}
+          OR u."lastname" ILIKE $${params.length}
+          OR u."email" ILIKE $${params.length}
+          OR u."phone" ILIKE $${params.length}
+        )
+      `)
+    }
+
+    if (status !== 'all') {
+      const dbStatus = status === 'active' ? true : false
+
+      params.push(dbStatus)
+
+      conditions.push(`
+        u."isactive" = $${params.length}
+      `)
+    }
+
+    if (role !== 'all') {
+      params.push(Number(role))
+
+      conditions.push(`
+        r."id" = $${params.length}
+      `)
+    }
+
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+
+    const query = `
+      SELECT u."id"
+      FROM "user" u
+      LEFT JOIN "role" r
+        ON u."roleid" = r."id"
+  
+      ${whereClause}
+  
+      ORDER BY u."createdat" DESC
+    `
+
+    const rows = await this.dataSource.execute(query, params)
+
+    return rows.map((row: { id: number }) => row.id)
   }
 }

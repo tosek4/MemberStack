@@ -3,6 +3,8 @@ import { MemberWithRelations } from '../../member/models'
 import { PaymentWithRelations } from '../../payment/models'
 import { RefreshTokenWithRelations } from '../../refresh-token/models'
 import { RoleWithRelations } from '../../role/models'
+export * from './dto'
+export * from './user-profile'
 
 export interface UserRelations {
   role?: RoleWithRelations
@@ -12,5 +14,10 @@ export interface UserRelations {
   attendances?: AttendanceWithRelations[]
 }
 
-export * from './dto'
-export * from './user-profile'
+export type UserStatus = 'active' | 'inactive'
+
+export interface UserListFilters {
+  search?: string
+  role?: string | 'all'
+  status?: UserStatus | 'all'
+}

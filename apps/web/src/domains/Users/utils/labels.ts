@@ -11,8 +11,10 @@ export const LABELS = {
   roles: {
     super_admin: 'Super Admin',
     admin: 'Administrator',
-    receptionist: 'Receptionist',
+    manager: 'Manager',
     trainer: 'Trainer',
+    receptionist: 'Receptionist',
+    member: 'Member',
   },
 
   statuses: {

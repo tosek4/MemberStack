@@ -1,41 +1,60 @@
 import { api } from '@/services'
-import { User, CreateUserPayload, UpdateUserPayload, Role } from '../types'
+import {
+  User,
+  CreateUserPayload,
+  UpdateUserPayload,
+  Role,
+  UserFilters,
+} from '../types'
 
-export const getUsers = async (): Promise<User[]> => {
-  const response = await api.get<User[]>('/users')
+export const userService = {
+  getUsers: async (filters?: UserFilters): Promise<User[]> => {
+    const params = new URLSearchParams()
 
-  return response.data
-}
+    if (filters?.search?.trim()) {
+      params.set('search', filters.search.trim())
+    }
 
-export const getUsersById = async (id: number): Promise<User> => {
-  const response = await api.get<User>(`/users/${id}`)
+    if (filters?.role && filters.role !== 'all') {
+      params.set('role', filters.role.toString())
+    }
 
-  return response.data
-}
+    if (filters?.status && filters.status !== 'all') {
+      params.set('status', filters.status)
+    }
 
-export const createUser = async (
-  data: CreateUserPayload,
-): Promise<CreateUserPayload> => {
-  const response = await api.post<CreateUserPayload>('/auth/register', data)
+    const query = params.toString()
 
-  return response.data
-}
+    const response = await api.get<User[]>(`/users${query ? `?${query}` : ''}`)
 
-export const updateUser = async (
-  id: number,
-  data: UpdateUserPayload,
-): Promise<User> => {
-  const response = await api.patch<User>(`/users/${id}`, data)
+    return response.data
+  },
 
-  return response.data
-}
+  getUsersById: async (id: number): Promise<User> => {
+    const response = await api.get<User>(`/users/${id}`)
 
-export const deleteUser = async (id: number): Promise<void> => {
-  await api.delete(`/users/${id}`)
-}
+    return response.data
+  },
 
-export const getRoles = async (): Promise<Role[]> => {
-  const response = await api.get<Role[]>('/roles')
+  createUser: async (data: CreateUserPayload): Promise<CreateUserPayload> => {
+    const response = await api.post<CreateUserPayload>('/auth/register', data)
 
-  return response.data
+    return response.data
+  },
+
+  updateUser: async (id: number, data: UpdateUserPayload): Promise<User> => {
+    const response = await api.patch<User>(`/users/${id}`, data)
+
+    return response.data
+  },
+
+  deleteUser: async (id: number): Promise<void> => {
+    await api.delete(`/users/${id}`)
+  },
+
+  getRoles: async (): Promise<Role[]> => {
+    const response = await api.get<Role[]>('/roles')
+
+    return response.data
+  },
 }

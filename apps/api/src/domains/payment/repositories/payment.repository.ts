@@ -12,7 +12,7 @@ import { MemberSubscription } from '../../member-subscription/models'
 import { MemberSubscriptionRepository } from '../../member-subscription/repositories'
 import { User } from '../../user/models'
 import { UserRepository } from '../../user/repositories'
-import { PaymentRelations } from '../types'
+import { PaymentListFilters, PaymentRelations } from '../types'
 
 export class PaymentRepository extends DefaultCrudRepository<
   Payment,
@@ -59,5 +59,63 @@ export class PaymentRepository extends DefaultCrudRepository<
       userRepositoryGetter,
     )
     this.registerInclusionResolver('createdBy', this.createdBy.inclusionResolver)
+  }
+
+  async findIdsForList(filters?: PaymentListFilters): Promise<number[]> {
+    const search = filters?.search?.trim()
+    const method = filters?.method ?? 'all'
+    const status = filters?.status ?? 'all'
+
+    const params: unknown[] = []
+    const conditions: string[] = []
+
+    if (search) {
+      params.push(`%${search}%`)
+
+      conditions.push(`
+      (
+        m."firstname" ILIKE $${params.length}
+        OR m."lastname" ILIKE $${params.length}
+        OR m."email" ILIKE $${params.length}
+      )
+    `)
+    }
+
+    if (method !== 'all') {
+      const dbMethod = method === 'bank-transfer' ? 'bank_transfer' : method
+
+      params.push(dbMethod)
+
+      conditions.push(`
+      p."paymentmethod" = $${params.length}
+    `)
+    }
+
+    if (status !== 'all') {
+      params.push(status)
+
+      conditions.push(`
+      p."status" = $${params.length}
+    `)
+    }
+
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+
+    const query = `
+    SELECT p."id"
+    FROM "payment" p
+
+    LEFT JOIN "member" m
+      ON p."memberid" = m."id"
+
+    ${whereClause}
+
+    ORDER BY p."paidat" DESC
+  `
+
+    const rows = await this.dataSource.execute(query, params)
+
+    return rows.map((row: { id: number }) => row.id)
   }
 }

@@ -10,7 +10,7 @@ import { HttpErrors } from '@loopback/rest'
 import { PasswordHasherService } from '../../auth/services/password-hasher.service'
 import { User } from '../models'
 import { UserRepository } from '../repositories'
-import { CreateUserDto, UpdateUserDto } from '../types'
+import { CreateUserDto, UpdateUserDto, UserListFilters } from '../types'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class UserService {
@@ -53,8 +53,21 @@ export class UserService {
     }
   }
 
-  find(filter?: Filter<User>): Promise<User[]> {
-    return this.userRepository.find(filter)
+  async find(filters?: UserListFilters): Promise<User[]> {
+    const userIds = await this.userRepository.findIdsForList(filters)
+
+    if (userIds.length === 0) {
+      return []
+    }
+
+    return this.userRepository.find({
+      where: {
+        id: {
+          inq: userIds,
+        },
+      },
+      include: ['role'],
+    })
   }
 
   async findById(

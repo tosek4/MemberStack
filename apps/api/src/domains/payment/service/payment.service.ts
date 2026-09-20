@@ -1,7 +1,6 @@
 import { BindingScope, injectable } from '@loopback/core'
 import {
   Count,
-  Filter,
   FilterExcludingWhere,
   repository,
   Where,
@@ -9,7 +8,7 @@ import {
 import { HttpErrors } from '@loopback/rest'
 import { Payment } from '../models'
 import { PaymentRepository } from '../repositories'
-import { PaymentListItem } from '../types'
+import { PaymentListFilters, PaymentListItem } from '../types'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class PaymentService {
@@ -22,8 +21,19 @@ export class PaymentService {
     return this.paymentRepository.create(data)
   }
 
-  async find(filter?: Filter<Payment>): Promise<PaymentListItem[]> {
+  async find(filters?: PaymentListFilters): Promise<PaymentListItem[]> {
+    const paymentIds = await this.paymentRepository.findIdsForList(filters)
+
+    if (paymentIds.length === 0) {
+      return []
+    }
+
     const payments = await this.paymentRepository.find({
+      where: {
+        id: {
+          inq: paymentIds,
+        },
+      },
       include: [
         'member',
         {
@@ -33,7 +43,7 @@ export class PaymentService {
           },
         },
       ],
-      ...filter,
+      order: ['paidAt DESC'],
     })
 
     return payments.map((payment) => {
