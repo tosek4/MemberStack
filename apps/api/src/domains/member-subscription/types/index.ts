@@ -9,3 +9,13 @@ export interface MemberSubscriptionRelations {
   createdBy?: UserWithRelations
   payments?: PaymentWithRelations[]
 }
+export type MemberSubscriptionStatus =
+  | 'active'
+  | 'inactive'
+  | 'expired'
+  | 'suspended'
+  | 'blocked'
+export interface MemberSubscriptionFilters {
+  search?: string
+  status?: MemberSubscriptionStatus
+}

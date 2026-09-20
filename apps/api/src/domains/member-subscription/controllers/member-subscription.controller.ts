@@ -19,6 +19,7 @@ import {
   MemberSubscriptionsResponseSchema,
   MemberSubscriptionUpdateResponseSchema,
 } from './member-subscription.docs'
+import { MemberSubscriptionStatus } from '../types'
 
 @api({ basePath: '/member-subscriptions' })
 export class MemberSubscriptionController {
@@ -30,9 +31,13 @@ export class MemberSubscriptionController {
   @get('/')
   @response(200, MemberSubscriptionsResponseSchema)
   find(
-    @param.filter(MemberSubscription) filter?: Filter<MemberSubscription>,
+    @param.query.string('search') search?: string,
+    @param.query.string('status') status?: string,
   ): Promise<MemberSubscription[]> {
-    return this.memberSubscriptionService.find(filter)
+    return this.memberSubscriptionService.find({
+      search,
+      status: status as MemberSubscriptionStatus | undefined,
+    })
   }
 
   @post('/')

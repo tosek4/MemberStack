@@ -1,22 +1,11 @@
 import React from 'react'
 import { Search } from 'lucide-react'
 
-import { SubscriptionFiltersProps, SubscriptionStatusFilter } from '../../types'
+import { SubscriptionFiltersProps } from '../../types'
 import { LABELS } from '../../utils/labels'
 
 import { styles } from './SubscriptionFilters.styled'
-
-const statusOptions: {
-  value: SubscriptionStatusFilter
-  label: string
-}[] = [
-  { value: 'all', label: LABELS.all },
-  { value: 'active', label: LABELS.active },
-  { value: 'inactive', label: LABELS.inactive },
-  { value: 'expired', label: LABELS.expired },
-  { value: 'suspended', label: LABELS.suspended },
-  { value: 'blocked', label: LABELS.blocked },
-]
+import { statusOptions } from './utils'
 
 export const SubscriptionFilters: React.FC<SubscriptionFiltersProps> = ({
   search,

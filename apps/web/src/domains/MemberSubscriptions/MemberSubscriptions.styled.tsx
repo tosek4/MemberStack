@@ -23,4 +23,6 @@ export const styles = {
   emptyTitle: 'text-base font-semibold text-gray-900 dark:text-white',
 
   emptyText: 'mt-1 text-sm text-gray-500 dark:text-gray-400',
+
+  searchLoading: 'ml-2 mb-4 h-4 w-4 text-gray-500 dark:text-gray-400',
 } as const

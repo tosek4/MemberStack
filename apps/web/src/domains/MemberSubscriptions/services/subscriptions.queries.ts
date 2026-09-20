@@ -1,25 +1,40 @@
-import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
-
 import {
-  createSubscription,
-  deleteSubscription,
-  getSubscriptionById,
-  getSubscriptions,
-  updateSubscription,
-} from './subscriptions.service'
-import { CreateSubscriptionPayload, UpdateSubscriptionPayload } from '../types'
+  keepPreviousData,
+  useMutation,
+  useQuery,
+  useQueryClient,
+} from '@tanstack/react-query'
 
-export const useSubscriptions = () => {
+import { subscriptionsService } from './subscriptions.service'
+import {
+  CreateSubscriptionPayload,
+  SubscriptionFilters,
+  UpdateSubscriptionPayload,
+} from '../types'
+
+export const subscriptionKeys = {
+  all: ['subscriptions'] as const,
+
+  lists: () => [...subscriptionKeys.all, 'list'] as const,
+
+  list: (filters: SubscriptionFilters) =>
+    [...subscriptionKeys.lists(), filters] as const,
+
+  detail: (id: number) => [...subscriptionKeys.all, 'detail', id] as const,
+}
+
+export const useSubscriptions = (filters?: SubscriptionFilters) => {
   return useQuery({
-    queryKey: ['subscriptions'],
-    queryFn: getSubscriptions,
+    queryKey: subscriptionKeys.list(filters ?? {}),
+    queryFn: () => subscriptionsService.getSubscriptions(filters),
+    placeholderData: keepPreviousData,
   })
 }
 
 export const useSubscription = (id: number) => {
   return useQuery({
-    queryKey: ['subscription', id],
-    queryFn: () => getSubscriptionById(id),
+    queryKey: subscriptionKeys.detail(id),
+    queryFn: () => subscriptionsService.getSubscriptionById(id),
     enabled: Number.isFinite(id),
   })
 }
@@ -28,12 +43,12 @@ export const useCreateSubscription = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: (data: CreateSubscriptionPayload) => 
-      createSubscription(data),
+    mutationFn: (data: CreateSubscriptionPayload) =>
+      subscriptionsService.createSubscription(data),
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['subscriptions'],
+        queryKey: subscriptionKeys.all,
       })
     },
   })
@@ -49,15 +64,15 @@ export const useUpdateSubscription = () => {
     }: {
       id: number
       data: UpdateSubscriptionPayload
-    }) => updateSubscription(id, data),
+    }) => subscriptionsService.updateSubscription(id, data),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
-        queryKey: ['subscriptions'],
+        queryKey: subscriptionKeys.lists(),
       })
 
       queryClient.invalidateQueries({
-        queryKey: ['subscription', variables.id],
+        queryKey: subscriptionKeys.detail(variables.id),
       })
     },
   })
@@ -67,11 +82,11 @@ export const useDeleteSubscription = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: deleteSubscription,
+    mutationFn: subscriptionsService.deleteSubscription,
 
     onSuccess: () => {
       queryClient.invalidateQueries({
-        queryKey: ['subscriptions'],
+        queryKey: subscriptionKeys.all,
       })
     },
   })

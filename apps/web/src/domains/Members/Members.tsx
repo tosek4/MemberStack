@@ -60,6 +60,9 @@ export const Members: React.FC = () => {
           onSearchChange={setSearch}
           onStatusChange={setStatus}
         />
+        {isFetching && !isPending && (
+          <div className={styles.searchLoading}>Searching...</div>
+        )}
 
         {isPending ? (
           <div className={styles.empty}>
@@ -89,10 +92,6 @@ export const Members: React.FC = () => {
               Try changing your search or filter.
             </p>
           </div>
-        )}
-
-        {isFetching && !isPending && (
-          <div className={styles.searchLoading}>Searching...</div>
         )}
       </div>
     </main>

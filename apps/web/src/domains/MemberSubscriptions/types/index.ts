@@ -87,3 +87,8 @@ export interface UpdateSubscriptionPayload {
   memberId?: number
   membershipPlanId?: number
 }
+
+export interface SubscriptionFilters {
+  search?: string
+  status?: SubscriptionStatusFilter
+}

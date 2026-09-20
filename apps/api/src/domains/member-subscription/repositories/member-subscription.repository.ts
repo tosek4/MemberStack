@@ -15,7 +15,10 @@ import { User } from '../../user/models'
 import { UserRepository } from '../../user/repositories'
 import { Payment } from '../../payment/models'
 import { PaymentRepository } from '../../payment/repositories'
-import { MemberSubscriptionRelations } from '../types'
+import {
+  MemberSubscriptionFilters,
+  MemberSubscriptionRelations,
+} from '../types'
 
 export class MemberSubscriptionRepository extends DefaultCrudRepository<
   MemberSubscription,
@@ -74,12 +77,66 @@ export class MemberSubscriptionRepository extends DefaultCrudRepository<
       'createdBy',
       userRepositoryGetter,
     )
-    this.registerInclusionResolver('createdBy', this.createdBy.inclusionResolver)
+    this.registerInclusionResolver(
+      'createdBy',
+      this.createdBy.inclusionResolver,
+    )
 
     this.payments = this.createHasManyRepositoryFactoryFor(
       'payments',
       paymentRepositoryGetter,
     )
     this.registerInclusionResolver('payments', this.payments.inclusionResolver)
+  }
+
+  async findIdsForList(filters?: MemberSubscriptionFilters): Promise<number[]> {
+    const search = filters?.search?.trim()
+    const status = filters?.status ?? 'all'
+
+    const params: unknown[] = []
+    const conditions: string[] = []
+
+    if (search) {
+      params.push(`%${search}%`)
+
+      conditions.push(`
+      (
+        m."firstname" ILIKE $${params.length}
+        OR m."lastname" ILIKE $${params.length}
+        OR m."email" ILIKE $${params.length}
+        OR mp."name" ILIKE $${params.length}
+      )
+    `)
+    }
+
+    if (status !== 'all') {
+      params.push(status)
+
+      conditions.push(`
+      ms."status" = $${params.length}
+    `)
+    }
+
+    const whereClause =
+      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+
+    const query = `
+    SELECT ms."id"
+    FROM "membersubscription" ms
+
+    LEFT JOIN "member" m
+      ON ms."memberid" = m."id"
+
+    LEFT JOIN "memberplan" mp
+      ON ms."membershipplanid" = mp."id"
+
+    ${whereClause}
+
+    ORDER BY mp."price" ASC
+  `
+
+    const rows = await this.dataSource.execute(query, params)
+
+    return rows.map((row: { id: number }) => row.id)
   }
 }

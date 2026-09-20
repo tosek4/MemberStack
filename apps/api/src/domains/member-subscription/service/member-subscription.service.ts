@@ -9,6 +9,7 @@ import {
 import { HttpErrors } from '@loopback/rest'
 import { MemberSubscription } from '../models'
 import { MemberSubscriptionRepository } from '../repositories'
+import { MemberSubscriptionFilters } from '../types'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class MemberSubscriptionService {
@@ -21,10 +22,18 @@ export class MemberSubscriptionService {
     return this.memberSubscriptionRepository.create(data)
   }
 
-  find(filter?: Filter<MemberSubscription>): Promise<MemberSubscription[]> {
+  async find(
+    filters?: MemberSubscriptionFilters,
+  ): Promise<MemberSubscription[]> {
+    const subscriptionIds =
+      await this.memberSubscriptionRepository.findIdsForList(filters)
+
     return this.memberSubscriptionRepository.find({
+      where: {
+        id: { inq: subscriptionIds },
+      },
       include: ['member', 'membershipPlan'],
-      ...filter,
+      order: ['id DESC'],
     })
   }
 

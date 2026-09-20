@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { Plus } from 'lucide-react'
 import { useRouter } from 'next/router'
 
@@ -12,6 +12,7 @@ import { MemberSubscription, SubscriptionStatusFilter } from './types'
 import { LABELS } from './utils/labels'
 import { styles } from './MemberSubscriptions.styled'
 import { useSubscriptions } from './services'
+import { useDebounce } from '@/hooks/useDebounce'
 
 export const MemberSubscriptions: React.FC = () => {
   const router = useRouter()
@@ -19,24 +20,17 @@ export const MemberSubscriptions: React.FC = () => {
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<SubscriptionStatusFilter>('all')
 
-  const { data: memberSubscriptions, isLoading, isError } = useSubscriptions()
+  const debouncedSearch = useDebounce(search, 400)
 
-  const filteredSubscriptions = useMemo(() => {
-    const normalizedSearch = search.toLowerCase().trim()
-
-    return memberSubscriptions?.filter((subscription) => {
-      const matchesSearch =
-        !normalizedSearch ||
-        subscription.member.firstName
-          .toLowerCase()
-          .includes(normalizedSearch) ||
-        subscription.member.lastName.toLowerCase().includes(normalizedSearch) ||
-        subscription.member.email.toLowerCase().includes(normalizedSearch)
-
-      const matchesStatus = status === 'all' || subscription.status === status
-      return matchesSearch && matchesStatus
-    })
-  }, [memberSubscriptions, search, status])
+  const {
+    data: memberSubscriptions,
+    isPending,
+    isFetching,
+    isError,
+  } = useSubscriptions({
+    search: debouncedSearch,
+    status,
+  })
 
   const handleView = (subscription: MemberSubscription) => {
     router.push(`/subscriptions/${subscription.id}`)
@@ -44,34 +38,6 @@ export const MemberSubscriptions: React.FC = () => {
 
   const handleRenew = (subscription: MemberSubscription) => {
     console.log('Renew subscription:', subscription)
-  }
-
-  if (isLoading) {
-    return (
-      <main className={styles.root}>
-        <div className={styles.container}>
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>Loading member subscriptions...</p>
-          </div>
-        </div>
-      </main>
-    )
-  }
-
-  if (isError) {
-    return (
-      <main className={styles.root}>
-        <div className={styles.container}>
-          <div className={styles.empty}>
-            <p className={styles.emptyTitle}>
-              Failed to load member subscriptions
-            </p>
-
-            <p className={styles.emptyText}>Please try again later.</p>
-          </div>
-        </div>
-      </main>
-    )
   }
 
   return (
@@ -101,15 +67,25 @@ export const MemberSubscriptions: React.FC = () => {
           onStatusChange={setStatus}
         />
 
-        {filteredSubscriptions?.length === 0 ? (
-          <div className={styles.empty}>
-            <h2 className={styles.emptyTitle}>{LABELS.emptyTitle}</h2>
+        {isFetching && !isPending && (
+          <div className={styles.searchLoading}>Searching...</div>
+        )}
 
-            <p className={styles.emptyText}>{LABELS.emptyText}</p>
+        {isPending ? (
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>Loading member subscriptions...</p>
           </div>
-        ) : (
+        ) : isError ? (
+          <div className={styles.empty}>
+            <p className={styles.emptyTitle}>
+              Failed to load member subscriptions
+            </p>
+
+            <p className={styles.emptyText}>Please try again later.</p>
+          </div>
+        ) : memberSubscriptions?.length > 0 ? (
           <div className={styles.grid}>
-            {filteredSubscriptions?.map((subscription) => (
+            {memberSubscriptions?.map((subscription) => (
               <SubscriptionCard
                 key={subscription.id}
                 subscription={subscription}
@@ -117,6 +93,12 @@ export const MemberSubscriptions: React.FC = () => {
                 onRenew={handleRenew}
               />
             ))}
+          </div>
+        ) : (
+          <div className={styles.empty}>
+            <h2 className={styles.emptyTitle}>{LABELS.emptyTitle}</h2>
+
+            <p className={styles.emptyText}>{LABELS.emptyText}</p>
           </div>
         )}
       </div>
