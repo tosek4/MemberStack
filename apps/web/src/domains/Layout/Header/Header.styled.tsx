@@ -1,5 +1,5 @@
 export const styles = {
-  root: 'flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-800',
+  root: 'fixed inset-x-0 top-0 z-50 flex h-16 items-center justify-between border-b border-gray-200 bg-white px-4 dark:border-gray-700 dark:bg-gray-800',
 
   left: {
     wrapper: 'flex items-center',

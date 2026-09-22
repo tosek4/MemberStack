@@ -1,6 +1,6 @@
 'use client'
 
-import React, { useState } from 'react'
+import React, { useEffect, useRef, useState } from 'react'
 import { ChevronDown, LogOut, Menu, Moon, Settings, Sun } from 'lucide-react'
 import { useRouter } from 'next/navigation'
 
@@ -17,6 +17,33 @@ export const Header: React.FC = () => {
 
   const [isDropdownOpen, setIsDropdownOpen] = useState(false)
 
+  const dropdownRef = useRef<HTMLDivElement>(null)
+
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node)
+      ) {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    const handleEscape = (event: KeyboardEvent) => {
+      if (event.key === 'Escape') {
+        setIsDropdownOpen(false)
+      }
+    }
+
+    document.addEventListener('mousedown', handleClickOutside)
+    document.addEventListener('keydown', handleEscape)
+
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside)
+      document.removeEventListener('keydown', handleEscape)
+    }
+  }, [])
+
   const initials = user?.firstName
     .split(' ')
     .map((name) => name.charAt(0))
@@ -25,7 +52,13 @@ export const Header: React.FC = () => {
     .toUpperCase()
 
   const handleClickEditProfile = () => {
+    setIsDropdownOpen(false)
     router.push('/profile')
+  }
+
+  const handleLogout = () => {
+    setIsDropdownOpen(false)
+    logout()
   }
 
   return (
@@ -52,7 +85,7 @@ export const Header: React.FC = () => {
         </button>
 
         {user && (
-          <div className={styles.right.user.wrapper}>
+          <div ref={dropdownRef} className={styles.right.user.wrapper}>
             <button
               type="button"
               className={styles.right.user.button}
@@ -62,10 +95,10 @@ export const Header: React.FC = () => {
 
               <div className={styles.right.user.info}>
                 <p className={styles.right.user.name}>
-                  {user?.firstName} {user?.lastName}
+                  {user.firstName} {user.lastName}
                 </p>
 
-                <p className={styles.right.user.role}>{user?.role?.name}</p>
+                <p className={styles.right.user.role}>{user.role?.name}</p>
               </div>
 
               <ChevronDown size={16} />
@@ -87,7 +120,7 @@ export const Header: React.FC = () => {
                 <button
                   type="button"
                   className={styles.right.dropdown.logout}
-                  onClick={logout}
+                  onClick={handleLogout}
                 >
                   <LogOut size={16} />
                   {LABELS.logout}

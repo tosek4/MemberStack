@@ -5,18 +5,16 @@ interface AppLayoutProps {
   children: React.ReactNode
 }
 
-export const AppLayout: React.FC<AppLayoutProps> = ({
-  children,
-}) => {
+export const AppLayout: React.FC<AppLayoutProps> = ({ children }) => {
   const { isOpen } = useSidebar()
 
   return (
-    <div
+    <main
       className={`min-h-screen transition-all duration-200 ${
         isOpen ? 'ml-64' : 'ml-0'
       }`}
     >
-      {children}
-    </div>
+      <div className="pt-16">{children}</div>
+    </main>
   )
 }
