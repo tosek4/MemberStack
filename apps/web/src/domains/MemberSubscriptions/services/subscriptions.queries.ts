@@ -11,6 +11,7 @@ import {
   SubscriptionFilters,
   UpdateSubscriptionPayload,
 } from '../types'
+import { PaymentMethod } from '@/components/PaymentMethodModal'
 
 export const subscriptionKeys = {
   all: ['subscriptions'] as const,
@@ -96,7 +97,13 @@ export const useRenewSubscription = () => {
   const queryClient = useQueryClient()
 
   return useMutation({
-    mutationFn: subscriptionsService.renewSubscription,
+    mutationFn: ({
+      id,
+      paymentMethod,
+    }: {
+      id: number
+      paymentMethod: PaymentMethod
+    }) => subscriptionsService.renewSubscription(id, paymentMethod),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({
@@ -104,7 +111,7 @@ export const useRenewSubscription = () => {
       })
 
       queryClient.invalidateQueries({
-        queryKey: subscriptionKeys.detail(variables),
+        queryKey: subscriptionKeys.detail(variables.id),
       })
     },
   })

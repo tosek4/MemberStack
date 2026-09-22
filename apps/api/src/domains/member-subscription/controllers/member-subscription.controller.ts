@@ -22,6 +22,7 @@ import {
 } from './member-subscription.docs'
 import { MemberSubscriptionStatus } from '../types'
 import { authenticate } from '@loopback/authentication'
+import { PaymentMethod } from '../../payment/types'
 
 @authenticate('jwt')
 @api({ basePath: '/member-subscriptions' })
@@ -47,7 +48,7 @@ export class MemberSubscriptionController {
   @response(200, CreateMemberSubscriptionResponseSchema)
   create(
     @requestBody(CreateMemberSubscriptionRequestSchema)
-    subscription: Omit<MemberSubscription, 'id'>,
+    subscription: Omit<MemberSubscription, 'id' | 'paymentMethod'>,
   ): Promise<MemberSubscription> {
     return this.memberSubscriptionService.create(subscription)
   }
@@ -82,7 +83,10 @@ export class MemberSubscriptionController {
 
   @post('/{id}/renew')
   @response(200, RenewMemberSubscriptionResponseSchema)
-  renewSubscription(@param.path.number('id') id: number): Promise<void> {
-    return this.memberSubscriptionService.renewSubscription(id)
+  renewSubscription(
+    @param.path.number('id') id: number,
+    @requestBody() paymentMethod: PaymentMethod,
+  ): Promise<void> {
+    return this.memberSubscriptionService.renewSubscription(id, paymentMethod)
   }
 }

@@ -1,3 +1,5 @@
+import { PaymentMethod } from '@/components/PaymentMethodModal'
+
 export type SubscriptionStatusFilter = 'all' | SubscriptionStatus
 
 export type SubscriptionStatus =
@@ -63,6 +65,7 @@ export interface AddSubscriptionFormData {
   planId: number
   startDate: string
   endDate: string
+  paymentMethod: PaymentMethod
 }
 
 export interface AddSubscriptionProps {
@@ -77,6 +80,7 @@ export interface CreateSubscriptionPayload {
   remainingVisits?: number | null
   memberId: number
   membershipPlanId: number
+  paymentMethod: PaymentMethod
 }
 
 export interface UpdateSubscriptionPayload {

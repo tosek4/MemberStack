@@ -12,6 +12,9 @@ import { MemberSubscriptionRepository } from '../repositories'
 import { MemberSubscriptionFilters } from '../types'
 import { SecurityBindings } from '@loopback/security'
 import { securityId, UserProfile } from '@loopback/security'
+import { PaymentMethod } from '../../payment/types'
+import { PaymentRepository } from '../../payment/repositories'
+import { MemberPlanRepository } from '../../member-plan/repositories'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class MemberSubscriptionService {
@@ -21,10 +24,44 @@ export class MemberSubscriptionService {
 
     @inject(SecurityBindings.USER)
     private readonly currentUser: UserProfile,
+
+    @repository(PaymentRepository)
+    private paymentRepository: PaymentRepository,
+
+    @repository(MemberPlanRepository)
+    private memberPlanRepository: MemberPlanRepository,
   ) {}
 
-  create(data: Omit<MemberSubscription, 'id'>): Promise<MemberSubscription> {
-    return this.memberSubscriptionRepository.create(data)
+  async create(
+    data: Omit<MemberSubscription, 'id' | 'paymentMethod'>,
+  ): Promise<MemberSubscription> {
+    const { paymentMethod, ...subscriptionData } = data as any
+    const memberPlan = await this.memberPlanRepository.findById(
+      subscriptionData.membershipPlanId,
+    )
+
+    if (memberPlan.status !== 'active') {
+      throw new HttpErrors.BadRequest(
+        `Cannot create subscription with plan status ${memberPlan.status}`,
+      )
+    }
+
+    const newSubscription =
+      await this.memberSubscriptionRepository.create(subscriptionData)
+    const currentDate = new Date()
+    const createdByUserId = Number(this.currentUser[securityId])
+
+    await this.paymentRepository.create({
+      memberId: newSubscription.memberId,
+      memberSubscriptionId: newSubscription.id!,
+      amount: memberPlan.price,
+      paymentMethod,
+      status: 'paid',
+      paidAt: currentDate,
+      createdByUserId,
+    })
+
+    return newSubscription
   }
 
   async find(
@@ -77,12 +114,15 @@ export class MemberSubscriptionService {
     await this.memberSubscriptionRepository.deleteById(id)
   }
 
-  async renewSubscription(id: number): Promise<void> {
+  async renewSubscription(
+    id: number,
+    paymentMethod: PaymentMethod,
+  ): Promise<void> {
     const subscription = await this.findById(id)
 
-    if (subscription.status !== 'active') {
+    if (subscription.membershipPlan?.status !== 'active') {
       throw new HttpErrors.BadRequest(
-        `Cannot renew subscription with status ${subscription.status}`,
+        `Cannot renew subscription with plan status ${subscription.membershipPlan?.status}`,
       )
     }
 
@@ -103,13 +143,23 @@ export class MemberSubscriptionService {
     const newExpiryDate = new Date(currentDate)
     newExpiryDate.setDate(newExpiryDate.getDate() + durationInDays)
 
-    await this.memberSubscriptionRepository.create({
+    const newSubscription = await this.memberSubscriptionRepository.create({
       memberId: subscription.memberId,
       membershipPlanId: subscription.membershipPlanId,
       startedAt: currentDate,
       expiresAt: newExpiryDate,
       status: 'active',
       createdByUserId: createdByUserId,
+    })
+
+    await this.paymentRepository.create({
+      memberId: subscription.memberId,
+      memberSubscriptionId: newSubscription.id!,
+      amount: subscription.membershipPlan?.price,
+      paymentMethod,
+      status: 'paid',
+      paidAt: currentDate,
+      createdByUserId,
     })
   }
 }

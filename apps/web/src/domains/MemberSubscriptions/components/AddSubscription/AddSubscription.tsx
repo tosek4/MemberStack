@@ -10,7 +10,7 @@ import { useCreateSubscription } from '../../services'
 import { useMembers } from '@/domains/Members/services'
 import { useMembershipPlans } from '@/domains/MembershipPlans/services'
 import { getCurrentDate } from '@/utils/dateFormat'
-import { addDays } from './utils'
+import { addDays, paymentMethods } from './utils'
 import { Member } from '@/domains/Members/types'
 
 export const AddSubscription: React.FC = () => {
@@ -33,6 +33,7 @@ export const AddSubscription: React.FC = () => {
       membershipPlanId: undefined,
       startDate: getCurrentDate(),
       endDate: '',
+      paymentMethod: 'cash',
     },
   })
 
@@ -165,6 +166,7 @@ export const AddSubscription: React.FC = () => {
         startedAt: new Date(`${data.startDate}T00:00:00.000Z`).toISOString(),
         expiresAt: new Date(`${data.endDate}T23:59:59.999Z`).toISOString(),
         status: 'active',
+        paymentMethod: data.paymentMethod,
       },
       {
         onSuccess: () => {
@@ -263,39 +265,57 @@ export const AddSubscription: React.FC = () => {
               <p className={styles.error}>{errors.memberId.message}</p>
             )}
           </div>
+          <div className={styles.row}>
+            <div className={styles.field}>
+              <label htmlFor="membership-plan" className={styles.label}>
+                Membership plan
+              </label>
 
-          {/* Membership plan */}
-          <div className={styles.field}>
-            <label htmlFor="membership-plan" className={styles.label}>
-              Membership plan
-            </label>
-
-            <select
-              id="membership-plan"
-              {...register('membershipPlanId', {
-                required: 'Membership plan is required',
-                valueAsNumber: true,
-              })}
-              onChange={handlePlanChange}
-              className={styles.input}
-              disabled={isLoading || !selectedMember}
-            >
-              <option value="">
-                {selectedMember
-                  ? 'Select a membership plan'
-                  : 'Select a member first'}
-              </option>
-
-              {activePlans.map((plan) => (
-                <option key={plan.id} value={plan.id}>
-                  {plan.name} — €{plan.price} / {plan.duration} days
+              <select
+                id="membership-plan"
+                {...register('membershipPlanId', {
+                  required: 'Membership plan is required',
+                  valueAsNumber: true,
+                })}
+                onChange={handlePlanChange}
+                className={styles.input}
+                disabled={isLoading || !selectedMember}
+              >
+                <option value="">
+                  {selectedMember
+                    ? 'Select a membership plan'
+                    : 'Select a member first'}
                 </option>
-              ))}
-            </select>
 
-            {errors.membershipPlanId && (
-              <p className={styles.error}>{errors.membershipPlanId.message}</p>
-            )}
+                {activePlans.map((plan) => (
+                  <option key={plan.id} value={plan.id}>
+                    {plan.name} — €{plan.price} / {plan.duration} days
+                  </option>
+                ))}
+              </select>
+
+              {errors.membershipPlanId && (
+                <p className={styles.error}>
+                  {errors.membershipPlanId.message}
+                </p>
+              )}
+            </div>{' '}
+            <div className={styles.field}>
+              <label className={styles.label}>Payment Method</label>
+              <select
+                {...register('paymentMethod', {
+                  required: 'Payment method is required',
+                })}
+                className={styles.input}
+                disabled={isLoading}
+              >
+                {paymentMethods.map((method) => (
+                  <option key={method.value} value={method.value}>
+                    {method.label}
+                  </option>
+                ))}
+              </select>
+            </div>
           </div>
 
           {/* Dates */}

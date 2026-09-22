@@ -1,7 +1,7 @@
 import { useMutation, useQuery, useQueryClient } from '@tanstack/react-query'
 
 import { CreateMembershipPlanPayload, UpdateMembershipPlanData } from '../types'
-import { membershipPlansService } from './membershipPlan.service'
+import { membershipPlansService } from './membershipPlans.service'
 
 export const membershipPlanKeys = {
   all: ['membership-plans'] as const,

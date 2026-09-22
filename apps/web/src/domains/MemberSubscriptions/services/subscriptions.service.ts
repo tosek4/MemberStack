@@ -5,6 +5,7 @@ import {
   SubscriptionFilters,
   UpdateSubscriptionPayload,
 } from '../types'
+import { PaymentMethod } from '@/components/PaymentMethodModal'
 
 export const subscriptionsService = {
   getSubscriptions: async (
@@ -64,7 +65,10 @@ export const subscriptionsService = {
     await api.delete(`/member-subscriptions/${id}`)
   },
 
-  renewSubscription: async (id: number): Promise<void> => {
-    await api.post(`/member-subscriptions/${id}/renew`)
+  renewSubscription: async (
+    id: number,
+    paymentMethod: PaymentMethod,
+  ): Promise<void> => {
+    await api.post(`/member-subscriptions/${id}/renew`, paymentMethod)
   },
 }

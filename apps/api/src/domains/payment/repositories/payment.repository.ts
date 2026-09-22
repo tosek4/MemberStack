@@ -26,7 +26,10 @@ export class PaymentRepository extends DefaultCrudRepository<
     typeof Payment.prototype.id
   >
 
-  public readonly createdBy: BelongsToAccessor<User, typeof Payment.prototype.id>
+  public readonly createdBy: BelongsToAccessor<
+    User,
+    typeof Payment.prototype.id
+  >
 
   constructor(
     @inject('datasources.postgres') dataSource: PostgresDataSource,
@@ -58,7 +61,10 @@ export class PaymentRepository extends DefaultCrudRepository<
       'createdBy',
       userRepositoryGetter,
     )
-    this.registerInclusionResolver('createdBy', this.createdBy.inclusionResolver)
+    this.registerInclusionResolver(
+      'createdBy',
+      this.createdBy.inclusionResolver,
+    )
   }
 
   async findIdsForList(filters?: PaymentListFilters): Promise<number[]> {
@@ -82,7 +88,7 @@ export class PaymentRepository extends DefaultCrudRepository<
     }
 
     if (method !== 'all') {
-      const dbMethod = method === 'bank-transfer' ? 'bank_transfer' : method
+      const dbMethod = method === 'bank_transfer' ? 'bank_transfer' : method
 
       params.push(dbMethod)
 

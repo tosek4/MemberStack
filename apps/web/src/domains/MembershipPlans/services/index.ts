@@ -1,2 +1,2 @@
-export * from './membershipPlan.service'
+export * from './membershipPlans.service'
 export * from './membershipPlans.queries'

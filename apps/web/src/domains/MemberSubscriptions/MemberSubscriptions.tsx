@@ -13,12 +13,18 @@ import { LABELS } from './utils/labels'
 import { styles } from './MemberSubscriptions.styled'
 import { useRenewSubscription, useSubscriptions } from './services'
 import { useDebounce } from '@/hooks/useDebounce'
+import { PaymentMethod } from '@/components/PaymentMethodModal'
+import { PaymentMethodModal } from '@/components/PaymentMethodModal/PaymentMethodModal'
 
 export const MemberSubscriptions: React.FC = () => {
   const router = useRouter()
 
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<SubscriptionStatusFilter>('all')
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false)
+  const [selectedSubscriptionId, setSelectedSubscriptionId] = useState<
+    number | null
+  >(null)
 
   const debouncedSearch = useDebounce(search, 400)
 
@@ -38,8 +44,28 @@ export const MemberSubscriptions: React.FC = () => {
     router.push(`/subscriptions/${subscription.id}`)
   }
 
-  const handleRenew = (subscriptionId: number) => {
-    renewSubscription.mutate(subscriptionId)
+  const handleOpenPaymentModal = (subscriptionId: number) => {
+    setSelectedSubscriptionId(subscriptionId)
+    setPaymentModalOpen(true)
+  }
+
+  const handleRenew = (paymentMethod: PaymentMethod) => {
+    if (!selectedSubscriptionId) {
+      return
+    }
+
+    renewSubscription.mutate(
+      {
+        id: selectedSubscriptionId,
+        paymentMethod,
+      },
+      {
+        onSuccess: () => {
+          setPaymentModalOpen(false)
+          setSelectedSubscriptionId(null)
+        },
+      },
+    )
   }
 
   return (
@@ -92,7 +118,7 @@ export const MemberSubscriptions: React.FC = () => {
                 key={subscription.id}
                 subscription={subscription}
                 onView={handleView}
-                onRenew={handleRenew}
+                onRenew={handleOpenPaymentModal}
               />
             ))}
           </div>
@@ -104,6 +130,16 @@ export const MemberSubscriptions: React.FC = () => {
           </div>
         )}
       </div>
+      <PaymentMethodModal
+        open={paymentModalOpen}
+        onClose={() => {
+          setPaymentModalOpen(false)
+          setSelectedSubscriptionId(null)
+        }}
+        onConfirm={(paymentMethod) => {
+          handleRenew(paymentMethod)
+        }}
+      />{' '}
     </main>
   )
 }

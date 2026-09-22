@@ -15,6 +15,7 @@ export class Payment extends Entity {
 
   @property({
     type: 'number',
+    required: true,
   })
   amount?: number
 
