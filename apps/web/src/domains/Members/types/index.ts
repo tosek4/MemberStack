@@ -1,4 +1,4 @@
-export type MemberStatus = 'active' | 'expiring' | 'expired' | 'no-subscription'
+export type MemberStatus = 'active' | 'expiring' | 'expired' | 'noSubscription'
 
 export type MemberStatusFilter = 'all' | MemberStatus
 

@@ -21,7 +21,7 @@ export const statusOptions: {
     label: 'Expired',
   },
   {
-    value: 'no-subscription',
+    value: 'noSubscription',
     label: 'No subscription',
   },
 ]

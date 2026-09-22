@@ -4,28 +4,8 @@ import { ChevronRight } from 'lucide-react'
 import { MemberCardProps, MemberStatus } from '../../types'
 import { styles } from './MemberCard.styled'
 import { LABELS } from '../../utils/labels'
-
-const statusStyles: Record<MemberStatus, string> = {
-  active: styles.status.active,
-  expiring: styles.status.expiring,
-  expired: styles.status.expired,
-  'no-subscription': styles.status.noSubscription,
-}
-
-const statusLabels: Record<MemberStatus, string> = {
-  active: LABELS.active,
-  expiring: LABELS.expiring,
-  expired: LABELS.expired,
-  'no-subscription': LABELS.noSubscription,
-}
-
-const getInitials = (name: string) =>
-  name
-    .split(' ')
-    .map((part) => part.charAt(0))
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
+import { getInitials } from '@/utils/textTransform'
+import { StatusBadge } from '@/components/StatusBadge'
 
 export const MemberCard: React.FC<MemberCardProps> = ({ member, onView }) => {
   const status = member.status as MemberStatus
@@ -57,9 +37,7 @@ export const MemberCard: React.FC<MemberCardProps> = ({ member, onView }) => {
           </div>
         </div>
 
-        <span className={`${styles.status.base} ${statusStyles[status]}`}>
-          {statusLabels[status]}
-        </span>
+        <StatusBadge value={status} />
       </div>
 
       <div className={styles.details.wrapper}>

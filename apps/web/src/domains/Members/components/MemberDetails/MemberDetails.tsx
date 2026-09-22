@@ -116,13 +116,10 @@ export const MemberDetails: React.FC = () => {
             </div>
 
             <div>
-              <p className={styles.details.label}>Plan</p>
+              <p className={styles.details.label}>Member status</p>
 
-              <p className={styles.details.value}>
-                {subscription?.membershipPlan?.name ?? '—'}
-              </p>
+              <p className={styles.details.value}>{member.status}</p>
             </div>
-
             <div>
               <p className={styles.details.label}>Start date</p>
 
@@ -144,9 +141,11 @@ export const MemberDetails: React.FC = () => {
             </div>
 
             <div>
-              <p className={styles.details.label}>Member status</p>
+              <p className={styles.details.label}>Plan</p>
 
-              <p className={styles.details.value}>{member.status}</p>
+              <p className={styles.details.value}>
+                {subscription?.membershipPlan?.name ?? '—'}
+              </p>
             </div>
 
             <div>

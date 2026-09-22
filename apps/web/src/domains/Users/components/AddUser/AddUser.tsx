@@ -22,6 +22,9 @@ export const AddUser: React.FC = () => {
     isError: rolesError,
   } = useRoles()
 
+  const staffRoles = roles.filter(
+    (role) => role.name !== 'admin' && role.name !== 'superAdmin',
+  )
   const { mutateAsync: createUser, isPending: isCreating } = useCreateUser()
 
   const onSubmit = async (data: AddUserFormData) => {
@@ -126,7 +129,7 @@ export const AddUser: React.FC = () => {
               {rolesLoading ? 'Loading roles...' : 'Select role'}
             </option>
 
-            {roles.map((role) => (
+            {staffRoles.map((role) => (
               <option key={role.id} value={role.id}>
                 {role.name}
               </option>

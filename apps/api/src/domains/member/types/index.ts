@@ -39,7 +39,7 @@ export type MemberListStatus =
   | 'active'
   | 'expiring'
   | 'expired'
-  | 'no-subscription'
+  | 'noSubscription'
 
 export interface MemberListFilters {
   search?: string

@@ -3,6 +3,7 @@ export interface MembershipPlanFormData {
   price: number
   duration: number
   description: string
+  status: 'active' | 'inactive'
 }
 
 export interface MembershipPlanFormProps {

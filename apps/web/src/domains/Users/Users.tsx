@@ -37,13 +37,12 @@ export const Users: React.FC = () => {
     total: users.length,
     active: users.filter((user) => user.isActive).length,
     administrators: users.filter(
-      (user) => user.role === 'admin' || user.role === 'super_admin',
+      (user) => user.role?.name === 'admin' || user.role?.name === 'super_admin',
     ).length,
-    receptionists: users.filter((user) => user.role === 'receptionist').length,
+    receptionists: users.filter((user) => user.role?.name === 'receptionist').length,
   }
 
   const handleToggleStatus = (user: { id: number; status: boolean }) => {
-    console.log('user', user)
     // setUsers((currentUsers) =>
     //   currentUsers.map((currentUser) =>
     //     currentUser.id === user.id

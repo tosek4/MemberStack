@@ -19,8 +19,7 @@ import { useState } from 'react'
 
 export const Dashboard = () => {
   const [period, setPeriod] = useState('7d')
-  const currentDate = new Date()
-  console.log('currentDate', currentDate)
+
   const { data: overview } = useDashboardOverview()
   const { data: memberActivity = [] } = useDashboardMemberActivity(period)
   const { data: attendance = [] } = useDashboardAttendance('2026-09')

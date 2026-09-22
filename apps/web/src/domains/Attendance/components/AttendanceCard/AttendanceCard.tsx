@@ -2,20 +2,12 @@ import React from 'react'
 import type { AttendanceCardProps } from '../../types'
 import { ATTENDANCE_STATUS_LABELS } from '../../utils/labels'
 import { styles } from './AttendanceCard.styled'
+import { getInitials } from '@/utils/textTransform'
 
 export const AttendanceCard: React.FC<AttendanceCardProps> = ({
   attendance,
   onCheckOut,
 }) => {
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((part) => part[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase()
-  }
-
   const formatTime = (date: string) => {
     return new Intl.DateTimeFormat('en-GB', {
       hour: '2-digit',

@@ -127,7 +127,7 @@ export class MemberRepository extends DefaultCrudRepository<
     `)
     }
 
-    if (status === 'no-subscription') {
+    if (status === 'noSubscription') {
       conditions.push(`
       latest_subscription."id" IS NULL
     `)

@@ -39,7 +39,6 @@ export const paymentsService = {
   },
 
   create: async (data: CreatePaymentPayload): Promise<Payment> => {
-    console.log('data', data)
     const response = await api.post('/payments', data)
 
     return response.data

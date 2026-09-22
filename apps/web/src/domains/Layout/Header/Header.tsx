@@ -8,6 +8,7 @@ import { useSidebar, useAuth, useTheme } from '@providers'
 
 import { styles } from './Header.styled'
 import { LABELS } from './utils/labels'
+import { getInitials } from '@/utils/textTransform'
 
 export const Header: React.FC = () => {
   const { toggleSidebar } = useSidebar()
@@ -44,12 +45,7 @@ export const Header: React.FC = () => {
     }
   }, [])
 
-  const initials = user?.firstName
-    .split(' ')
-    .map((name) => name.charAt(0))
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
+  const initials = getInitials(user?.firstName as string)
 
   const handleClickEditProfile = () => {
     setIsDropdownOpen(false)

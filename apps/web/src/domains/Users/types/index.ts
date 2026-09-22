@@ -8,7 +8,7 @@ export interface User {
   lastName: string
   email: string
   phone?: string
-  role: UserRole
+  role: Role
   isActive: boolean
   lastLogin?: string
   avatar?: string

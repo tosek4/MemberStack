@@ -5,6 +5,7 @@ import { MembershipPlanCardProps } from '../../types'
 
 import { styles } from './MembershipPlanCard.styled'
 import { LABELS } from '../../utils/labels'
+import { StatusBadge } from '@/components/StatusBadge'
 
 export const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
   plan,
@@ -12,8 +13,6 @@ export const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
   onDelete,
   openDeleteModal,
 }) => {
-  const isActive = plan.status === 'active'
-
   return (
     <article className={styles.root}>
       <div className={styles.header.wrapper}>
@@ -21,13 +20,7 @@ export const MembershipPlanCard: React.FC<MembershipPlanCardProps> = ({
           <div className={styles.header.titleRow}>
             <h2 className={styles.header.title}>{plan.name}</h2>
 
-            <span
-              className={`${styles.status.base} ${
-                isActive ? styles.status.active : styles.status.inactive
-              }`}
-            >
-              {isActive ? LABELS.active : LABELS.inactive}
-            </span>
+            <StatusBadge value={plan.status} />
           </div>
 
           {plan.description && (

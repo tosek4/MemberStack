@@ -2,7 +2,6 @@ import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 
 import { MembershipPlanFormData, MembershipPlanFormProps } from './types'
-
 import { styles } from './MembershipPlanForm.styled'
 
 import {
@@ -28,10 +27,13 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
     price: initialValues?.price ?? 0,
     duration: initialValues?.duration ?? 0,
     description: initialValues?.description ?? '',
+    status: initialValues?.status ?? 'active',
   })
 
   const handleChange = (
-    e: React.ChangeEvent<HTMLInputElement | HTMLTextAreaElement>,
+    e: React.ChangeEvent<
+      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
+    >,
   ) => {
     const { name, value } = e.target
 
@@ -54,11 +56,11 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
     event.preventDefault()
 
     const data = {
-      name: form.name,
+      name: form.name.trim(),
       price: form.price,
       duration: form.duration,
-      description: form.description || undefined,
-      status: 'active' as const,
+      description: form.description.trim() || undefined,
+      status: form.status,
     }
 
     if (isEdit) {
@@ -114,6 +116,7 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
             onChange={handleChange}
             value={form.price}
             type="number"
+            min="0"
             step="0.01"
             className={styles.input}
             placeholder="40"
@@ -132,10 +135,31 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
             onChange={handleChange}
             value={form.duration}
             type="number"
+            min="1"
             className={styles.input}
             placeholder="30"
             disabled={isPending}
           />
+        </div>
+      </div>
+
+      <div className={styles.row}>
+        <div className={styles.field}>
+          <label htmlFor="plan-status" className={styles.label}>
+            Status
+          </label>
+
+          <select
+            id="plan-status"
+            name="status"
+            value={form.status}
+            onChange={handleChange}
+            className={styles.input}
+            disabled={isPending}
+          >
+            <option value="active">Active</option>
+            <option value="inactive">Inactive</option>
+          </select>
         </div>
       </div>
 

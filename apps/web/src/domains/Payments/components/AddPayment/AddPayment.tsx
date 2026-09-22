@@ -43,7 +43,7 @@ export const AddPayment: React.FC = () => {
       transactionReference: '',
     },
   })
-  console.log('getCurrentDate', getCurrentDate())
+
   const {
     data: members = [],
     isLoading: membersLoading,

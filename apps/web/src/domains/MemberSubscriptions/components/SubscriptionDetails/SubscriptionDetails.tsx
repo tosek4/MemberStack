@@ -6,6 +6,8 @@ import { SubscriptionDetailsProps } from './types'
 import { styles } from './SubscriptionDetails.styled'
 import { LABELS } from '../../utils/labels'
 import { formatDate } from '../../../../utils/dateFormat'
+import { StatusBadge } from '@/components/StatusBadge'
+import { getInitials } from '../../../../utils/textTransform'
 
 export const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
   subscription,
@@ -22,28 +24,8 @@ export const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
 
     router.push('/subscriptions')
   }
-  const statusStyles = {
-    active: styles.status.active,
-    inactive: styles.status.inactive,
-    expired: styles.status.expired,
-    suspended: styles.status.suspended,
-    blocked: styles.status.blocked,
-  }
 
-  const statusLabels = {
-    active: LABELS.active,
-    inactive: LABELS.inactive,
-    expired: LABELS.expired,
-    suspended: LABELS.suspended,
-    blocked: LABELS.blocked,
-  }
-
-  const initials = subscription.member.firstName
-    .split(' ')
-    .map((name) => name.charAt(0))
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
+  const initials = getInitials(subscription.member.firstName)
 
   return (
     <main className={styles.root}>
@@ -82,13 +64,7 @@ export const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
                 </p>
               </div>
 
-              <span
-                className={`${styles.status} ${
-                  statusStyles[subscription.status]
-                }`}
-              >
-                {statusLabels[subscription.status]}
-              </span>
+              <StatusBadge value={subscription.status} />
             </div>
           </section>
 

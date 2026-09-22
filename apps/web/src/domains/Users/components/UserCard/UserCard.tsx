@@ -3,36 +3,15 @@ import React from 'react'
 import { LABELS } from '../../utils/labels'
 import { UserCardProps } from './types'
 import { styles } from './UserCard.styled'
-
-const getInitials = (name: string) =>
-  name
-    .split(' ')
-    .map((part) => part.charAt(0))
-    .join('')
-    .slice(0, 2)
-    .toUpperCase()
-
-const getRoleStyle = (role: UserCardProps['user']['role']) => {
-  switch (role) {
-    case 'super_admin':
-      return styles.role.superAdmin
-
-    case 'admin':
-      return styles.role.admin
-
-    case 'receptionist':
-      return styles.role.receptionist
-
-    case 'trainer':
-      return styles.role.trainer
-  }
-}
+import { getInitials } from '@/utils/textTransform'
+import { StatusBadge } from '@/components/StatusBadge/StatusBadge'
 
 export const UserCard: React.FC<UserCardProps> = ({
   user,
   onEdit,
   onToggleStatus,
 }) => {
+  const status = user.isActive ? 'active' : 'inactive'
   return (
     <div className={styles.card.root}>
       <div className={styles.card.header}>
@@ -58,19 +37,15 @@ export const UserCard: React.FC<UserCardProps> = ({
           </div>
         </div>
 
-        <span
-          className={`${styles.card.status.base} ${
-            user.isActive === true
-              ? styles.card.status.active
-              : styles.card.status.inactive
-          }`}
-        >
-          {LABELS.statuses[user.isActive === true ? 'active' : 'inactive']}
-        </span>
+        <StatusBadge value={status} />
       </div>
 
-      <span className={`${styles.role.base} ${getRoleStyle(user.role)}`}>
-        {LABELS.roles[user.role]}
+      <span
+        className={`${styles.role.base} ${styles.role[user.role?.name as keyof typeof styles.role]}`}
+      >
+        {user.role?.name
+          ? LABELS.roles[user.role.name as keyof typeof LABELS.roles]
+          : 'Unknown role'}
       </span>
 
       <div className={styles.details.wrapper}>

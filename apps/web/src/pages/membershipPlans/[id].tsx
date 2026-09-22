@@ -42,6 +42,7 @@ export default function EditMembershipPlanPage() {
           price: membershipPlan.price,
           duration: membershipPlan.duration,
           description: membershipPlan.description ?? '',
+          status: membershipPlan.status,
         }}
       />
     </main>

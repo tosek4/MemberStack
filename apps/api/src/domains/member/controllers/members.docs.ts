@@ -64,8 +64,6 @@ const createMemberSchema: SchemaObject = {
     'phone',
     'birthDate',
     'gender',
-    'emergency_contact',
-    'profile_image',
     'status',
   ],
   properties: {
@@ -85,12 +83,6 @@ const createMemberSchema: SchemaObject = {
       type: 'string',
     },
     gender: {
-      type: 'string',
-    },
-    emergency_contact: {
-      type: 'string',
-    },
-    profile_image: {
       type: 'string',
     },
     status: {

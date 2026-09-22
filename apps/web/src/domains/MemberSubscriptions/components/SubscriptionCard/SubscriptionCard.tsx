@@ -6,39 +6,20 @@ import { SubscriptionCardProps } from '../../types'
 import { styles } from './SubscriptionCard.styled'
 import { LABELS } from '../../utils/labels'
 import { formatDate } from '@/utils/dateFormat'
+import { StatusBadge } from '@/components/StatusBadge'
+import { getInitials } from '@/utils/textTransform'
 
 export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
   subscription,
   onView,
   onRenew,
 }) => {
-  const statusStyles = {
-    active: styles.status.active,
-    inactive: styles.status.inactive,
-    expired: styles.status.expired,
-    suspended: styles.status.suspended,
-    blocked: styles.status.blocked,
-  }
-
-  const statusLabels = {
-    active: LABELS.active,
-    inactive: LABELS.inactive,
-    expired: LABELS.expired,
-    suspended: LABELS.suspended,
-    blocked: LABELS.blocked,
-  }
-
   return (
     <article className={styles.root}>
       <div className={styles.header.wrapper}>
         <div className={styles.member.wrapper}>
           <div className={styles.member.avatar}>
-            {subscription.member.firstName
-              .split(' ')
-              .map((name) => name.charAt(0))
-              .join('')
-              .slice(0, 2)
-              .toUpperCase()}
+            {getInitials(subscription.member.firstName)}
           </div>
 
           <div className={styles.member.info}>
@@ -50,20 +31,16 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
           </div>
         </div>
 
-        <span
-          className={`${styles.status.base} ${
-            statusStyles[subscription.status]
-          }`}
-        >
-          {statusLabels[subscription.status]}
-        </span>
+        <StatusBadge value={subscription.status} />
       </div>
 
       <div className={styles.plan.wrapper}>
         <div>
           <p className={styles.plan.label}>{LABELS.plan}</p>
 
-          <p className={styles.plan.name}>{subscription.membershipPlan?.name}</p>
+          <p className={styles.plan.name}>
+            {subscription.membershipPlan?.name}
+          </p>
         </div>
 
         <div className={styles.plan.price}>

@@ -3,20 +3,12 @@ import type { PaymentCardProps } from './types'
 
 import { styles } from './PaymentCard.styled'
 import { formatDate } from '@/utils/dateFormat'
+import { getInitials } from '@/utils/textTransform'
 
 export const PaymentCard: React.FC<PaymentCardProps> = ({
   payment,
   onView,
 }) => {
-  const getInitials = (name: string) => {
-    return name
-      .split(' ')
-      .map((part) => part[0])
-      .join('')
-      .slice(0, 2)
-      .toUpperCase()
-  }
-
   const statusClassName = {
     paid: styles.badge.paid,
     pending: styles.badge.pending,
