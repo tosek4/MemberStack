@@ -44,6 +44,8 @@ import { PAYMENT_SERVICE } from './domains/payment/keys'
 import { PaymentService } from './domains/payment/service'
 import { RoleService } from './domains/role/service'
 import { ROLES_SERVICE } from './domains/role/keys'
+import { DashboardService } from './domains/dashboard/services/dashboard.service'
+import { DASHBOARD_SERVICE } from './domains/dashboard/keys'
 
 export { ApplicationConfig }
 export class MemberstackApiApplication extends BootMixin(
@@ -115,8 +117,8 @@ export class MemberstackApiApplication extends BootMixin(
     this.bind(MEMBER_SUBSCRIPTION_SERVICE).toClass(MemberSubscriptionService)
     this.bind(ATTENDANCE_SERVICE).toClass(AttendanceService)
     this.bind(PAYMENT_SERVICE).toClass(PaymentService)
-
     this.bind(ROLES_SERVICE).toClass(RoleService)
+    this.bind(DASHBOARD_SERVICE).toClass(DashboardService)
   }
 
   setupComponents() {

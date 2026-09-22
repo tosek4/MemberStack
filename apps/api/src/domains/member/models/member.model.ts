@@ -77,6 +77,13 @@ export class Member extends Entity {
   })
   status: MemberStatus
 
+  @property({
+    type: 'date',
+    defaultFn: 'now',
+    required: true,
+  })
+  createdAt: Date
+
   // relations
   @belongsTo(() => User, { name: 'createdBy' })
   createdByUserId: number
