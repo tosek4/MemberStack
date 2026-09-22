@@ -21,7 +21,9 @@ import {
   MemberUpdateResponseSchema,
   UpdateMemberRequestSchema,
 } from './members.docs'
+import { authenticate } from '@loopback/authentication'
 
+@authenticate('jwt')
 @api({ basePath: '/members' })
 export class MemberController {
   constructor(

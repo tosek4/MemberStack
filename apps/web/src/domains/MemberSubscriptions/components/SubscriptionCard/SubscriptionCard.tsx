@@ -87,7 +87,7 @@ export const SubscriptionCard: React.FC<SubscriptionCardProps> = ({
         <button
           type="button"
           className={styles.actions.renew}
-          onClick={() => onRenew?.(subscription)}
+          onClick={() => onRenew?.(subscription?.id)}
         >
           <RefreshCw size={16} />
           {LABELS.renew}

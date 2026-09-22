@@ -23,7 +23,9 @@ import {
   MemberPlanUpdateResponseSchema,
   UpdateMemberPlanRequestSchema,
 } from './member-plan.docs'
+import { authenticate } from '@loopback/authentication'
 
+@authenticate('jwt')
 @api({ basePath: '/member-plans' })
 @authorize({
   allowedRoles: [AppRole.ADMIN, AppRole.SUPER_ADMIN],

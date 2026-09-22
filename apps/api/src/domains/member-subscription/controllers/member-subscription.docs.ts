@@ -105,3 +105,11 @@ export const UpdateMemberSubscriptionRequestSchema = {
   },
   required: true,
 }
+
+export const RenewMemberSubscriptionResponseSchema = {
+  responses: {
+    '200': {
+      description: 'MemberSubscription RENEW success',
+    },
+  },
+}

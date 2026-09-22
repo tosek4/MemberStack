@@ -18,9 +18,12 @@ import {
   MemberSubscriptionGetByIdResponseSchema,
   MemberSubscriptionsResponseSchema,
   MemberSubscriptionUpdateResponseSchema,
+  RenewMemberSubscriptionResponseSchema,
 } from './member-subscription.docs'
 import { MemberSubscriptionStatus } from '../types'
+import { authenticate } from '@loopback/authentication'
 
+@authenticate('jwt')
 @api({ basePath: '/member-subscriptions' })
 export class MemberSubscriptionController {
   constructor(
@@ -75,5 +78,11 @@ export class MemberSubscriptionController {
   @response(204, { description: 'MemberSubscription DELETE success' })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.memberSubscriptionService.deleteById(id)
+  }
+
+  @post('/{id}/renew')
+  @response(200, RenewMemberSubscriptionResponseSchema)
+  renewSubscription(@param.path.number('id') id: number): Promise<void> {
+    return this.memberSubscriptionService.renewSubscription(id)
   }
 }

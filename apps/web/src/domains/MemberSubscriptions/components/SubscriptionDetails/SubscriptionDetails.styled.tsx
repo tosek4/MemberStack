@@ -11,7 +11,7 @@ export const styles = {
   },
 
   backButton:
-    'rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800',
+    'justify-center flex items-center gap-2 rounded-lg border border-gray-300 px-4 py-2 text-sm font-medium text-gray-700 transition hover:bg-gray-50 dark:border-gray-700 dark:text-gray-300 dark:hover:bg-gray-800',
 
   card: 'rounded-xl border border-gray-200 bg-white p-6 shadow-sm dark:border-gray-800 dark:bg-gray-900',
 
@@ -48,7 +48,7 @@ export const styles = {
   actions: {
     wrapper: 'mt-6 flex justify-end gap-3',
     renew:
-      'rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50',
+      'rounded-lg bg-cyan-600 px-4 py-2 text-sm font-medium text-white transition hover:bg-cyan-700 disabled:cursor-not-allowed disabled:opacity-50 justify-center flex items-center gap-2',
   },
   status: {
     base: 'shrink-0 rounded-full px-2.5 py-1 text-xs font-medium',

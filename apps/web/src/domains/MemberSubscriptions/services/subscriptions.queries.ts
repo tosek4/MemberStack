@@ -91,3 +91,21 @@ export const useDeleteSubscription = () => {
     },
   })
 }
+
+export const useRenewSubscription = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: subscriptionsService.renewSubscription,
+
+    onSuccess: (_, variables) => {
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.lists(),
+      })
+
+      queryClient.invalidateQueries({
+        queryKey: subscriptionKeys.detail(variables),
+      })
+    },
+  })
+}

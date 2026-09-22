@@ -13,7 +13,9 @@ import {
 } from '@loopback/rest'
 import { Role } from '../models'
 import { RoleService } from '../service'
+import { authenticate } from '@loopback/authentication'
 
+@authenticate('jwt')
 @api({ basePath: 'roles' })
 export class RoleController {
   constructor(

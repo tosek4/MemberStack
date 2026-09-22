@@ -8,6 +8,7 @@ import { LABELS } from '../../utils/labels'
 import { formatDate } from '../../../../utils/dateFormat'
 import { StatusBadge } from '@/components/StatusBadge'
 import { getInitials } from '../../../../utils/textTransform'
+import { useRenewSubscription } from '../../services'
 
 export const SubscriptionDetails: React.FC<SubscriptionDetailsProps> = ({
   subscription,

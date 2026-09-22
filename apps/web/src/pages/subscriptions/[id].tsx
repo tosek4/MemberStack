@@ -2,7 +2,10 @@ import React from 'react'
 import { useRouter } from 'next/router'
 
 import { SubscriptionDetails } from '@domain/MemberSubscriptions/components/SubscriptionDetails'
-import { useSubscription } from '@/domains/MemberSubscriptions/services'
+import {
+  useRenewSubscription,
+  useSubscription,
+} from '@/domains/MemberSubscriptions/services'
 
 export default function SubscriptionDetailsPage() {
   const router = useRouter()
@@ -14,6 +17,13 @@ export default function SubscriptionDetailsPage() {
     isLoading,
     isError,
   } = useSubscription(subscriptionId)
+
+  const renewSubscription = useRenewSubscription()
+
+  const handleRenew = (subscriptionId: number) => {
+    renewSubscription.mutate(subscriptionId)
+    router.push('/subscriptions')
+  }
 
   if (!router.isReady) {
     return null
@@ -40,9 +50,7 @@ export default function SubscriptionDetailsPage() {
     <SubscriptionDetails
       subscription={subscription}
       onBack={() => router.push('/subscriptions')}
-      onRenew={() => {
-        console.log('Renew subscription:', subscription.id)
-      }}
+      onRenew={() => handleRenew(subscription.id)}
     />
   )
 }

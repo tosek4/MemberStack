@@ -63,4 +63,8 @@ export const subscriptionsService = {
   deleteSubscription: async (id: number): Promise<void> => {
     await api.delete(`/member-subscriptions/${id}`)
   },
+
+  renewSubscription: async (id: number): Promise<void> => {
+    await api.post(`/member-subscriptions/${id}/renew`)
+  },
 }

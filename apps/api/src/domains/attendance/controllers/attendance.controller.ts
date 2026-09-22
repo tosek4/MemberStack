@@ -28,7 +28,9 @@ import {
   AttendanceListStatus,
   AttendanceStats,
 } from '../types'
+import { authenticate } from '@loopback/authentication'
 
+@authenticate('jwt')
 @api({ basePath: '/attendances' })
 export class AttendanceController {
   constructor(

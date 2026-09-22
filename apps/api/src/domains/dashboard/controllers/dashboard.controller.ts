@@ -11,7 +11,9 @@ import {
   DashboardPeriod,
   DashboardRecentPayment,
 } from '../types/index'
+import { authenticate } from '@loopback/authentication'
 
+@authenticate('jwt')
 @api({ basePath: '/dashboard' })
 export class DashboardController {
   constructor(

@@ -47,7 +47,7 @@ export interface MemberSubscription {
 export interface SubscriptionCardProps {
   subscription: MemberSubscription
   onView?: (subscription: MemberSubscription) => void
-  onRenew?: (subscription: MemberSubscription) => void
+  onRenew?: (subscriptionId: number) => void
 }
 
 export interface SubscriptionFiltersProps {
@@ -59,7 +59,7 @@ export interface SubscriptionFiltersProps {
 
 export interface AddSubscriptionFormData {
   memberId: number
-  membershipPlanId: number
+  membershipPlanId?: number
   planId: number
   startDate: string
   endDate: string

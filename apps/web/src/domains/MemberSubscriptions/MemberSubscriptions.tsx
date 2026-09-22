@@ -11,7 +11,7 @@ import { MemberSubscription, SubscriptionStatusFilter } from './types'
 
 import { LABELS } from './utils/labels'
 import { styles } from './MemberSubscriptions.styled'
-import { useSubscriptions } from './services'
+import { useRenewSubscription, useSubscriptions } from './services'
 import { useDebounce } from '@/hooks/useDebounce'
 
 export const MemberSubscriptions: React.FC = () => {
@@ -32,12 +32,14 @@ export const MemberSubscriptions: React.FC = () => {
     status,
   })
 
+  const renewSubscription = useRenewSubscription()
+
   const handleView = (subscription: MemberSubscription) => {
     router.push(`/subscriptions/${subscription.id}`)
   }
 
-  const handleRenew = (subscription: MemberSubscription) => {
-    console.log('Renew subscription:', subscription)
+  const handleRenew = (subscriptionId: number) => {
+    renewSubscription.mutate(subscriptionId)
   }
 
   return (

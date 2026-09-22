@@ -1,5 +1,5 @@
 import { service } from '@loopback/core'
-import { Count,  Where } from '@loopback/repository'
+import { Count, Where } from '@loopback/repository'
 import {
   api,
   del,
@@ -21,12 +21,10 @@ import {
   PaymentUpdateResponseSchema,
   UpdatePaymentRequestSchema,
 } from './payment.docs'
-import {
-  PaymentListItem,
-  PaymentListMethod,
-  PaymentListStatus,
-} from '../types'
+import { PaymentListItem, PaymentListMethod, PaymentListStatus } from '../types'
+import { authenticate } from '@loopback/authentication'
 
+@authenticate('jwt')
 @api({ basePath: '/payments' })
 export class PaymentController {
   constructor(
