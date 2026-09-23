@@ -1,0 +1,20 @@
+export declare const LABELS: {
+    readonly title: "Subscriptions";
+    readonly subtitle: "Manage member subscriptions and membership periods";
+    readonly addSubscription: "Add subscription";
+    readonly active: "Active";
+    readonly inactive: "Inactive";
+    readonly expiring: "Expiring soon";
+    readonly expired: "Expired";
+    readonly suspended: "Suspended";
+    readonly blocked: "Blocked";
+    readonly all: "All subscriptions";
+    readonly plan: "Plan";
+    readonly startDate: "Start date";
+    readonly endDate: "End date";
+    readonly view: "View";
+    readonly renew: "Renew";
+    readonly searchPlaceholder: "Search member by name or email...";
+    readonly emptyTitle: "No subscriptions found";
+    readonly emptyText: "There are no subscriptions matching your current filters.";
+};

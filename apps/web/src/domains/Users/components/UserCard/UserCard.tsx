@@ -77,12 +77,17 @@ export const UserCard: React.FC<UserCardProps> = ({
 
         <button
           type="button"
-          className={`${styles.actions.button} ${styles.actions.toggle}`}
+          className={`${styles.actions.button} ${
+            user.isActive ? styles.actions.deactivate : styles.actions.activate
+          }`}
           onClick={() =>
-            onToggleStatus?.({ id: user.id, status: !user.isActive })
+            onToggleStatus?.({
+              id: user.id,
+              isActive: !user.isActive,
+            })
           }
         >
-          {user.isActive === true ? LABELS.deactivate : LABELS.activate}
+          {user.isActive ? LABELS.deactivate : LABELS.activate}
         </button>
       </div>
     </div>

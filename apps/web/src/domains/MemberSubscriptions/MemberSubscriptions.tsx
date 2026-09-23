@@ -139,7 +139,7 @@ export const MemberSubscriptions: React.FC = () => {
         onConfirm={(paymentMethod) => {
           handleRenew(paymentMethod)
         }}
-      />{' '}
+      />
     </main>
   )
 }

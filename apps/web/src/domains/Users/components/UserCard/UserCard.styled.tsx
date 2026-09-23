@@ -54,7 +54,6 @@ export const styles = {
     trainer:
       'bg-orange-100 text-orange-800 dark:bg-orange-900/30 dark:text-orange-300',
   },
-
   actions: {
     wrapper:
       'mt-5 flex gap-2 border-t border-gray-100 pt-4 dark:border-gray-700',
@@ -63,7 +62,10 @@ export const styles = {
 
     edit: 'text-gray-700 hover:bg-gray-100 dark:text-gray-200 dark:hover:bg-gray-700',
 
-    toggle:
+    activate:
+      'text-green-600 hover:bg-green-50 dark:text-green-400 dark:hover:bg-green-900/20',
+
+    deactivate:
       'text-red-600 hover:bg-red-50 dark:text-red-400 dark:hover:bg-red-900/20',
   },
 } as const

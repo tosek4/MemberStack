@@ -1,4 +1,4 @@
-import React from 'react'
+import React, { useState } from 'react'
 import { useRouter } from 'next/router'
 
 import { SubscriptionDetails } from '@domain/MemberSubscriptions/components/SubscriptionDetails'
@@ -6,11 +6,14 @@ import {
   useRenewSubscription,
   useSubscription,
 } from '@/domains/MemberSubscriptions/services'
+import { PaymentMethodModal } from '@/components/PaymentMethodModal/PaymentMethodModal'
+import { PaymentMethod } from '@/components/PaymentMethodModal'
 
 export default function SubscriptionDetailsPage() {
   const router = useRouter()
   const { id } = router.query
   const subscriptionId = Number(id)
+  const [paymentModalOpen, setPaymentModalOpen] = useState(false)
 
   const {
     data: subscription,
@@ -20,8 +23,8 @@ export default function SubscriptionDetailsPage() {
 
   const renewSubscription = useRenewSubscription()
 
-  const handleRenew = (subscriptionId: number) => {
-    renewSubscription.mutate(subscriptionId)
+  const handleRenew = (paymentMethod: PaymentMethod) => {
+    renewSubscription.mutate({ id: subscriptionId, paymentMethod })
     router.push('/subscriptions')
   }
 
@@ -47,10 +50,21 @@ export default function SubscriptionDetailsPage() {
   }
 
   return (
-    <SubscriptionDetails
-      subscription={subscription}
-      onBack={() => router.push('/subscriptions')}
-      onRenew={() => handleRenew(subscription.id)}
-    />
+    <>
+      <SubscriptionDetails
+        subscription={subscription}
+        onBack={() => router.push('/subscriptions')}
+        onRenew={() => setPaymentModalOpen(true)}
+      />
+      <PaymentMethodModal
+        open={paymentModalOpen}
+        onClose={() => {
+          setPaymentModalOpen(false)
+        }}
+        onConfirm={(paymentMethod) => {
+          handleRenew(paymentMethod)
+        }}
+      />
+    </>
   )
 }

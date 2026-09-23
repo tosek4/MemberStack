@@ -12,6 +12,7 @@ export interface User {
   isActive: boolean
   lastLogin?: string
   avatar?: string
+  roleId: number
 }
 
 export interface UserFilters {
@@ -27,7 +28,7 @@ export interface CreateUserPayload {
   email: string
   phone?: string
   roleId: number
-  status: boolean
+  isActive: boolean
   lastLogin?: string
   avatar?: string
 }
@@ -38,7 +39,7 @@ export interface UpdateUserPayload {
   email?: string
   phone?: string
   roleId?: number
-  status?: boolean
+  isActive?: boolean
   lastLogin?: string
   avatar?: string
 }

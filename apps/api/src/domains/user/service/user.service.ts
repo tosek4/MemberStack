@@ -94,7 +94,6 @@ export class UserService {
   }
 
   async updateById(id: number, data: UpdateUserDto): Promise<void> {
-    await this.findById(id)
     const { password, ...rest } = data
 
     const update: Partial<User> = {

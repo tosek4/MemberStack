@@ -99,7 +99,7 @@ export const AddPayment: React.FC = () => {
       shouldValidate: true,
     })
 
-    const activePlanId = member?.activeSubscription?.membershipPlan?.id
+    const activePlanId = member?.latestSubscription?.membershipPlan?.id
 
     if (activePlanId) {
       handlePlanChange(String(activePlanId))
@@ -219,9 +219,9 @@ export const AddPayment: React.FC = () => {
                       )}
                     </div>
 
-                    {member.activeSubscription && (
+                    {member.latestSubscription && (
                       <span className={styles.memberPlan}>
-                        {member?.activeSubscription?.membershipPlan?.name}
+                        {member?.latestSubscription?.membershipPlan?.name}
                       </span>
                     )}
                   </button>
@@ -268,7 +268,7 @@ export const AddPayment: React.FC = () => {
               </option>
             ))}
           </select>
-          {selectedMember?.activeSubscription && (
+          {selectedMember?.latestSubscription && (
             <div className={styles.currentSubscription}>
               <div>
                 <span className={styles.currentSubscriptionLabel}>
@@ -276,14 +276,14 @@ export const AddPayment: React.FC = () => {
                 </span>
 
                 <span className={styles.currentSubscriptionPlan}>
-                  {selectedMember.activeSubscription?.membershipPlan?.name}
+                  {selectedMember.latestSubscription?.membershipPlan?.name}
                 </span>
               </div>
 
               <div className={styles.currentSubscriptionDate}>
                 Valid until{' '}
                 {new Date(
-                  selectedMember.activeSubscription.expiresAt,
+                  selectedMember.latestSubscription.expiresAt,
                 ).toLocaleDateString('en-GB')}
               </div>
             </div>

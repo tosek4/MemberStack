@@ -6,7 +6,7 @@ import { UserCard } from './components'
 import { LABELS } from './utils/labels'
 import { styles } from './Users.styled'
 import { UserFilters } from './components/UserFilters/UserFilters'
-import { useRoles, useUsers } from './services'
+import { useRoles, useUpdateUser, useUsers } from './services'
 import { useDebounce } from '@/hooks/useDebounce'
 
 export const Users: React.FC = () => {
@@ -33,29 +33,30 @@ export const Users: React.FC = () => {
 
   const { data: roles = [] } = useRoles()
 
+  const updateUser = useUpdateUser()
+
   const stats = {
     total: users.length,
     active: users.filter((user) => user.isActive).length,
     administrators: users.filter(
-      (user) => user.role?.name === 'admin' || user.role?.name === 'super_admin',
+      (user) =>
+        user.role?.name === 'admin' || user.role?.name === 'super_admin',
     ).length,
-    receptionists: users.filter((user) => user.role?.name === 'receptionist').length,
+    receptionists: users.filter((user) => user.role?.name === 'receptionist')
+      .length,
   }
 
-  const handleToggleStatus = (user: { id: number; status: boolean }) => {
-    // setUsers((currentUsers) =>
-    //   currentUsers.map((currentUser) =>
-    //     currentUser.id === user.id
-    //       ? {
-    //           ...currentUser,
-    //           status: currentUser.status === 'active' ? 'inactive' : 'active',
-    //         }
-    //       : currentUser,
-    //   ),
-    // )
+  const handleToggleStatus = (user: { id: number; isActive: boolean }) => {
+    updateUser.mutate({
+      id: user.id,
+      data: {
+        isActive: user.isActive,
+      },
+    })
   }
 
   const handleEdit = (user: User) => {
+    router.push(`/users/${user.id}`)
     console.log('Edit staff member:', user)
   }
 

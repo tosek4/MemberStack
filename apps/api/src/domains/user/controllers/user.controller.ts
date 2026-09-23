@@ -98,7 +98,7 @@ export class UserController {
     await this.userService.deleteById(id)
   }
 
-  @patch('{id}')
+  @patch('/{id}')
   @response(204, updateUserByIdResponseSchema)
   async updateById(
     @param.path.number('id') id: number,
