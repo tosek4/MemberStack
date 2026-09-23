@@ -12,7 +12,11 @@ import {
 } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberService } from '../service'
-import { MemberListItem, MemberListStatus } from '../types'
+import {
+  MemberAvailableForCheckIn,
+  MemberListItem,
+  MemberListStatus,
+} from '../types'
 import {
   CreateMemberRequestSchema,
   CreateMemberResponseSchema,
@@ -40,6 +44,11 @@ export class MemberController {
       search,
       status: status as MemberListStatus | undefined,
     })
+  }
+
+  @get('/availableForCheckIn')
+  getAllAvailableForCheckInMembers(): Promise<MemberAvailableForCheckIn[]> {
+    return this.memberService.getAllAvailableForCheckInMembers()
   }
 
   @post('/')

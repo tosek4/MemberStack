@@ -23,7 +23,7 @@ export const AttendanceFilters: React.FC<AttendanceFiltersProps> = ({
   return (
     <div className={styles.container}>
       <div className={styles.search.wrapper}>
-        <Search size={18} className={styles.search.icon} />
+        <Search className={styles.search.icon} />
 
         <input
           type="text"

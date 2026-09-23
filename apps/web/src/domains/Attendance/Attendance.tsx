@@ -1,5 +1,5 @@
 import React, { useState } from 'react'
-import { Users, UserCheck, LogIn, LogOut } from 'lucide-react'
+import { Users, LogIn } from 'lucide-react'
 
 import { AttendanceCard, AttendanceFilters, CheckIn } from './components'
 
@@ -48,7 +48,11 @@ export const Attendance: React.FC = () => {
       status: 'checked-in' as const,
     }
 
-    createAttendance.mutate(formattedData)
+    createAttendance.mutate(formattedData, {
+      onSuccess: () => {
+        setCheckInModalOpen(false)
+      },
+    })
   }
 
   const handleCheckOut = (id: number) => {
@@ -123,72 +127,10 @@ export const Attendance: React.FC = () => {
           >
             <LogIn size={18} />
             Check In Member
-          </button>{' '}
+          </button>
         </header>
 
         <section className={styles.stats}>
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <Users size={20} />
-            </div>
-
-            <div>
-              <p className={styles.statLabel}>Today&apos;s Visits</p>
-
-              <p className={styles.statValue}>
-                {attendanceStats?.totalVisits || 0}
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <UserCheck size={20} />
-            </div>
-
-            <div>
-              <p className={styles.statLabel}>Currently In Gym</p>
-
-              <p className={styles.statValue}>
-                {attendanceStats?.currentlyInGym || 0}
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <LogIn size={20} />
-            </div>
-
-            <div>
-              <p className={styles.statLabel}>Check-ins</p>
-
-              <p className={styles.statValue}>
-                {attendanceStats?.checkIns || 0}
-              </p>
-            </div>
-          </div>
-
-          <div className={styles.statCard}>
-            <div className={styles.statIcon}>
-              <LogOut size={20} />
-            </div>
-
-            <div>
-              <p className={styles.statLabel}>Check-outs</p>
-
-              <p className={styles.statValue}>
-                {attendanceStats?.checkOuts || 0}
-              </p>
-            </div>
-          </div>
-        </section>
-
-        <section className={styles.history}>
-          <div className={styles.sectionHeader}>
-            <h2 className={styles.sectionTitle}>Attendance History</h2>
-          </div>
-
           <AttendanceFilters
             search={search}
             status={status}
@@ -199,6 +141,26 @@ export const Attendance: React.FC = () => {
             onToday={handleToday}
             onYesterday={handleYesterday}
           />
+
+          <div className={styles.statCard}>
+            <div className={styles.statIcon}>
+              <Users size={20} />
+            </div>
+
+            <div>
+              <p className={styles.statLabel}>Total Visits</p>
+
+              <p className={styles.statValue}>
+                {attendanceStats?.totalVisits || 0}
+              </p>
+            </div>
+          </div>
+        </section>
+
+        <section className={styles.history}>
+          <div className={styles.sectionHeader}>
+            <h2 className={styles.sectionTitle}>Attendance History</h2>
+          </div>
 
           {isFetching && !isPending && (
             <p className={styles.emptyText}>Searching...</p>

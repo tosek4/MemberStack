@@ -66,3 +66,14 @@ export interface MemberFilters {
   search?: string
   status?: MemberStatusFilter
 }
+
+export interface MemberAvailableForCheckIn {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  status: string
+  subscriptionExpiresAt: Date
+  planName: string
+  planDescription?: string
+}

@@ -1,9 +1,8 @@
 export const styles = {
   container:
-    'flex flex-col gap-3 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800 md:flex-row md:items-center md:justify-between',
-
+    'flex flex-col gap-4 rounded-xl border border-gray-200 bg-white p-4 shadow-sm dark:border-gray-700 dark:bg-gray-800',
   search: {
-    wrapper: 'relative flex w-full md:max-w-md',
+    wrapper: 'relative flex w-full ',
 
     icon: 'pointer-events-none absolute left-3 top-1/2 -translate-y-1/2 text-gray-400',
 

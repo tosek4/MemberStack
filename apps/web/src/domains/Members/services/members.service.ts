@@ -3,6 +3,7 @@ import { api } from '@/services/api'
 import {
   CreateMemberPayload,
   Member,
+  MemberAvailableForCheckIn,
   MemberFilters,
   UpdateMemberData,
 } from '../types'
@@ -48,5 +49,14 @@ export const membersService = {
 
   delete: async (id: number): Promise<void> => {
     await api.delete(`/members/${id}`)
+  },
+
+  getAllAvailableForCheckInMembers: async (): Promise<
+    MemberAvailableForCheckIn[]
+  > => {
+    const availableMembers = await api.get<MemberAvailableForCheckIn[]>(
+      '/members/availableForCheckIn',
+    )
+    return availableMembers.data
   },
 }

@@ -1,7 +1,7 @@
-import React, { useMemo, useState } from 'react'
+import React, { useState } from 'react'
 import { Search, X } from 'lucide-react'
 import { useForm } from 'react-hook-form'
-import { useMembers } from '@/domains/Members/services'
+import { useGetAllAvailableForCheckInMembers } from '@/domains/Members/services'
 import type { CheckInFormData, CheckInProps } from '../../types'
 import { styles } from './CheckIn.styled'
 
@@ -26,37 +26,13 @@ export const CheckIn: React.FC<CheckInProps> = ({
     data: members = [],
     isLoading: membersLoading,
     isError: membersError,
-  } = useMembers()
+  } = useGetAllAvailableForCheckInMembers()
 
   const selectedMemberId = watch('memberId')
-
-  const filteredMembers = useMemo(() => {
-    const normalizedSearch = search.toLowerCase().trim()
-
-    return members.filter((member) => {
-      if (!member.activeSubscription) {
-        return false
-      }
-
-      if (!normalizedSearch) {
-        return true
-      }
-
-      const fullName = `${member.firstName} ${member.lastName}`.toLowerCase()
-
-      return (
-        fullName.includes(normalizedSearch) ||
-        member.email.toLowerCase().includes(normalizedSearch) ||
-        member.phone?.includes(normalizedSearch)
-      )
-    })
-  }, [members, search])
 
   const selectedMember = members.find(
     (member) => member.id === selectedMemberId,
   )
-
-  const selectedSubscription = selectedMember?.activeSubscription
 
   if (!open) {
     return null
@@ -139,13 +115,13 @@ export const CheckIn: React.FC<CheckInProps> = ({
             </div>
 
             <div className={styles.memberList}>
-              {filteredMembers.length === 0 && !membersLoading && (
+              {members.length === 0 && !membersLoading && (
                 <div className={styles.emptyState}>
                   No active members found.
                 </div>
               )}
 
-              {filteredMembers.map((member) => {
+              {members.map((member) => {
                 const isSelected = member.id === selectedMemberId
 
                 return (
@@ -165,10 +141,6 @@ export const CheckIn: React.FC<CheckInProps> = ({
 
                       <span className={styles.memberEmail}>{member.email}</span>
                     </div>
-
-                    <span className={styles.memberPlan}>
-                      {member?.activeSubscription?.membershipPlan?.name}
-                    </span>
                   </button>
                 )
               })}
@@ -187,7 +159,7 @@ export const CheckIn: React.FC<CheckInProps> = ({
             )}
           </div>
 
-          {selectedMember && selectedSubscription && (
+          {selectedMember && (
             <div className={styles.subscription}>
               <div className={styles.subscriptionHeader}>
                 <span className={styles.subscriptionTitle}>
@@ -200,7 +172,7 @@ export const CheckIn: React.FC<CheckInProps> = ({
                   <span className={styles.subscriptionLabel}>Plan</span>
 
                   <span className={styles.subscriptionValue}>
-                    {selectedSubscription?.membershipPlan?.name}
+                    {selectedMember?.planName}
                   </span>
                 </div>
 
@@ -209,20 +181,29 @@ export const CheckIn: React.FC<CheckInProps> = ({
 
                   <span className={styles.subscriptionValue}>
                     {new Date(
-                      selectedSubscription.expiresAt,
+                      selectedMember?.subscriptionExpiresAt,
                     ).toLocaleDateString('en-GB')}
+                  </span>
+                </div>
+
+                <div>
+                  <span className={styles.subscriptionLabel}>Status</span>
+
+                  <span className={styles.subscriptionValue}>
+                    {selectedMember?.status}
+                  </span>
+                </div>
+                <div>
+                  <span className={styles.subscriptionLabel}>Description</span>
+
+                  <span className={styles.subscriptionValue}>
+                    {selectedMember?.planDescription || 'N/A'}
                   </span>
                 </div>
               </div>
 
               <input type="hidden" />
             </div>
-          )}
-
-          {selectedMember && !selectedSubscription && (
-            <p className={styles.error}>
-              This member does not have an active subscription.
-            </p>
           )}
 
           <div className={styles.actions}>
@@ -238,7 +219,7 @@ export const CheckIn: React.FC<CheckInProps> = ({
             <button
               type="submit"
               className={styles.button}
-              disabled={isLoading || !selectedMember || !selectedSubscription}
+              disabled={isLoading || !selectedMember}
             >
               {loading ? 'Checking In...' : 'Check In'}
             </button>

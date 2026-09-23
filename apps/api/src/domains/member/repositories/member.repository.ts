@@ -163,4 +163,37 @@ export class MemberRepository extends DefaultCrudRepository<
 
     return rows.map((row: { id: number }) => row.id)
   }
+
+  async findAvailableForCheckInMembers(): Promise<Member[]> {
+    return this.dataSource.execute(`
+    SELECT
+      m.id,
+      m.firstname AS "firstName",
+      m.lastname AS "lastName",
+      m.email,
+      ms.status AS "subscriptionStatus",
+      ms.expiresat AS "subscriptionExpiresAt",
+      mp.name AS "planName",
+      mp.description AS "planDescription"
+    FROM "member" m
+
+    INNER JOIN "membersubscription" ms
+      ON ms.memberid = m.id
+      AND ms.status = 'active'
+      AND ms.expiresat > NOW()
+
+    INNER JOIN "memberplan" mp
+      ON mp.id = ms.membershipplanid
+
+    WHERE NOT EXISTS (
+      SELECT 1
+      FROM "attendance" a
+      WHERE a.memberid = m.id
+        AND a.checkedinat >= CURRENT_DATE
+        AND a.checkedinat < CURRENT_DATE + INTERVAL '1 day'
+    )
+
+    ORDER BY m.firstname ASC, m.lastname ASC
+  `)
+  }
 }

@@ -45,3 +45,14 @@ export interface MemberListFilters {
   search?: string
   status?: MemberListStatus
 }
+
+export interface MemberAvailableForCheckIn {
+  id: number
+  firstName: string
+  lastName: string
+  email: string
+  status: string
+  subscriptionExpiresAt: Date
+  planName: string
+  planDescription?: string
+}

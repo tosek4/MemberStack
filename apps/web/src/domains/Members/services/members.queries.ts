@@ -81,3 +81,10 @@ export const useDeleteMember = () => {
     },
   })
 }
+
+export const useGetAllAvailableForCheckInMembers = () => {
+  return useQuery({
+    queryKey: [...memberKeys.all, 'available-members'],
+    queryFn: () => membersService.getAllAvailableForCheckInMembers(),
+  })
+}

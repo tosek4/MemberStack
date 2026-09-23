@@ -9,7 +9,11 @@ import {
 import { HttpErrors } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberRepository } from '../repositories'
-import { MemberListFilters, MemberListItem } from '../types'
+import {
+  MemberAvailableForCheckIn,
+  MemberListFilters,
+  MemberListItem,
+} from '../types'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class MemberService {
@@ -91,5 +95,21 @@ export class MemberService {
   async deleteById(id: number): Promise<void> {
     await this.findById(id)
     await this.memberRepository.deleteById(id)
+  }
+  async getAllAvailableForCheckInMembers(): Promise<
+    MemberAvailableForCheckIn[]
+  > {
+    const members = await this.memberRepository.findAvailableForCheckInMembers()
+
+    return members.map((member) => ({
+      id: member.id!,
+      firstName: member.firstName,
+      lastName: member.lastName,
+      email: member.email,
+      status: member.subscriptionStatus,
+      subscriptionExpiresAt: member.subscriptionExpiresAt,
+      planName: member.planName ?? '',
+      planDescription: member.planDescription ?? '',
+    }))
   }
 }
