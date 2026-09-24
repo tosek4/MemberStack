@@ -5,18 +5,14 @@ import {
   useQueryClient,
 } from '@tanstack/react-query'
 
-import {
-  createAttendance,
-  getAttendanceById,
-  getAttendanceStats,
-  getAttendances,
-  updateAttendance,
-} from './attendance.service'
+import { attendanceService, dailyVisitService } from './attendance.service'
 import {
   AttendanceFilters,
   CreateAttendancePayload,
+  CreateDailyCheckInPayload,
   UpdateAttendancePayload,
 } from '../types'
+import { PaymentMethod } from '@/components/PaymentMethodModal'
 
 export const attendanceKeys = {
   all: ['attendances'] as const,
@@ -34,7 +30,7 @@ export const attendanceKeys = {
 export const useAttendances = (filters?: AttendanceFilters) => {
   return useQuery({
     queryKey: attendanceKeys.list(filters ?? {}),
-    queryFn: () => getAttendances(filters),
+    queryFn: () => attendanceService.getAttendances(filters),
     placeholderData: keepPreviousData,
   })
 }
@@ -42,7 +38,7 @@ export const useAttendances = (filters?: AttendanceFilters) => {
 export const useAttendance = (id: number) => {
   return useQuery({
     queryKey: attendanceKeys.detail(id),
-    queryFn: () => getAttendanceById(id),
+    queryFn: () => attendanceService.getAttendanceById(id),
     enabled: Number.isFinite(id),
   })
 }
@@ -50,7 +46,7 @@ export const useAttendance = (id: number) => {
 export const useAttendanceStats = (date: string) => {
   return useQuery({
     queryKey: attendanceKeys.stats(date),
-    queryFn: () => getAttendanceStats(date),
+    queryFn: () => attendanceService.getAttendanceStats(date),
     enabled: Boolean(date),
   })
 }
@@ -60,7 +56,7 @@ export const useCreateAttendance = () => {
 
   return useMutation({
     mutationFn: (attendance: CreateAttendancePayload) =>
-      createAttendance(attendance),
+      attendanceService.createAttendance(attendance),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: attendanceKeys.all })
@@ -78,13 +74,26 @@ export const useUpdateAttendance = () => {
     }: {
       id: number
       attendance: UpdateAttendancePayload
-    }) => updateAttendance(id, attendance),
+    }) => attendanceService.updateAttendance(id, attendance),
 
     onSuccess: (_, variables) => {
       queryClient.invalidateQueries({ queryKey: attendanceKeys.all })
       queryClient.invalidateQueries({
         queryKey: attendanceKeys.detail(variables.id),
       })
+    },
+  })
+}
+
+export const useCreateDailyVisit = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: ({ data }: { data: CreateDailyCheckInPayload }) =>
+      dailyVisitService.createDailyVisit(data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: attendanceKeys.all })
     },
   })
 }

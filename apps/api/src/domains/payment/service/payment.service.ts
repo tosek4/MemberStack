@@ -53,10 +53,10 @@ export class PaymentService {
 
       return {
         id: payment.id!,
-        memberId: payment.memberId,
+        memberId: payment.memberId as number,
         memberName: member ? `${member.firstName} ${member.lastName}` : '',
         memberEmail: member?.email ?? '',
-        memberSubscriptionId: payment.memberSubscriptionId,
+        memberSubscriptionId: payment.memberSubscriptionId as number,
         planName: membershipPlan?.name ?? '',
         amount: payment.amount as number,
         currency: 'EUR',

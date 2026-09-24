@@ -3,6 +3,7 @@ import { Member } from '../../member/models'
 import { User } from '../../user/models'
 import { MemberSubscription } from '../../member-subscription/models'
 import { PaymentRelations } from '../types'
+import { DailyVisit } from '../../daily-visit/models'
 
 @model()
 export class Payment extends Entity {
@@ -49,10 +50,13 @@ export class Payment extends Entity {
 
   // relations
   @belongsTo(() => Member)
-  memberId: number
+  memberId?: number
+
+  @belongsTo(() => DailyVisit)
+  dailyVisitId?: number
 
   @belongsTo(() => MemberSubscription)
-  memberSubscriptionId: number
+  memberSubscriptionId?: number
 
   @belongsTo(() => User, { name: 'createdBy' })
   createdByUserId: number

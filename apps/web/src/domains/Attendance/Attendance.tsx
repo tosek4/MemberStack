@@ -10,16 +10,20 @@ import {
   useAttendances,
   useAttendanceStats,
   useCreateAttendance,
+  useCreateDailyVisit,
   useUpdateAttendance,
 } from './services'
 import { getLocalDateString } from '@/utils/date'
 import { useDebounce } from '@/hooks/useDebounce'
+import { DailyCheckIn } from './components/DailyCheckIn'
+import { DailyCheckInFormData } from './components/DailyCheckIn/types'
 
 export const Attendance: React.FC = () => {
   const today = getLocalDateString()
   const [search, setSearch] = useState('')
   const [status, setStatus] = useState<AttendanceStatusFilter>('all')
   const [date, setDate] = useState(today)
+  const [dailyCheckInModalOpen, setDailyCheckInModalOpen] = useState(false)
   const [checkInModalOpen, setCheckInModalOpen] = useState(false)
 
   const debouncedSearch = useDebounce(search, 400)
@@ -39,6 +43,7 @@ export const Attendance: React.FC = () => {
 
   const createAttendance = useCreateAttendance()
   const updateAttendance = useUpdateAttendance()
+  const createDailyVisit = useCreateDailyVisit()
 
   const handleCheckIn = async (data: CheckInFormData) => {
     const formattedData = {
@@ -80,6 +85,25 @@ export const Attendance: React.FC = () => {
     setDate(getLocalDateString(yesterday))
   }
 
+  const handleDailyCheckIn = async (data: DailyCheckInFormData) => {
+    const formattedData = {
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      phone: data.phone.trim(),
+      membershipPlanId: data.membershipPlanId,
+      paymentMethod: data.paymentMethod,
+    }
+
+    createDailyVisit.mutate(
+      { data: formattedData },
+      {
+        onSuccess: () => {
+          setDailyCheckInModalOpen(false)
+        },
+      },
+    )
+  }
+
   if (isPending) {
     return (
       <main className={styles.root}>
@@ -117,17 +141,29 @@ export const Attendance: React.FC = () => {
             <h1 className={styles.title}>Attendance</h1>
 
             <p className={styles.description}>
-              Track member check-ins and check-outs.
+              Track member check-ins and daily visits.
             </p>
           </div>
-          <button
-            type="button"
-            className={styles.checkInButton}
-            onClick={() => setCheckInModalOpen(true)}
-          >
-            <LogIn size={18} />
-            Check In Member
-          </button>
+
+          <div className={styles.actions}>
+            <button
+              type="button"
+              className={styles.checkInButton}
+              onClick={() => setCheckInModalOpen(true)}
+            >
+              <LogIn size={18} />
+              Check In Member
+            </button>
+
+            <button
+              type="button"
+              className={styles.checkInButton}
+              onClick={() => setDailyCheckInModalOpen(true)}
+            >
+              <LogIn size={18} />
+              Daily Check In
+            </button>
+          </div>
         </header>
 
         <section className={styles.stats}>
@@ -192,6 +228,12 @@ export const Attendance: React.FC = () => {
         loading={false}
         onClose={() => setCheckInModalOpen(false)}
         onSubmit={handleCheckIn}
+      />
+      <DailyCheckIn
+        open={dailyCheckInModalOpen}
+        loading={createDailyVisit.isPending}
+        onClose={() => setDailyCheckInModalOpen(false)}
+        onSubmit={handleDailyCheckIn}
       />
     </main>
   )

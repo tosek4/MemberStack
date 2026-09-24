@@ -1,5 +1,5 @@
 import { service } from '@loopback/core'
-import { Count, Filter, Where } from '@loopback/repository'
+import { Count, Where } from '@loopback/repository'
 import {
   api,
   del,

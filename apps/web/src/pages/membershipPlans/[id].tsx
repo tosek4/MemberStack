@@ -43,6 +43,7 @@ export default function EditMembershipPlanPage() {
           duration: membershipPlan.duration,
           description: membershipPlan.description ?? '',
           status: membershipPlan.status,
+          isDailyPlan: membershipPlan.isDailyPlan,
         }}
       />
     </main>

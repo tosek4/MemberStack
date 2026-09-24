@@ -11,6 +11,8 @@ export const styles = {
 
   description: 'mt-1 text-sm text-gray-500 dark:text-gray-400',
 
+  actions: 'flex items-center gap-2',
+
   stats: 'mb-6 grid grid-cols-1 gap-4 lg:grid-cols-[7fr_3fr]',
   statCard:
     'flex items-center gap-4 rounded-xl border border-gray-200 bg-white p-5 shadow-sm dark:border-gray-700 dark:bg-gray-800',

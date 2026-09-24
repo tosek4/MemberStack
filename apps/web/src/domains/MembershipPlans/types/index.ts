@@ -9,6 +9,7 @@ export interface MembershipPlan {
   description?: string
   status: MembershipPlanStatus
   activeMembers: number
+  isDailyPlan: boolean
 }
 
 export interface MembershipPlanCardProps {
@@ -24,6 +25,7 @@ export interface CreateMembershipPlanPayload {
   price: number
   duration: number
   status: MembershipPlanStatus
+  isDailyPlan: boolean
 }
 
 export interface UpdateMembershipPlanData {
@@ -32,4 +34,5 @@ export interface UpdateMembershipPlanData {
   price?: number
   duration?: number
   status?: MembershipPlanStatus
+  isDailyPlan?: boolean
 }

@@ -59,6 +59,13 @@ export class MemberPlan extends Entity {
   })
   createdAt: Date
 
+  @property({
+    type: 'boolean',
+    required: true,
+    default: false,
+  })
+  isDailyPlan: boolean
+
   // relations
   @hasMany(() => MemberSubscription, { keyTo: 'membershipPlanId' })
   subscriptions?: MemberSubscription[]

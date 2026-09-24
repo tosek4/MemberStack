@@ -4,6 +4,7 @@ export interface MembershipPlanFormData {
   duration: number
   description: string
   status: 'active' | 'inactive'
+  isDailyPlan: boolean
 }
 
 export interface MembershipPlanFormProps {

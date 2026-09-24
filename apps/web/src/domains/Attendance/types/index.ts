@@ -1,3 +1,5 @@
+import { PaymentMethod } from '@/components/PaymentMethodModal/types'
+
 export type AttendanceStatus = 'checked-in' | 'checked-out'
 
 export interface Attendance {
@@ -69,4 +71,12 @@ export interface UpdateAttendancePayload {
   checkedOutAt?: string | null
   attendanceMethod?: 'qr' | 'nfc' | 'manual'
   status?: AttendanceStatus
+}
+
+export interface CreateDailyCheckInPayload {
+  firstName: string
+  lastName: string
+  phone: string
+  membershipPlanId: number
+  paymentMethod: PaymentMethod
 }

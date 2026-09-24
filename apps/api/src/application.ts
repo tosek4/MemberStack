@@ -46,6 +46,8 @@ import { RoleService } from './domains/role/service'
 import { ROLES_SERVICE } from './domains/role/keys'
 import { DashboardService } from './domains/dashboard/services/dashboard.service'
 import { DASHBOARD_SERVICE } from './domains/dashboard/keys'
+import { DAILY_VISIT_SERVICE } from './domains/daily-visit/keys'
+import { DailyVisitService } from './domains/daily-visit/service'
 
 export { ApplicationConfig }
 export class MemberstackApiApplication extends BootMixin(
@@ -119,6 +121,8 @@ export class MemberstackApiApplication extends BootMixin(
     this.bind(PAYMENT_SERVICE).toClass(PaymentService)
     this.bind(ROLES_SERVICE).toClass(RoleService)
     this.bind(DASHBOARD_SERVICE).toClass(DashboardService)
+    this.bind(DAILY_VISIT_SERVICE).toClass(DailyVisitService)
+
   }
 
   setupComponents() {

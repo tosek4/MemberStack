@@ -28,6 +28,7 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
     duration: initialValues?.duration ?? 0,
     description: initialValues?.description ?? '',
     status: initialValues?.status ?? 'active',
+    isDailyPlan: initialValues?.isDailyPlan ?? false,
   })
 
   const handleChange = (
@@ -61,6 +62,7 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
       duration: form.duration,
       description: form.description.trim() || undefined,
       status: form.status,
+      isDailyPlan: form.isDailyPlan,
     }
 
     if (isEdit) {
@@ -159,6 +161,28 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
           >
             <option value="active">Active</option>
             <option value="inactive">Inactive</option>
+          </select>
+        </div>
+        <div className={styles.field}>
+          <label htmlFor="plan-isDailyPlan" className={styles.label}>
+            Is Daily Plan?
+          </label>
+
+          <select
+            id="plan-isDailyPlan"
+            name="isDailyPlan"
+            value={form.isDailyPlan ? 'true' : 'false'}
+            onChange={(e) =>
+              setForm((prev) => ({
+                ...prev,
+                isDailyPlan: e.target.value === 'true',
+              }))
+            }
+            className={styles.input}
+            disabled={isPending}
+          >
+            <option value="false">No</option>
+            <option value="true">Yes</option>
           </select>
         </div>
       </div>
