@@ -20,7 +20,9 @@ export default function App({ Component, pageProps }: AppProps) {
   const isAuthPage =
     router.pathname === '/login' ||
     router.pathname === '/register' ||
-    router.pathname === '/forgot-password'
+    router.pathname === '/forgot-password' ||
+    router.pathname === '/reset-password' ||
+    router.pathname === '/'
 
   return (
     <AuthProvider>

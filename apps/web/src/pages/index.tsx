@@ -1,7 +1,9 @@
-export default function Home() {
+import { Landing } from '@domain/landing/Landing'
+
+export default function HomePage() {
   return (
-    <main className="flex min-h-screen items-center justify-center">
-      <h1 className="text-4xl font-bold">MemberStack</h1>
+    <main>
+      <Landing />
     </main>
   )
 }
