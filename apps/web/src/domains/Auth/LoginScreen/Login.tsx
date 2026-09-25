@@ -6,6 +6,7 @@ import { useAuth } from '@providers'
 import { styles } from './Login.styled'
 import { LoginScreenProps } from './types'
 import { LABELS } from './utils/labels'
+import { getDefaultRoute } from '../utils'
 
 export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
   const router = useRouter()
@@ -22,13 +23,21 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
     try {
       setLoading(true)
 
-      await login({
+      const response = await login({
         email,
         password,
         remember,
       })
 
-      await router.push('/dashboard')
+      const role = response.user.role?.name
+
+      if (!role) {
+        throw new Error('User role not found')
+      }
+
+      const defaultRoute = getDefaultRoute(role)
+
+      await router.push(defaultRoute)
     } catch (error) {
       console.error('Login failed:', error)
     } finally {

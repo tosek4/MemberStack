@@ -5,9 +5,8 @@ export interface AuthContextValue {
   accessToken: string | null
   refreshToken: string | null
   isAuthenticated: boolean
-
+  isLoading: boolean
   login: (data: LoginRequest) => Promise<LoginResponse>
-
   logout: () => void
 }
 

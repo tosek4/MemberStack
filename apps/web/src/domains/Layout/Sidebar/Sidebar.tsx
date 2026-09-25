@@ -4,13 +4,26 @@ import React from 'react'
 import Link from 'next/link'
 import { useRouter } from 'next/router'
 
-import { useSidebar } from '@providers'
+import { useAuth, useSidebar } from '@providers'
+
 import { styles } from './Sidebar.styled'
 import { sidebarItems } from './utils'
 
 export const Sidebar: React.FC = () => {
   const router = useRouter()
+
   const { isOpen } = useSidebar()
+  const { user } = useAuth()
+
+  const userRole = user?.role?.name
+
+  const visibleSidebarItems = sidebarItems.filter((item) => {
+    if (!item.roles) {
+      return true
+    }
+
+    return userRole ? item.roles.includes(userRole) : false
+  })
 
   const isActive = (href: string) => {
     if (href === '/dashboard') {
@@ -29,9 +42,10 @@ export const Sidebar: React.FC = () => {
       <div className={styles.brand.wrapper}>
         <span className={styles.brand.name}>MemberStack</span>
       </div>
+
       <nav className={styles.navigation.wrapper}>
         <div className={styles.navigation.section.wrapper}>
-          {sidebarItems.map((item) => (
+          {visibleSidebarItems.map((item) => (
             <Link
               key={item.href}
               href={item.href}

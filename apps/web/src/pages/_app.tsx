@@ -10,6 +10,8 @@ import {
   QueryProvider,
 } from '@/providers'
 
+import { RouteGuard } from '@/domains/Auth/RouteGuard'
+
 import { Header } from '@/domains/Layout/Header'
 import { Sidebar } from '@/domains/Layout/Sidebar'
 import { AppLayout } from '@/domains/Layout/AppLayout'
@@ -17,29 +19,32 @@ import { AppLayout } from '@/domains/Layout/AppLayout'
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
 
-  const isAuthPage =
+  const isPublicRoute =
+    router.pathname === '/' ||
     router.pathname === '/login' ||
     router.pathname === '/register' ||
     router.pathname === '/forgot-password' ||
-    router.pathname === '/reset-password' ||
-    router.pathname === '/'
+    router.pathname === '/reset-password'
 
   return (
     <AuthProvider>
       <ThemeProvider>
         <QueryProvider>
           <SidebarProvider>
-            {!isAuthPage && (
-              <>
-                <Header />
-                <Sidebar />
+            <RouteGuard>
+              {isPublicRoute ? (
+                <Component {...pageProps} />
+              ) : (
+                <>
+                  <Header />
+                  <Sidebar />
 
-                <AppLayout>
-                  <Component {...pageProps} />
-                </AppLayout>
-              </>
-            )}
-            {isAuthPage && <Component {...pageProps} />}
+                  <AppLayout>
+                    <Component {...pageProps} />
+                  </AppLayout>
+                </>
+              )}
+            </RouteGuard>
           </SidebarProvider>
         </QueryProvider>
       </ThemeProvider>
