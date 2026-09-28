@@ -28,6 +28,8 @@ export const AddSubscription: React.FC = () => {
     resetField,
     formState: { errors },
   } = useForm<AddSubscriptionFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     defaultValues: {
       memberId: undefined,
       membershipPlanId: undefined,
@@ -51,8 +53,9 @@ export const AddSubscription: React.FC = () => {
 
   const createSubscription = useCreateSubscription()
 
-  const isLoading =
-    membersLoading || plansLoading || createSubscription.isPending
+  const isPending = createSubscription.isPending
+
+  const isLoading = membersLoading || plansLoading || isPending
 
   const startDate = watch('startDate')
   const membershipPlanId = watch('membershipPlanId')
@@ -158,7 +161,7 @@ export const AddSubscription: React.FC = () => {
     resetField('endDate')
   }
 
-  const submit = (data: AddSubscriptionFormData) => {
+  const onSubmit = (data: AddSubscriptionFormData) => {
     createSubscription.mutate(
       {
         memberId: data.memberId,
@@ -199,7 +202,7 @@ export const AddSubscription: React.FC = () => {
           </p>
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit(submit)}>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
           {/* Member */}
           <div className={styles.field}>
             <label htmlFor="member-search" className={styles.label}>
@@ -260,6 +263,14 @@ export const AddSubscription: React.FC = () => {
                 </div>
               )}
             </div>
+
+            <input
+              type="hidden"
+              {...register('memberId', {
+                required: 'Member is required',
+                valueAsNumber: true,
+              })}
+            />
 
             {errors.memberId && (
               <p className={styles.error}>{errors.memberId.message}</p>
@@ -373,7 +384,7 @@ export const AddSubscription: React.FC = () => {
               type="button"
               className={styles.cancelButton}
               onClick={() => router.push('/subscriptions')}
-              disabled={createSubscription.isPending}
+              disabled={isPending}
             >
               Cancel
             </button>
@@ -383,9 +394,7 @@ export const AddSubscription: React.FC = () => {
               disabled={isLoading}
               className={styles.submitButton}
             >
-              {createSubscription.isPending
-                ? 'Creating...'
-                : 'Create subscription'}
+              {isPending ? 'Creating...' : 'Create subscription'}
             </button>
           </div>
         </form>

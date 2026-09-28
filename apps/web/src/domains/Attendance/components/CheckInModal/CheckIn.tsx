@@ -20,7 +20,13 @@ export const CheckIn: React.FC<CheckInProps> = ({
     reset,
     setValue,
     formState: { errors },
-  } = useForm<CheckInFormData>()
+  } = useForm<CheckInFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      memberId: undefined,
+    },
+  })
 
   const {
     data: members = [],
@@ -56,8 +62,8 @@ export const CheckIn: React.FC<CheckInProps> = ({
     })
   }
 
-  const submit = async (data: CheckInFormData) => {
-    await onSubmit(data)
+  const onSubmitForm = (data: CheckInFormData) => {
+    onSubmit(data)
   }
 
   return (
@@ -90,7 +96,7 @@ export const CheckIn: React.FC<CheckInProps> = ({
           </button>
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit(submit)}>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmitForm)}>
           {membersError && (
             <p className={styles.error}>Failed to load members.</p>
           )}

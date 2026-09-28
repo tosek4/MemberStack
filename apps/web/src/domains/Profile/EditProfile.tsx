@@ -1,7 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect } from 'react'
+import { useForm } from 'react-hook-form'
 
 import { styles } from './EditProfile.styled'
-import { EditProfileProps } from './types'
+import { EditProfileFormData, EditProfileProps } from './types'
 import { LABELS } from './utils/labels'
 
 export const EditProfile: React.FC<EditProfileProps> = ({
@@ -9,36 +10,40 @@ export const EditProfile: React.FC<EditProfileProps> = ({
   loading = false,
   onSubmit,
 }) => {
-  const [formData, setFormData] = useState(initialData)
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors, isSubmitting },
+  } = useForm<EditProfileFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: initialData,
+  })
 
-  const handleChange = (
-    event: React.ChangeEvent<HTMLInputElement>,
-  ) => {
-    const { name, value } = event.target
+  useEffect(() => {
+    reset(initialData)
+  }, [initialData, reset])
 
-    setFormData((current) => ({
-      ...current,
-      [name]: value,
-    }))
-  }
+  const isPending = loading || isSubmitting
 
-  const handleSubmit = async (
-    event: React.FormEvent<HTMLFormElement>,
-  ) => {
-    event.preventDefault()
-
-    if (onSubmit) {
-      await onSubmit(formData)
+  const onSubmitForm = async (data: EditProfileFormData) => {
+    if (!onSubmit) {
+      return
     }
+
+    await onSubmit({
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      email: data.email.trim(),
+    })
   }
 
   return (
     <div className={styles.card.root}>
       <div className={styles.card.body}>
         <div>
-          <h1 className={styles.heading.title}>
-            {LABELS.title}
-          </h1>
+          <h1 className={styles.heading.title}>{LABELS.title}</h1>
 
           <p className={styles.heading.description}>
             Update your personal information.
@@ -47,77 +52,80 @@ export const EditProfile: React.FC<EditProfileProps> = ({
 
         <form
           className={styles.form.root}
-          onSubmit={handleSubmit}
+          onSubmit={handleSubmit(onSubmitForm)}
         >
           <div className={styles.form.grid}>
             <div className={styles.form.field}>
-              <label
-                htmlFor="firstName"
-                className={styles.form.label}
-              >
+              <label htmlFor="firstName" className={styles.form.label}>
                 {LABELS.firstName}
               </label>
 
               <input
                 type="text"
                 id="firstName"
-                name="firstName"
+                {...register('firstName', {
+                  required: 'First name is required',
+                })}
                 className={styles.form.input}
                 placeholder={LABELS.firstNamePlaceholder}
-                value={formData.firstName}
-                onChange={handleChange}
-                required
+                disabled={isPending}
               />
+
+              {errors.firstName && (
+                <p className={styles.form.error}>{errors.firstName.message}</p>
+              )}
             </div>
 
             <div className={styles.form.field}>
-              <label
-                htmlFor="lastName"
-                className={styles.form.label}
-              >
+              <label htmlFor="lastName" className={styles.form.label}>
                 {LABELS.lastName}
               </label>
 
               <input
                 type="text"
                 id="lastName"
-                name="lastName"
+                {...register('lastName', {
+                  required: 'Last name is required',
+                })}
                 className={styles.form.input}
                 placeholder={LABELS.lastNamePlaceholder}
-                value={formData.lastName}
-                onChange={handleChange}
-                required
+                disabled={isPending}
               />
+
+              {errors.lastName && (
+                <p className={styles.form.error}>{errors.lastName.message}</p>
+              )}
             </div>
           </div>
 
           <div className={styles.form.field}>
-            <label
-              htmlFor="email"
-              className={styles.form.label}
-            >
+            <label htmlFor="email" className={styles.form.label}>
               {LABELS.email}
             </label>
 
             <input
               type="email"
               id="email"
-              name="email"
+              {...register('email', {
+                required: 'Email is required',
+              })}
               className={styles.form.input}
               placeholder={LABELS.emailPlaceholder}
-              value={formData.email}
-              onChange={handleChange}
-              required
+              disabled={isPending}
             />
+
+            {errors.email && (
+              <p className={styles.form.error}>{errors.email.message}</p>
+            )}
           </div>
 
           <div className={styles.submit.wrapper}>
             <button
               type="submit"
-              disabled={loading}
+              disabled={isPending}
               className={styles.submit.button}
             >
-              {loading ? LABELS.saving : LABELS.save}
+              {isPending ? LABELS.saving : LABELS.save}
             </button>
           </div>
         </form>

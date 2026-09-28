@@ -25,9 +25,11 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
     isLoading: rolesLoading,
     isError: rolesError,
   } = useRoles()
-  console.log('roles', roles)
+
   const createUser = useCreateUser()
   const updateUser = useUpdateUser()
+
+  const isPending = createUser.isPending || updateUser.isPending
 
   const {
     register,
@@ -35,6 +37,8 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
     reset,
     formState: { errors },
   } = useForm<UserFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -62,35 +66,48 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
     })
   }, [user, isEdit, reset])
 
-  const isLoading =
-    rolesLoading || userLoading || createUser.isPending || updateUser.isPending
+  const isLoading = rolesLoading || userLoading || isPending
 
-  const handleFormSubmit = async (data: UserFormData) => {
+  const onSubmit = (data: UserFormData) => {
     if (isEdit && userId !== undefined) {
-      await updateUser.mutateAsync({
-        id: userId,
-        data: {
-          firstName: data.firstName,
-          lastName: data.lastName,
-          email: data.email,
-          phone: data.phone,
-          roleId: Number(data.roleId),
-          isActive: data.isActive,
+      updateUser.mutate(
+        {
+          id: userId,
+          data: {
+            firstName: data.firstName.trim(),
+            lastName: data.lastName.trim(),
+            email: data.email.trim(),
+            phone: data?.phone?.trim() || undefined,
+            roleId: Number(data.roleId),
+            isActive: data.isActive,
+          },
         },
-      })
-    } else {
-      await createUser.mutateAsync({
-        firstName: data.firstName,
-        lastName: data.lastName,
-        email: data.email,
-        phone: data.phone,
+        {
+          onSuccess: () => {
+            router.push('/users')
+          },
+        },
+      )
+
+      return
+    }
+
+    createUser.mutate(
+      {
+        firstName: data.firstName.trim(),
+        lastName: data.lastName.trim(),
+        email: data.email.trim(),
+        phone: data?.phone?.trim() || undefined,
         roleId: Number(data.roleId),
         isActive: data.isActive,
         password: data.password as string,
-      })
-    }
-
-    router.push('/users')
+      },
+      {
+        onSuccess: () => {
+          router.push('/users')
+        },
+      },
+    )
   }
 
   if (isEdit && userLoading) {
@@ -145,7 +162,7 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
         </button>
       </div>
 
-      <form className={styles.form} onSubmit={handleSubmit(handleFormSubmit)}>
+      <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
         <div className={styles.title}>
           <div className="w-full">
             <label className={styles.label}>First Name</label>
@@ -160,7 +177,7 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
             />
 
             {errors.firstName && (
-              <p className="text-sm text-red-600">{errors.firstName.message}</p>
+              <p className={styles.error}>{errors.firstName.message}</p>
             )}
           </div>
 
@@ -177,7 +194,7 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
             />
 
             {errors.lastName && (
-              <p className="text-sm text-red-600">{errors.lastName.message}</p>
+              <p className={styles.error}>{errors.lastName.message}</p>
             )}
           </div>
         </div>
@@ -195,7 +212,7 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
           />
 
           {errors.email && (
-            <p className="text-sm text-red-600">{errors.email.message}</p>
+            <p className={styles.error}>{errors.email.message}</p>
           )}
         </div>
 
@@ -234,11 +251,11 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
             </select>
 
             {rolesError && (
-              <p className="text-sm text-red-600">Failed to load roles.</p>
+              <p className={styles.error}>Failed to load roles.</p>
             )}
 
             {errors.roleId && (
-              <p className="text-sm text-red-600">{errors.roleId.message}</p>
+              <p className={styles.error}>{errors.roleId.message}</p>
             )}
           </div>
 
@@ -258,7 +275,7 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
             </select>
 
             {errors.isActive && (
-              <p className="text-sm text-red-600">{errors.isActive.message}</p>
+              <p className={styles.error}>{errors.isActive.message}</p>
             )}
           </div>
         </div>
@@ -293,13 +310,13 @@ export const UserForm: React.FC<UserFormProps> = ({ userId }) => {
             </div>
 
             {errors.password && (
-              <p className="text-sm text-red-600">{errors.password.message}</p>
+              <p className={styles.error}>{errors.password.message}</p>
             )}
           </div>
         )}
 
         <button type="submit" className={styles.button} disabled={isLoading}>
-          {isLoading
+          {isPending
             ? isEdit
               ? 'Saving...'
               : 'Creating...'

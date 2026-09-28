@@ -18,7 +18,7 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     mode: 'onSubmit',
     reValidateMode: 'onChange',
@@ -29,12 +29,8 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
     },
   })
 
-  const [loading, setLoading] = React.useState(false)
-
   const onSubmit = async (data: LoginFormData) => {
     try {
-      setLoading(true)
-
       const response = await login({
         email: data.email.trim(),
         password: data.password,
@@ -56,8 +52,6 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
       if (message) {
         notifications.error(message)
       }
-    } finally {
-      setLoading(false)
     }
   }
 
@@ -95,7 +89,7 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
                   })}
                   className={styles.form.input}
                   placeholder="name@company.com"
-                  disabled={loading}
+                  disabled={isSubmitting}
                 />
 
                 {errors.email && (
@@ -116,7 +110,7 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
                   })}
                   className={styles.form.input}
                   placeholder="••••••••"
-                  disabled={loading}
+                  disabled={isSubmitting}
                 />
 
                 {errors.password && (
@@ -132,7 +126,7 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
                       type="checkbox"
                       {...register('remember')}
                       className={styles.options.remember.checkbox}
-                      disabled={loading}
+                      disabled={isSubmitting}
                     />
                   </div>
 
@@ -157,10 +151,10 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isSubmitting}
                 className={styles.submit.button}
               >
-                {loading ? LABELS.signingIn : LABELS.signIn}
+                {isSubmitting ? LABELS.signingIn : LABELS.signIn}
               </button>
 
               <p className={styles.signup.text}>

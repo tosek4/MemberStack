@@ -1,6 +1,8 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+
 import { styles } from './Register.styled'
-import { RegisterScreenProps } from './types'
+import { RegisterFormData, RegisterScreenProps } from './types'
 import { LABELS } from './utils/labels'
 
 export const Register: React.FC<RegisterScreenProps> = ({
@@ -9,30 +11,40 @@ export const Register: React.FC<RegisterScreenProps> = ({
   onSignIn,
   loading = false,
 }) => {
-  const [firstName, setFirstName] = useState('')
-  const [lastName, setLastName] = useState('')
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [confirmPassword, setConfirmPassword] = useState('')
-  const [termsAccepted, setTermsAccepted] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    watch,
+    formState: { errors, isSubmitting },
+  } = useForm<RegisterFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      firstName: '',
+      lastName: '',
+      email: '',
+      password: '',
+      confirmPassword: '',
+      termsAccepted: false,
+    },
+  })
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const termsAccepted = watch('termsAccepted')
+  const isPending = loading || isSubmitting
 
-    if (onSubmit) {
-      await onSubmit({
-        firstName,
-        lastName,
-        email,
-        password,
-        confirmPassword,
-        termsAccepted,
-      })
-    }
+  const onSubmitForm = async (data: RegisterFormData) => {
+    await onSubmit?.({
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      email: data.email.trim(),
+      password: data.password,
+      confirmPassword: data.confirmPassword,
+      termsAccepted: data.termsAccepted,
+    })
   }
 
-  const handleSignIn = (e: React.MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
+  const handleSignIn = (event: React.MouseEvent<HTMLAnchorElement>) => {
+    event.preventDefault()
     onSignIn?.()
   }
 
@@ -43,7 +55,10 @@ export const Register: React.FC<RegisterScreenProps> = ({
           <div className={styles.card.body}>
             <h1 className={styles.heading.title}>{title}</h1>
 
-            <form className={styles.form.root} onSubmit={handleSubmit}>
+            <form
+              className={styles.form.root}
+              onSubmit={handleSubmit(onSubmitForm)}
+            >
               <div className={styles.form.row}>
                 <div className={styles.form.field}>
                   <label htmlFor="firstName" className={styles.form.label}>
@@ -52,13 +67,19 @@ export const Register: React.FC<RegisterScreenProps> = ({
 
                   <input
                     type="text"
-                    name="firstName"
                     id="firstName"
+                    {...register('firstName', {
+                      required: 'First name is required',
+                    })}
                     className={styles.form.input}
-                    value={firstName}
-                    onChange={(e) => setFirstName(e.target.value)}
-                    required
+                    disabled={isPending}
                   />
+
+                  {errors.firstName && (
+                    <p className={styles.form.error}>
+                      {errors.firstName.message}
+                    </p>
+                  )}
                 </div>
 
                 <div className={styles.form.field}>
@@ -68,13 +89,19 @@ export const Register: React.FC<RegisterScreenProps> = ({
 
                   <input
                     type="text"
-                    name="lastName"
                     id="lastName"
+                    {...register('lastName', {
+                      required: 'Last name is required',
+                    })}
                     className={styles.form.input}
-                    value={lastName}
-                    onChange={(e) => setLastName(e.target.value)}
-                    required
+                    disabled={isPending}
                   />
+
+                  {errors.lastName && (
+                    <p className={styles.form.error}>
+                      {errors.lastName.message}
+                    </p>
+                  )}
                 </div>
               </div>
 
@@ -85,14 +112,18 @@ export const Register: React.FC<RegisterScreenProps> = ({
 
                 <input
                   type="email"
-                  name="email"
                   id="email"
+                  {...register('email', {
+                    required: 'Email is required',
+                  })}
                   className={styles.form.input}
                   placeholder="name@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  disabled={isPending}
                 />
+
+                {errors.email && (
+                  <p className={styles.form.error}>{errors.email.message}</p>
+                )}
               </div>
 
               <div className={styles.form.field}>
@@ -102,13 +133,21 @@ export const Register: React.FC<RegisterScreenProps> = ({
 
                 <input
                   type="password"
-                  name="password"
                   id="password"
+                  {...register('password', {
+                    required: 'Password is required',
+                    minLength: {
+                      value: 8,
+                      message: 'Password must contain at least 8 characters',
+                    },
+                  })}
                   className={styles.form.input}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  disabled={isPending}
                 />
+
+                {errors.password && (
+                  <p className={styles.form.error}>{errors.password.message}</p>
+                )}
               </div>
 
               <div className={styles.form.field}>
@@ -118,13 +157,21 @@ export const Register: React.FC<RegisterScreenProps> = ({
 
                 <input
                   type="password"
-                  name="confirmPassword"
                   id="confirmPassword"
+                  {...register('confirmPassword', {
+                    required: 'Please confirm your password',
+                    validate: (value, formValues) =>
+                      value === formValues.password || 'Passwords do not match',
+                  })}
                   className={styles.form.input}
-                  value={confirmPassword}
-                  onChange={(e) => setConfirmPassword(e.target.value)}
-                  required
+                  disabled={isPending}
                 />
+
+                {errors.confirmPassword && (
+                  <p className={styles.form.error}>
+                    {errors.confirmPassword.message}
+                  </p>
+                )}
               </div>
 
               <div className={styles.terms.wrapper}>
@@ -132,9 +179,10 @@ export const Register: React.FC<RegisterScreenProps> = ({
                   id="terms"
                   type="checkbox"
                   className={styles.terms.checkbox}
-                  checked={termsAccepted}
-                  onChange={(e) => setTermsAccepted(e.target.checked)}
-                  required
+                  {...register('termsAccepted', {
+                    required: 'You must accept the terms',
+                  })}
+                  disabled={isPending}
                 />
 
                 <label htmlFor="terms" className={styles.terms.label}>
@@ -142,12 +190,18 @@ export const Register: React.FC<RegisterScreenProps> = ({
                 </label>
               </div>
 
+              {errors.termsAccepted && (
+                <p className={styles.form.error}>
+                  {errors.termsAccepted.message}
+                </p>
+              )}
+
               <button
                 type="submit"
-                disabled={loading || !termsAccepted}
+                disabled={isPending || !termsAccepted}
                 className={styles.submit.button}
               >
-                {loading ? LABELS.creatingAccount : LABELS.createAccount}
+                {isPending ? LABELS.creatingAccount : LABELS.createAccount}
               </button>
 
               <p className={styles.signin.text}>

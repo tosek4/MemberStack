@@ -1,9 +1,14 @@
-import React, { useState } from 'react'
+import React from 'react'
+import { useForm } from 'react-hook-form'
+import Link from 'next/link'
 
 import { styles } from './ForgotPassword.styled'
 import { ForgotPasswordProps } from './types'
 import { LABELS } from './utils/labels'
-import Link from 'next/link'
+
+type ForgotPasswordFormData = {
+  email: string
+}
 
 export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
   title = LABELS.title,
@@ -11,14 +16,22 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
   onSubmit,
   onBackToLogin,
 }) => {
-  const [email, setEmail] = useState('')
+  const {
+    register,
+    handleSubmit,
+    formState: { errors, isSubmitting },
+  } = useForm<ForgotPasswordFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      email: '',
+    },
+  })
 
-  const handleSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
+  const isPending = loading || isSubmitting
 
-    if (onSubmit) {
-      await onSubmit(email)
-    }
+  const onSubmitForm = async (data: ForgotPasswordFormData) => {
+    await onSubmit?.(data.email.trim())
   }
 
   const handleBackToLogin = (event: React.MouseEvent<HTMLAnchorElement>) => {
@@ -37,7 +50,10 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
               <p className={styles.heading.description}>{LABELS.description}</p>
             </div>
 
-            <form className={styles.form.root} onSubmit={handleSubmit}>
+            <form
+              className={styles.form.root}
+              onSubmit={handleSubmit(onSubmitForm)}
+            >
               <div className={styles.form.field}>
                 <label htmlFor="email" className={styles.form.label}>
                   {LABELS.email}
@@ -45,22 +61,26 @@ export const ForgotPassword: React.FC<ForgotPasswordProps> = ({
 
                 <input
                   type="email"
-                  name="email"
                   id="email"
+                  {...register('email', {
+                    required: 'Email is required',
+                  })}
                   className={styles.form.input}
                   placeholder={LABELS.emailPlaceholder}
-                  value={email}
-                  onChange={(event) => setEmail(event.target.value)}
-                  required
+                  disabled={isPending}
                 />
+
+                {errors.email && (
+                  <p className={styles.form.error}>{errors.email.message}</p>
+                )}
               </div>
 
               <button
                 type="submit"
-                disabled={loading}
+                disabled={isPending}
                 className={styles.submit.button}
               >
-                {loading ? LABELS.sending : LABELS.submit}
+                {isPending ? LABELS.sending : LABELS.submit}
               </button>
 
               <div className={styles.back.wrapper}>

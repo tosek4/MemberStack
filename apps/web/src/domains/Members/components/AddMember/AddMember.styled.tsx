@@ -29,6 +29,8 @@ export const styles = {
 
     select:
       'block w-full rounded-lg border border-gray-300 bg-gray-50 p-2.5 text-sm text-gray-900 focus:border-primary-500 focus:ring-primary-500 dark:border-gray-600 dark:bg-gray-700 dark:text-white',
+
+    error: 'text-sm text-red-600 dark:text-red-400',
   },
 
   actions: {

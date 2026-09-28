@@ -18,6 +18,8 @@ export const DailyCheckIn: React.FC<DailyCheckInProps> = ({
     reset,
     formState: { errors },
   } = useForm<DailyCheckInFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     defaultValues: {
       firstName: '',
       lastName: '',
@@ -55,8 +57,13 @@ export const DailyCheckIn: React.FC<DailyCheckInProps> = ({
     return null
   }
 
-  const handleFormSubmit = (data: DailyCheckInFormData) => {
-    onSubmit(data)
+  const onSubmitForm = (data: DailyCheckInFormData) => {
+    onSubmit({
+      ...data,
+      firstName: data.firstName.trim(),
+      lastName: data.lastName.trim(),
+      phone: data.phone.trim(),
+    })
   }
 
   return (
@@ -81,7 +88,7 @@ export const DailyCheckIn: React.FC<DailyCheckInProps> = ({
           </button>
         </div>
 
-        <form className={styles.form} onSubmit={handleSubmit(handleFormSubmit)}>
+        <form className={styles.form} onSubmit={handleSubmit(onSubmitForm)}>
           <div className={styles.row}>
             <div className={styles.field}>
               <label className={styles.label}>First name</label>

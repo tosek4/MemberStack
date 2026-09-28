@@ -28,6 +28,8 @@ export const AddPayment: React.FC = () => {
 
   const createPayment = useCreatePayment()
 
+  const isPending = createPayment.isPending
+
   const {
     register,
     handleSubmit,
@@ -35,6 +37,8 @@ export const AddPayment: React.FC = () => {
     setValue,
     formState: { errors },
   } = useForm<AddPaymentFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
     defaultValues: {
       amount: 0,
       paymentMethod: 'cash',
@@ -126,7 +130,7 @@ export const AddPayment: React.FC = () => {
     })
   }
 
-  const submit = async (data: AddPaymentFormData) => {
+  const onSubmit = (data: AddPaymentFormData) => {
     createPayment.mutate(
       {
         amount: data.amount,
@@ -135,7 +139,8 @@ export const AddPayment: React.FC = () => {
         status: data.status,
         memberId: Number(data.memberId),
         memberSubscriptionId: Number(data.memberSubscriptionId),
-        transactionReference: data.transactionReference || undefined,
+        transactionReference:
+          data.transactionReference?.trim() || undefined,
       },
       {
         onSuccess: () => {
@@ -145,7 +150,7 @@ export const AddPayment: React.FC = () => {
     )
   }
 
-  const isLoading = membersLoading || plansLoading || createPayment.isPending
+  const isLoading = membersLoading || plansLoading || isPending
 
   return (
     <div className={styles.container}>
@@ -157,7 +162,7 @@ export const AddPayment: React.FC = () => {
         </p>
       </div>
 
-      <form onSubmit={handleSubmit(submit)} className={styles.form}>
+      <form onSubmit={handleSubmit(onSubmit)} className={styles.form}>
         {/* Member */}
         <div className={styles.field.wrapper}>
           <label className={styles.field.label}>Member</label>
@@ -439,7 +444,7 @@ export const AddPayment: React.FC = () => {
             disabled={isLoading || !selectedMember || !selectedPlan}
             className={styles.submit}
           >
-            {isLoading ? 'Saving...' : 'Add Payment'}
+            {isPending ? 'Saving...' : 'Add Payment'}
           </button>
         </div>
       </form>
