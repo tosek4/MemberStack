@@ -23,9 +23,20 @@ import {
 import { MemberSubscriptionStatus } from '../types'
 import { authenticate } from '@loopback/authentication'
 import { PaymentMethod } from '../../payment/types'
+import { AppRole } from '../../../enums/app-role.enum'
+import { authorize } from '@loopback/authorization/dist/decorators/authorize'
 
 @authenticate('jwt')
 @api({ basePath: '/member-subscriptions' })
+@authorize({
+  allowedRoles: [
+    AppRole.ADMIN,
+    AppRole.SUPER_ADMIN,
+    AppRole.MANAGER,
+    AppRole.RECEPTIONIST,
+  ],
+  voters: ['authorization.authorizers.role'],
+})
 export class MemberSubscriptionController {
   constructor(
     @service(MemberSubscriptionService)

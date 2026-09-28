@@ -1,32 +1,44 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useRouter } from 'next/router'
+import { useForm } from 'react-hook-form'
 
 import { useAuth } from '@providers'
 
 import { styles } from './Login.styled'
-import { LoginScreenProps } from './types'
+import { LoginFormData, LoginScreenProps } from './types'
 import { LABELS } from './utils/labels'
 import { getDefaultRoute } from '../utils'
+import { getApiErrorMessage } from '@/utils/apiError'
+import { notifications } from '@/utils/notifications'
 
 export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
   const router = useRouter()
   const { login } = useAuth()
 
-  const [email, setEmail] = useState('')
-  const [password, setPassword] = useState('')
-  const [remember, setRemember] = useState(false)
-  const [loading, setLoading] = useState(false)
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<LoginFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      email: '',
+      password: '',
+      remember: false,
+    },
+  })
 
-  const handleSubmit = async (e: React.FormEvent<HTMLFormElement>) => {
-    e.preventDefault()
+  const [loading, setLoading] = React.useState(false)
 
+  const onSubmit = async (data: LoginFormData) => {
     try {
       setLoading(true)
 
       const response = await login({
-        email,
-        password,
-        remember,
+        email: data.email.trim(),
+        password: data.password,
+        remember: data.remember,
       })
 
       const role = response.user.role?.name
@@ -39,7 +51,11 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
 
       await router.push(defaultRoute)
     } catch (error) {
-      console.error('Login failed:', error)
+      const message = getApiErrorMessage(error)
+
+      if (message) {
+        notifications.error(message)
+      }
     } finally {
       setLoading(false)
     }
@@ -62,22 +78,29 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
           <div className={styles.card.body}>
             <h1 className={styles.heading.title}>{title}</h1>
 
-            <form className={styles.form.root} onSubmit={handleSubmit}>
+            <form
+              className={styles.form.root}
+              onSubmit={handleSubmit(onSubmit)}
+            >
               <div className={styles.form.field}>
                 <label htmlFor="email" className={styles.form.label}>
                   {LABELS.email}
                 </label>
 
                 <input
-                  type="email"
-                  name="email"
                   id="email"
+                  type="email"
+                  {...register('email', {
+                    required: 'Email is required',
+                  })}
                   className={styles.form.input}
                   placeholder="name@company.com"
-                  value={email}
-                  onChange={(e) => setEmail(e.target.value)}
-                  required
+                  disabled={loading}
                 />
+
+                {errors.email && (
+                  <p className={styles.form.error}>{errors.email.message}</p>
+                )}
               </div>
 
               <div className={styles.form.field}>
@@ -86,15 +109,19 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
                 </label>
 
                 <input
-                  type="password"
-                  name="password"
                   id="password"
+                  type="password"
+                  {...register('password', {
+                    required: 'Password is required',
+                  })}
                   className={styles.form.input}
                   placeholder="••••••••"
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
+                  disabled={loading}
                 />
+
+                {errors.password && (
+                  <p className={styles.form.error}>{errors.password.message}</p>
+                )}
               </div>
 
               <div className={styles.options.row}>
@@ -102,11 +129,10 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
                   <div className={styles.options.remember.checkboxWrapper}>
                     <input
                       id="remember"
-                      aria-describedby="remember"
                       type="checkbox"
+                      {...register('remember')}
                       className={styles.options.remember.checkbox}
-                      checked={remember}
-                      onChange={(e) => setRemember(e.target.checked)}
+                      disabled={loading}
                     />
                   </div>
 

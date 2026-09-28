@@ -23,9 +23,20 @@ import {
 } from './payment.docs'
 import { PaymentListItem, PaymentListMethod, PaymentListStatus } from '../types'
 import { authenticate } from '@loopback/authentication'
+import { AppRole } from '../../../enums/app-role.enum'
+import { authorize } from '@loopback/authorization/dist/decorators/authorize'
 
 @authenticate('jwt')
 @api({ basePath: '/payments' })
+@authorize({
+  allowedRoles: [
+    AppRole.ADMIN,
+    AppRole.SUPER_ADMIN,
+    AppRole.MANAGER,
+    AppRole.RECEPTIONIST,
+  ],
+  voters: ['authorization.authorizers.role'],
+})
 export class PaymentController {
   constructor(
     @service(PaymentService)

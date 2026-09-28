@@ -32,7 +32,15 @@ api.interceptors.response.use(
       _retry?: boolean
     }
 
-    if (error.response?.status !== 401 || originalRequest?._retry) {
+    const isAuthRequest =
+      originalRequest?.url === '/auth/login' ||
+      originalRequest?.url === '/auth/refresh'
+
+    if (
+      error.response?.status !== 401 ||
+      originalRequest?._retry ||
+      isAuthRequest
+    ) {
       return Promise.reject(error)
     }
 

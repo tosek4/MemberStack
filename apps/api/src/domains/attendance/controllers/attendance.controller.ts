@@ -29,9 +29,21 @@ import {
   AttendanceStats,
 } from '../types'
 import { authenticate } from '@loopback/authentication'
+import { AppRole } from '../../../enums/app-role.enum'
+import { authorize } from '@loopback/authorization/dist/decorators/authorize'
 
 @authenticate('jwt')
 @api({ basePath: '/attendances' })
+@authorize({
+  allowedRoles: [
+    AppRole.ADMIN,
+    AppRole.SUPER_ADMIN,
+    AppRole.RECEPTIONIST,
+    AppRole.MANAGER,
+    AppRole.TRAINER,
+  ],
+  voters: ['authorization.authorizers.role'],
+})
 export class AttendanceController {
   constructor(
     @service(AttendanceService)

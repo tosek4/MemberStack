@@ -15,6 +15,7 @@ import { RouteGuard } from '@/domains/Auth/RouteGuard'
 import { Header } from '@/domains/Layout/Header'
 import { Sidebar } from '@/domains/Layout/Sidebar'
 import { AppLayout } from '@/domains/Layout/AppLayout'
+import { Toaster } from 'sonner'
 
 export default function App({ Component, pageProps }: AppProps) {
   const router = useRouter()
@@ -31,6 +32,7 @@ export default function App({ Component, pageProps }: AppProps) {
       <ThemeProvider>
         <QueryProvider>
           <SidebarProvider>
+            <Toaster position="top-center" richColors duration={5000} />
             <RouteGuard>
               {isPublicRoute ? (
                 <Component {...pageProps} />

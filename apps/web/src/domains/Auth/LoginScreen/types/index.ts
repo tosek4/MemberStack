@@ -1,4 +1,4 @@
-export interface LoginFormValues {
+export interface LoginFormData {
   email: string
   password: string
   remember: boolean
@@ -9,7 +9,7 @@ export interface LoginScreenProps {
   logoAlt?: string
   brandName?: string
   title?: string
-  onSubmit?: (values: LoginFormValues) => void | Promise<void>
+  onSubmit?: (values: LoginFormData) => void | Promise<void>
   onForgotPassword?: () => void
   onSignUp?: () => void
   loading?: boolean

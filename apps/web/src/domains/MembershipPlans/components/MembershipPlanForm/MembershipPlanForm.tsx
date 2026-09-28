@@ -1,4 +1,4 @@
-import React, { useState } from 'react'
+import React from 'react'
 import { useRouter } from 'next/router'
 
 import { MembershipPlanFormData, MembershipPlanFormProps } from './types'
@@ -8,6 +8,7 @@ import {
   useCreateMembershipPlan,
   useUpdateMembershipPlan,
 } from '../../services'
+import { useForm } from 'react-hook-form'
 
 export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
   initialValues,
@@ -22,54 +23,38 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
   const isPending =
     createMembershipPlan.isPending || updateMembershipPlan.isPending
 
-  const [form, setForm] = useState<MembershipPlanFormData>({
-    name: initialValues?.name ?? '',
-    price: initialValues?.price ?? 0,
-    duration: initialValues?.duration ?? 0,
-    description: initialValues?.description ?? '',
-    status: initialValues?.status ?? 'active',
-    isDailyPlan: initialValues?.isDailyPlan ?? false,
+  const {
+    register,
+    handleSubmit,
+    formState: { errors },
+  } = useForm<MembershipPlanFormData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+    defaultValues: {
+      name: initialValues?.name ?? '',
+      price: initialValues?.price,
+      duration: initialValues?.duration,
+      description: initialValues?.description ?? '',
+      status: initialValues?.status ?? 'active',
+      isDailyPlan: initialValues?.isDailyPlan ?? false,
+    },
   })
 
-  const handleChange = (
-    e: React.ChangeEvent<
-      HTMLInputElement | HTMLTextAreaElement | HTMLSelectElement
-    >,
-  ) => {
-    const { name, value } = e.target
-
-    if (name === 'price' || name === 'duration') {
-      setForm((prev) => ({
-        ...prev,
-        [name]: Number(value),
-      }))
-
-      return
-    }
-
-    setForm((prev) => ({
-      ...prev,
-      [name]: value,
-    }))
-  }
-
-  const handleSubmit = (event: React.FormEvent<HTMLFormElement>) => {
-    event.preventDefault()
-
-    const data = {
-      name: form.name.trim(),
-      price: form.price,
-      duration: form.duration,
-      description: form.description.trim() || undefined,
-      status: form.status,
-      isDailyPlan: form.isDailyPlan,
+  const onSubmit = (data: MembershipPlanFormData) => {
+    const formattedData = {
+      name: data.name.trim(),
+      price: data.price,
+      duration: data.duration,
+      description: data.description.trim() || undefined,
+      status: data.status,
+      isDailyPlan: data.isDailyPlan,
     }
 
     if (isEdit) {
       updateMembershipPlan.mutate(
         {
           id: planId,
-          data,
+          data: formattedData,
         },
         {
           onSuccess: () => {
@@ -81,7 +66,7 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
       return
     }
 
-    createMembershipPlan.mutate(data, {
+    createMembershipPlan.mutate(formattedData, {
       onSuccess: () => {
         router.push('/membershipPlans')
       },
@@ -89,7 +74,7 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
   }
 
   return (
-    <form className={styles.form} onSubmit={handleSubmit}>
+    <form className={styles.form} onSubmit={handleSubmit(onSubmit)}>
       <div className={styles.field}>
         <label htmlFor="plan-name" className={styles.label}>
           Plan name
@@ -97,13 +82,15 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
 
         <input
           id="plan-name"
-          name="name"
-          value={form.name}
-          onChange={handleChange}
+          {...register('name', {
+            required: 'Plan name is required',
+          })}
           className={styles.input}
-          placeholder="e.g. Premium"
+          placeholder="Plan name"
           disabled={isPending}
         />
+
+        {errors.name && <p className={styles.error}>{errors.name.message}</p>}
       </div>
 
       <div className={styles.row}>
@@ -114,16 +101,19 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
 
           <input
             id="plan-price"
-            name="price"
-            onChange={handleChange}
-            value={form.price}
+            {...register('price', {
+              valueAsNumber: true,
+              required: 'Price is required',
+            })}
             type="number"
-            min="0"
-            step="0.01"
             className={styles.input}
             placeholder="40"
             disabled={isPending}
           />
+
+          {errors.price && (
+            <p className={styles.error}>{errors.price.message}</p>
+          )}
         </div>
 
         <div className={styles.field}>
@@ -133,15 +123,19 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
 
           <input
             id="plan-duration"
-            name="duration"
-            onChange={handleChange}
-            value={form.duration}
+            {...register('duration', {
+              valueAsNumber: true,
+              required: 'Duration is required',
+            })}
             type="number"
-            min="1"
             className={styles.input}
             placeholder="30"
             disabled={isPending}
           />
+
+          {errors.duration && (
+            <p className={styles.error}>{errors.duration.message}</p>
+          )}
         </div>
       </div>
 
@@ -153,9 +147,9 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
 
           <select
             id="plan-status"
-            name="status"
-            value={form.status}
-            onChange={handleChange}
+            {...register('status', {
+              required: 'Status is required',
+            })}
             className={styles.input}
             disabled={isPending}
           >
@@ -170,14 +164,9 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
 
           <select
             id="plan-isDailyPlan"
-            name="isDailyPlan"
-            value={form.isDailyPlan ? 'true' : 'false'}
-            onChange={(e) =>
-              setForm((prev) => ({
-                ...prev,
-                isDailyPlan: e.target.value === 'true',
-              }))
-            }
+            {...register('isDailyPlan', {
+              required: 'Is Daily Plan is required',
+            })}
             className={styles.input}
             disabled={isPending}
           >
@@ -194,14 +183,18 @@ export const MembershipPlanForm: React.FC<MembershipPlanFormProps> = ({
 
         <textarea
           id="plan-description"
-          name="description"
-          value={form.description}
-          onChange={handleChange}
+          {...register('description', {
+            required: 'Description is required',
+          })}
           className={styles.textarea}
           placeholder="Describe what this plan includes..."
           rows={4}
           disabled={isPending}
         />
+
+        {errors.description && (
+          <p className={styles.error}>{errors.description.message}</p>
+        )}
       </div>
 
       <div className={styles.actions}>

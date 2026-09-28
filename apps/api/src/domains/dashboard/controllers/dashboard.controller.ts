@@ -12,9 +12,20 @@ import {
   DashboardRecentPayment,
 } from '../types/index'
 import { authenticate } from '@loopback/authentication'
+import { AppRole } from '../../../enums/app-role.enum'
+import { authorize } from '@loopback/authorization/dist/decorators/authorize'
 
 @authenticate('jwt')
 @api({ basePath: '/dashboard' })
+@authorize({
+  allowedRoles: [
+    AppRole.ADMIN,
+    AppRole.SUPER_ADMIN,
+    AppRole.MANAGER,
+    AppRole.RECEPTIONIST,
+  ],
+  voters: ['authorization.authorizers.role'],
+})
 export class DashboardController {
   constructor(
     @inject(DASHBOARD_SERVICE)

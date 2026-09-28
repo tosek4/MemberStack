@@ -2,11 +2,17 @@ import { service } from '@loopback/core'
 import { api, get, post, requestBody, response } from '@loopback/rest'
 import { authenticate } from '@loopback/authentication'
 import { DailyVisitService } from '../service'
-import {  CreateDailyVisitPayload } from '../types'
+import { CreateDailyVisitPayload } from '../types'
 import { CreateDailyVisitRequestSchema } from './daily-visit.docs'
+import { AppRole } from '../../../enums/app-role.enum'
+import { authorize } from '@loopback/authorization/dist/decorators/authorize'
 
 @authenticate('jwt')
 @api({ basePath: '/daily-visits' })
+@authorize({
+  allowedRoles: [AppRole.ADMIN, AppRole.SUPER_ADMIN, AppRole.RECEPTIONIST, AppRole.MANAGER],
+  voters: ['authorization.authorizers.role'],
+})
 export class DailyVisitController {
   constructor(
     @service(DailyVisitService)

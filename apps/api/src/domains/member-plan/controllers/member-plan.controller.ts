@@ -27,10 +27,15 @@ import { authenticate } from '@loopback/authentication'
 
 @authenticate('jwt')
 @api({ basePath: '/member-plans' })
-// @authorize({
-//   allowedRoles: [AppRole.ADMIN, AppRole.SUPER_ADMIN],
-//   voters: ['authorization.authorizers.role'],
-// })
+@authorize({
+  allowedRoles: [
+    AppRole.ADMIN,
+    AppRole.SUPER_ADMIN,
+    AppRole.TRAINER,
+    AppRole.MANAGER,
+  ],
+  voters: ['authorization.authorizers.role'],
+})
 export class MemberPlanController {
   constructor(
     @service(MemberPlanService)

@@ -26,9 +26,21 @@ import {
   UpdateMemberRequestSchema,
 } from './members.docs'
 import { authenticate } from '@loopback/authentication'
+import { AppRole } from '../../../enums/app-role.enum'
+import { authorize } from '@loopback/authorization/dist/decorators/authorize'
 
 @authenticate('jwt')
 @api({ basePath: '/members' })
+@authorize({
+  allowedRoles: [
+    AppRole.ADMIN,
+    AppRole.SUPER_ADMIN,
+    AppRole.MANAGER,
+    AppRole.RECEPTIONIST,
+    AppRole.TRAINER,
+  ],
+  voters: ['authorization.authorizers.role'],
+})
 export class MemberController {
   constructor(
     @service(MemberService)
