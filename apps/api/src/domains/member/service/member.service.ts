@@ -1,9 +1,5 @@
-import { BindingScope, injectable } from '@loopback/core'
-import {
-  Count,
-  repository,
-  Where,
-} from '@loopback/repository'
+import { BindingScope, inject, injectable } from '@loopback/core'
+import { Count, repository, Where } from '@loopback/repository'
 import { HttpErrors } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberRepository } from '../repositories'
@@ -12,12 +8,20 @@ import {
   MemberListFilters,
   MemberListItem,
 } from '../types'
+import { MemberQRCodeRepository } from '../../member-qrcode/repositories/member-qrcode.repository'
+import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.service'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class MemberService {
   constructor(
     @repository(MemberRepository)
     private memberRepository: MemberRepository,
+
+    @repository(MemberQRCodeRepository)
+    private memberQRCodeRepository: MemberQRCodeRepository,
+
+    @inject('service.member-qrcode')
+    private memberQRCodeService: MemberQRCodeService,
   ) {}
 
   create(data: Omit<Member, 'id'>): Promise<Member> {
@@ -94,6 +98,7 @@ export class MemberService {
     await this.findById(id)
     await this.memberRepository.deleteById(id)
   }
+
   async getAllAvailableForCheckInMembers(): Promise<
     MemberAvailableForCheckIn[]
   > {
@@ -109,5 +114,31 @@ export class MemberService {
       planName: member.planName ?? '',
       planDescription: member.planDescription ?? '',
     }))
+  }
+
+  async findActiveQRCode(memberId: number) {
+    const qrCode = await this.memberQRCodeRepository.findOne({
+      where: {
+        memberId,
+        status: 'active',
+      },
+    })
+
+    if (!qrCode) {
+      return null
+    }
+
+    const image = await this.memberQRCodeService.generateQRCodeImage(
+      qrCode.tokenHash,
+    )
+
+    return {
+      id: qrCode.id!,
+      memberId: qrCode.memberId,
+      status: qrCode.status,
+      issuedAt: qrCode.issuedAt,
+      revokedAt: qrCode.revokedAt,
+      qrCodeImage: image,
+    }
   }
 }

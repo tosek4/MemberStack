@@ -48,6 +48,13 @@ export class Payment extends Entity {
   })
   status?: string
 
+  @property({
+    type: 'date',
+    defaultFn: 'now',
+    required: true,
+  })
+  createdAt: Date
+
   // relations
   @belongsTo(() => Member)
   memberId?: number

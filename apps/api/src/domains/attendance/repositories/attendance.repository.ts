@@ -108,4 +108,14 @@ export class AttendanceRepository extends DefaultCrudRepository<
 
     return rows.map((row: { id: number }) => row.id)
   }
+
+  async findOpenAttendance(memberId: number): Promise<Attendance | null> {
+    return this.findOne({
+      where: {
+        memberId,
+        checkedOutAt: null as unknown as Date,
+      },
+      order: ['checkedInAt DESC'],
+    })
+  }
 }

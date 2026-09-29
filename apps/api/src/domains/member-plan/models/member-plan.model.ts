@@ -1,8 +1,5 @@
 import { Entity, hasMany, model, property } from '@loopback/repository'
-import {
-  MemberSubscription,
-  MemberSubscriptionWithRelations,
-} from '../../member-subscription/models'
+import { MemberSubscription } from '../../member-subscription/models'
 import { MemberPlanRelations, MemberPlanStatus } from '../types'
 
 @model()

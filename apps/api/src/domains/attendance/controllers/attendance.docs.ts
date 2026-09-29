@@ -121,3 +121,22 @@ export const AttendanceStatsResponseSchema = {
     },
   },
 }
+const qrCheckInSchema: SchemaObject = {
+  type: 'object',
+  required: ['token'],
+  properties: {
+    token: {
+      type: 'string',
+    },
+  },
+}
+
+export const QRCheckInRequestSchema = {
+  description: 'Required input for QR code check-in',
+  content: {
+    'application/json': {
+      schema: qrCheckInSchema,
+    },
+  },
+  required: true,
+}

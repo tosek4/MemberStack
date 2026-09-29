@@ -29,9 +29,11 @@ export class RefreshToken extends Entity {
   revokedAt?: Date
 
   @property({
-    type: 'string',
+    type: 'date',
+    defaultFn: 'now',
+    required: true,
   })
-  createdAt: string
+  createdAt: Date
 
   @property({
     type: 'string',

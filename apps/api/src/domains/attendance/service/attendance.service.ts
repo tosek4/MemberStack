@@ -1,4 +1,4 @@
-import { BindingScope, injectable } from '@loopback/core'
+import { BindingScope, inject, injectable } from '@loopback/core'
 import {
   Count,
   FilterExcludingWhere,
@@ -13,12 +13,22 @@ import {
   AttendanceListItem,
   AttendanceStats,
 } from '../types'
+import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.service'
+import { MEMBER__QR_CODE_SERVICE } from '../../member-qrcode/keys'
+import { MemberSubscriptionService } from '../../member-subscription/service'
+import { MEMBER_SUBSCRIPTION_SERVICE } from '../../member-subscription/keys'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class AttendanceService {
   constructor(
     @repository(AttendanceRepository)
     private attendanceRepository: AttendanceRepository,
+
+    @inject(MEMBER__QR_CODE_SERVICE)
+    private memberQRCodeService: MemberQRCodeService,
+
+    @inject(MEMBER_SUBSCRIPTION_SERVICE)
+    private memberSubscriptionService: MemberSubscriptionService,
   ) {}
 
   async find(filters?: AttendanceListFilters): Promise<AttendanceListItem[]> {
@@ -132,5 +142,41 @@ export class AttendanceService {
   async deleteById(id: number): Promise<void> {
     await this.findById(id)
     await this.attendanceRepository.deleteById(id)
+  }
+
+  async checkInWithQRCode(token: string): Promise<Attendance> {
+    const qrCode = await this.memberQRCodeService.verifyToken(token)
+
+    if (!qrCode) {
+      throw new HttpErrors.Unauthorized('Invalid or inactive QR code')
+    }
+
+    const subscription =
+      await this.memberSubscriptionService.findCurrentSubscription(
+        qrCode.memberId,
+      )
+
+    if (!subscription) {
+      throw new HttpErrors.Forbidden(
+        'Member does not have an active membership',
+      )
+    }
+
+    const openAttendance = await this.attendanceRepository.findOpenAttendance(
+      qrCode.memberId,
+    )
+
+    if (openAttendance) {
+      throw new HttpErrors.Conflict('Member is already checked in')
+    }
+
+    const attendance = await this.attendanceRepository.create({
+      memberId: qrCode.memberId,
+      checkedInAt: new Date(),
+      attendanceMethod: 'qr',
+      status: 'checked-in',
+    })
+
+    return attendance
   }
 }

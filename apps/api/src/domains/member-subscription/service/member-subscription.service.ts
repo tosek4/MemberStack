@@ -148,7 +148,7 @@ export class MemberSubscriptionService {
       startedAt: currentDate,
       expiresAt: newExpiryDate,
       status: 'active',
-      createdByUserId: createdByUserId,
+      createdByUserId,
     })
 
     await this.paymentRepository.create({
@@ -159,6 +159,23 @@ export class MemberSubscriptionService {
       status: 'paid',
       paidAt: currentDate,
       createdByUserId,
+    })
+  }
+
+  async findCurrentSubscription(
+    memberId: number,
+  ): Promise<MemberSubscription | null> {
+    const now = new Date()
+
+    return this.memberSubscriptionRepository.findOne({
+      where: {
+        memberId,
+        status: 'active',
+        expiresAt: {
+          gte: now,
+        },
+      },
+      order: ['expiresAt DESC'],
     })
   }
 }

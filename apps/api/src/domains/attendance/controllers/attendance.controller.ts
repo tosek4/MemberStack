@@ -21,6 +21,7 @@ import {
   AttendanceUpdateResponseSchema,
   CreateAttendanceRequestSchema,
   CreateAttendanceResponseSchema,
+  QRCheckInRequestSchema,
   UpdateAttendanceRequestSchema,
 } from './attendance.docs'
 import {
@@ -107,5 +108,16 @@ export class AttendanceController {
   @response(204, AttendanceDeleteResponseSchema)
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.attendanceService.deleteById(id)
+  }
+
+  @post('/qr-check-in')
+  @response(200, CreateAttendanceResponseSchema)
+  async checkInWithQRCode(
+    @requestBody(QRCheckInRequestSchema)
+    body: {
+      token: string
+    },
+  ): Promise<Attendance> {
+    return this.attendanceService.checkInWithQRCode(body.token)
   }
 }

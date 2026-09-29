@@ -46,6 +46,13 @@ export class MemberSubscription extends Entity {
   })
   remainingVisits: number
 
+  @property({
+    type: 'date',
+    defaultFn: 'now',
+    required: true,
+  })
+  createdAt: Date
+
   // relations
   @belongsTo(() => Member)
   memberId: number

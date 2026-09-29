@@ -99,4 +99,10 @@ export class MemberController {
   async deleteById(@param.path.number('id') id: number): Promise<void> {
     await this.memberService.deleteById(id)
   }
+
+  @get('/{memberId}/qrcode')
+  @response(200)
+  async getActiveQRCode(@param.path.number('memberId') memberId: number) {
+    return this.memberService.findActiveQRCode(memberId)
+  }
 }

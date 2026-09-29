@@ -48,6 +48,10 @@ import { DashboardService } from './domains/dashboard/services/dashboard.service
 import { DASHBOARD_SERVICE } from './domains/dashboard/keys'
 import { DAILY_VISIT_SERVICE } from './domains/daily-visit/keys'
 import { DailyVisitService } from './domains/daily-visit/service'
+import { MEMBER__QR_CODE_SERVICE } from './domains/member-qrcode/keys'
+import { MemberQRCodeService } from './domains/member-qrcode/services/member-qrcode.service'
+import { EmailService } from './services/email/email.services'
+import { EMAIL_SERVICE } from './services/email/keys'
 
 export { ApplicationConfig }
 export class MemberstackApiApplication extends BootMixin(
@@ -122,7 +126,8 @@ export class MemberstackApiApplication extends BootMixin(
     this.bind(ROLES_SERVICE).toClass(RoleService)
     this.bind(DASHBOARD_SERVICE).toClass(DashboardService)
     this.bind(DAILY_VISIT_SERVICE).toClass(DailyVisitService)
-
+    this.bind(MEMBER__QR_CODE_SERVICE).toClass(MemberQRCodeService)
+    this.bind(EMAIL_SERVICE).toClass(EmailService)
   }
 
   setupComponents() {
