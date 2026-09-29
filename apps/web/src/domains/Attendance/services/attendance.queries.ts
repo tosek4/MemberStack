@@ -12,7 +12,6 @@ import {
   CreateDailyCheckInPayload,
   UpdateAttendancePayload,
 } from '../types'
-import { PaymentMethod } from '@/components/PaymentMethodModal'
 
 export const attendanceKeys = {
   all: ['attendances'] as const,
@@ -91,6 +90,18 @@ export const useCreateDailyVisit = () => {
   return useMutation({
     mutationFn: ({ data }: { data: CreateDailyCheckInPayload }) =>
       dailyVisitService.createDailyVisit(data),
+
+    onSuccess: () => {
+      queryClient.invalidateQueries({ queryKey: attendanceKeys.all })
+    },
+  })
+}
+
+export const useCheckInWithQR = () => {
+  const queryClient = useQueryClient()
+
+  return useMutation({
+    mutationFn: (token: string) => attendanceService.checkInWithQR(token),
 
     onSuccess: () => {
       queryClient.invalidateQueries({ queryKey: attendanceKeys.all })

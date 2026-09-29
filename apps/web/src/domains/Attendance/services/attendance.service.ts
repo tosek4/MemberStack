@@ -7,7 +7,6 @@ import {
   CreateDailyCheckInPayload,
   UpdateAttendancePayload,
 } from '../types'
-import { PaymentMethod } from '@/components/PaymentMethodModal'
 
 export const attendanceService = {
   getAttendances: async (
@@ -41,6 +40,7 @@ export const attendanceService = {
 
     return response.data
   },
+
   getAttendanceStats: async (date: string): Promise<AttendanceStats> => {
     const response = await api.get<AttendanceStats>('/attendances/stats', {
       params: {
@@ -58,11 +58,16 @@ export const attendanceService = {
 
     return response.data
   },
+
   updateAttendance: async (
     id: number,
     data: UpdateAttendancePayload,
   ): Promise<void> => {
     await api.patch(`/attendances/${id}`, data)
+  },
+
+  checkInWithQR: async (token: string): Promise<void> => {
+    await api.post(`/attendances/qr-check-in`, { token })
   },
 }
 

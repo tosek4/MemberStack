@@ -1,5 +1,5 @@
-import React, { useState } from 'react'
-import { Users, LogIn } from 'lucide-react'
+import React, { useCallback, useState } from 'react'
+import { Users, LogIn, ScanQrCode } from 'lucide-react'
 
 import { AttendanceCard, AttendanceFilters, CheckIn } from './components'
 
@@ -9,6 +9,7 @@ import { styles } from './Attendance.styled'
 import {
   useAttendances,
   useAttendanceStats,
+  useCheckInWithQR,
   useCreateAttendance,
   useCreateDailyVisit,
   useUpdateAttendance,
@@ -17,6 +18,8 @@ import { getLocalDateString } from '@/utils/date'
 import { useDebounce } from '@/hooks/useDebounce'
 import { DailyCheckIn } from './components/DailyCheckIn'
 import { DailyCheckInFormData } from './components/DailyCheckIn/types'
+import { QRCodeScanner } from './components/QRCodeScanner/QRCodeScanner'
+import { toast } from 'sonner'
 
 export const Attendance: React.FC = () => {
   const today = getLocalDateString()
@@ -25,6 +28,7 @@ export const Attendance: React.FC = () => {
   const [date, setDate] = useState(today)
   const [dailyCheckInModalOpen, setDailyCheckInModalOpen] = useState(false)
   const [checkInModalOpen, setCheckInModalOpen] = useState(false)
+  const [isScannerOpen, setIsScannerOpen] = useState(false)
 
   const debouncedSearch = useDebounce(search, 400)
 
@@ -44,6 +48,7 @@ export const Attendance: React.FC = () => {
   const createAttendance = useCreateAttendance()
   const updateAttendance = useUpdateAttendance()
   const createDailyVisit = useCreateDailyVisit()
+  const checkInWithQR = useCheckInWithQR()
 
   const handleCheckIn = async (data: CheckInFormData) => {
     const formattedData = {
@@ -104,6 +109,26 @@ export const Attendance: React.FC = () => {
     )
   }
 
+  const handleQRCodeScan = useCallback(
+    (token: string) => {
+      setIsScannerOpen(false)
+
+      checkInWithQR.mutate(token, {
+        onSuccess: () => {
+          toast.success('Member checked in successfully')
+        },
+        onError: (error) => {
+          toast.error(
+            error instanceof Error
+              ? error.message
+              : 'QR check-in failed. Please try again.',
+          )
+        },
+      })
+    },
+    [checkInWithQR],
+  )
+
   if (isPending) {
     return (
       <main className={styles.root}>
@@ -162,6 +187,16 @@ export const Attendance: React.FC = () => {
             >
               <LogIn size={18} />
               Daily Check In
+            </button>
+
+            <button
+              type="button"
+              className={styles.checkInButton}
+              onClick={() => setIsScannerOpen(true)}
+              disabled={checkInWithQR.isPending}
+            >
+              <ScanQrCode size={18} />
+              {checkInWithQR.isPending ? 'Checking In...' : 'Scan QR Code'}
             </button>
           </div>
         </header>
@@ -234,6 +269,11 @@ export const Attendance: React.FC = () => {
         loading={createDailyVisit.isPending}
         onClose={() => setDailyCheckInModalOpen(false)}
         onSubmit={handleDailyCheckIn}
+      />
+      <QRCodeScanner
+        open={isScannerOpen}
+        onClose={() => setIsScannerOpen(false)}
+        onScan={handleQRCodeScan}
       />
     </main>
   )
