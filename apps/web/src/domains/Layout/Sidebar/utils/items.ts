@@ -6,6 +6,7 @@ import {
   Settings,
   UserRound,
   Users,
+  Sparkles,
 } from 'lucide-react'
 import { createElement } from 'react'
 
@@ -17,6 +18,12 @@ export const sidebarItems: SidebarItem[] = [
     label: LABELS.dashboard,
     href: '/dashboard',
     icon: createElement(LayoutDashboard),
+    roles: ['reception', 'manager', 'admin', 'superAdmin'],
+  },
+  {
+    label: LABELS.ai,
+    href: '/ai',
+    icon: createElement(Sparkles),
     roles: ['reception', 'manager', 'admin', 'superAdmin'],
   },
   {

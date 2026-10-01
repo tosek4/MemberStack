@@ -83,9 +83,8 @@ export class AuthService {
       credentials.deviceToken ?? '',
     )
 
-    const accessTokenExpiryAt = getAccessTokenExpiry(
-      parseInt(this.tokenExpiresIn),
-    )
+    const accessTokenExpiryAt = getAccessTokenExpiry(this.tokenExpiresIn)
+
     const { passwordHash, ...userData } = user
 
     return {
@@ -133,9 +132,7 @@ export class AuthService {
 
     const accessToken = await this.jwtService.generateToken(payload)
 
-    const accessTokenExpiry = getAccessTokenExpiry(
-      parseInt(this.tokenExpiresIn),
-    )
+    const accessTokenExpiry = getAccessTokenExpiry(this.tokenExpiresIn)
 
     return {
       accessToken,

@@ -16,8 +16,11 @@ import {
 } from './services'
 import { getDashboardStatistics } from './utils'
 import { useState } from 'react'
+import { Sparkles } from 'lucide-react'
+import { useRouter } from 'next/router'
 
 export const Dashboard = () => {
+  const router = useRouter()
   const [period, setPeriod] = useState('7d')
 
   const { data: overview } = useDashboardOverview()
@@ -52,6 +55,15 @@ export const Dashboard = () => {
             <RecentPayments payments={recentPayments} />
           </div>
         </div>
+        <button
+          type="button"
+          onClick={() => router.push('/ai')}
+          aria-label="Open AI Assistant"
+          className={styles.aiButton}
+        >
+          <Sparkles size={20} />
+          Ask AI
+        </button>
       </div>
     </main>
   )

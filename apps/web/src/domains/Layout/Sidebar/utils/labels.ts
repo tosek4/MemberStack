@@ -11,4 +11,5 @@ export const LABELS = {
   attendanceSection: 'Attendance',
   managementSection: 'Management',
   membershipPlans: 'Membership Plans',
+  ai: 'AI',
 } as const
