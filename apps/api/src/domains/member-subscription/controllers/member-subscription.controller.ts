@@ -10,7 +10,7 @@ import {
   response,
 } from '@loopback/rest'
 import { MemberSubscription } from '../models'
-import { MemberSubscriptionService } from '../service'
+import { MemberSubscriptionService } from '../services'
 import {
   CreateMemberSubscriptionRequestSchema,
   CreateMemberSubscriptionResponseSchema,

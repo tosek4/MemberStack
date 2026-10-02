@@ -78,4 +78,52 @@ export class EmailService {
       ],
     })
   }
+
+  async sendMembershipExpirationEmail(options: {
+    to: string
+    memberName: string
+    expiresAt: Date
+  }): Promise<void> {
+    const formattedExpirationDate = options.expiresAt.toLocaleDateString(
+      'en-GB',
+      {
+        day: '2-digit',
+        month: '2-digit',
+        year: 'numeric',
+      },
+    )
+
+    await this.transporter.sendMail({
+      from: process.env.SMTP_FROM,
+      to: options.to,
+      subject: 'Your membership is expiring soon',
+      text: `Hello ${options.memberName},
+
+Your membership will expire on ${formattedExpirationDate}.
+
+Please contact the gym to renew your membership.
+
+Best regards,
+MemberStack Team`,
+      html: `
+      <h2>MemberStack</h2>
+
+      <p>Hello ${options.memberName},</p>
+
+      <p>
+        Your membership will expire on
+        <strong>${formattedExpirationDate}</strong>.
+      </p>
+
+      <p>
+        Please contact the gym to renew your membership.
+      </p>
+
+      <p>
+        Best regards,<br />
+        MemberStack Team
+      </p>
+    `,
+    })
+  }
 }

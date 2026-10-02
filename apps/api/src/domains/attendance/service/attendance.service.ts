@@ -15,7 +15,7 @@ import {
 } from '../types'
 import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.service'
 import { MEMBER__QR_CODE_SERVICE } from '../../member-qrcode/keys'
-import { MemberSubscriptionService } from '../../member-subscription/service'
+import { MemberSubscriptionService } from '../../member-subscription/services'
 import { MEMBER_SUBSCRIPTION_SERVICE } from '../../member-subscription/keys'
 
 @injectable({ scope: BindingScope.TRANSIENT })

@@ -1,7 +1,6 @@
 import { BindingScope, inject, injectable } from '@loopback/core'
 import {
   Count,
-  Filter,
   FilterExcludingWhere,
   repository,
   Where,

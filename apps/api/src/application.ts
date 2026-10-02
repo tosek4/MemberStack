@@ -36,8 +36,11 @@ import { MEMBER_SERVICE } from './domains/member/keys'
 import { MemberService } from './domains/member/service'
 import { MEMBER_PLAN_SERVICE } from './domains/member-plan/keys'
 import { MemberPlanService } from './domains/member-plan/service'
-import { MEMBER_SUBSCRIPTION_SERVICE } from './domains/member-subscription/keys'
-import { MemberSubscriptionService } from './domains/member-subscription/service'
+import {
+  MEMBER_SUBSCRIPTION_EXPIRATION_SERVICE,
+  MEMBER_SUBSCRIPTION_SERVICE,
+} from './domains/member-subscription/keys'
+import { MemberSubscriptionService } from './domains/member-subscription/services'
 import { AttendanceService } from './domains/attendance/service'
 import { ATTENDANCE_SERVICE } from './domains/attendance/keys'
 import { PAYMENT_SERVICE } from './domains/payment/keys'
@@ -54,6 +57,7 @@ import { EmailService } from './services/email/email.services'
 import { EMAIL_SERVICE } from './services/email/keys'
 import { AIAssistantService } from './domains/ai/services/ai-assistant.service'
 import { AI_ASSISTANT_SERVICE } from './domains/ai/keys'
+import { SubscriptionExpirationService } from './domains/member-subscription/services/subscription-expiration.service'
 
 export { ApplicationConfig }
 export class MemberstackApiApplication extends BootMixin(
@@ -82,6 +86,7 @@ export class MemberstackApiApplication extends BootMixin(
     this.setupComponents()
 
     this.projectRoot = __dirname
+
     // Customize @loopback/boot Booter Conventions here
     this.bootOptions = {
       controllers: {
@@ -92,6 +97,11 @@ export class MemberstackApiApplication extends BootMixin(
       repositories: {
         dirs: ['domains'],
         extensions: ['.repository.ts'],
+        nested: true,
+      },
+      observers: {
+        dirs: ['observers'],
+        extensions: ['.observer.ts'],
         nested: true,
       },
     }
@@ -133,6 +143,9 @@ export class MemberstackApiApplication extends BootMixin(
     this.bind(EMAIL_SERVICE).toClass(EmailService)
 
     this.bind(AI_ASSISTANT_SERVICE).toClass(AIAssistantService)
+    this.bind(MEMBER_SUBSCRIPTION_EXPIRATION_SERVICE).toClass(
+      SubscriptionExpirationService,
+    )
   }
 
   setupComponents() {

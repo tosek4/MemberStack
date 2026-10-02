@@ -53,6 +53,11 @@ export class MemberSubscription extends Entity {
   })
   createdAt: Date
 
+  @property({
+    type: 'date',
+  })
+  expirationNotificationSentAt: Date
+
   // relations
   @belongsTo(() => Member)
   memberId: number
