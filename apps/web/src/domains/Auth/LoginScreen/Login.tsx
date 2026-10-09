@@ -157,7 +157,7 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
                 {isSubmitting ? LABELS.signingIn : LABELS.signIn}
               </button>
 
-              <p className={styles.signup.text}>
+              {/* <p className={styles.signup.text}>
                 {LABELS.dontHaveAccount}{' '}
                 <a
                   href="#"
@@ -166,7 +166,7 @@ export const Login: React.FC<LoginScreenProps> = ({ title = LABELS.title }) => {
                 >
                   {LABELS.signUp}
                 </a>
-              </p>
+              </p> */}
             </form>
           </div>
         </div>

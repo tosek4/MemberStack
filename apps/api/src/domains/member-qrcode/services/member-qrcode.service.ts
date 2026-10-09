@@ -42,12 +42,6 @@ export class MemberQRCodeService {
       throw new HttpErrors.BadRequest('Member does not have an email address')
     }
 
-    const existingQRCode = await this.findActiveQRCode(memberId)
-
-    if (existingQRCode) {
-      throw new HttpErrors.Conflict('Member already has an active QR code')
-    }
-
     const token = this.generateToken()
     const tokenHash = this.hashToken(token)
 
@@ -61,11 +55,22 @@ export class MemberQRCodeService {
 
     const image = await this.generateQRCodeImage(token)
 
-    await this.emailService.sendQRCodeEmail({
-      to: member.email,
-      memberName: `${member.firstName} ${member.lastName}`,
-      image,
-    })
+    try {
+      await this.emailService.sendQRCodeEmail({
+        to: member.email,
+        memberName: `${member.firstName} ${member.lastName}`,
+        image,
+      })
+    } catch (error) {
+      await this.revokeQRCode(qrCode.id!)
+      throw error
+    }
+
+   
+    await this.memberQRCodeRepository.updateAll(
+      { status: 'revoked', revokedAt: new Date().toISOString() },
+      { memberId, status: 'active', id: { neq: qrCode.id } },
+    )
 
     return {
       qrCode: {

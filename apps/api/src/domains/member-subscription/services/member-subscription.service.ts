@@ -13,6 +13,8 @@ import { SecurityBindings, securityId, UserProfile } from '@loopback/security'
 import { PaymentMethod } from '../../payment/types'
 import { PaymentRepository } from '../../payment/repositories'
 import { MemberPlanRepository } from '../../member-plan/repositories'
+import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.service'
+import { MEMBER__QR_CODE_SERVICE } from '../../member-qrcode/keys'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class MemberSubscriptionService {
@@ -28,6 +30,9 @@ export class MemberSubscriptionService {
 
     @repository(MemberPlanRepository)
     private memberPlanRepository: MemberPlanRepository,
+
+    @inject(MEMBER__QR_CODE_SERVICE)
+    private memberQRCodeService: MemberQRCodeService,
   ) {}
 
   async create(
@@ -58,6 +63,11 @@ export class MemberSubscriptionService {
       paidAt: currentDate,
       createdByUserId,
     })
+
+    await this.memberQRCodeService.createQRCode(
+      newSubscription.memberId,
+      createdByUserId,
+    )
 
     return newSubscription
   }
@@ -115,7 +125,7 @@ export class MemberSubscriptionService {
   async renewSubscription(
     id: number,
     paymentMethod: PaymentMethod,
-  ): Promise<void> {
+  ): Promise<MemberSubscription> {
     const subscription = await this.findById(id)
 
     if (subscription.membershipPlan?.status !== 'active') {
@@ -159,6 +169,13 @@ export class MemberSubscriptionService {
       paidAt: currentDate,
       createdByUserId,
     })
+
+    await this.memberQRCodeService.createQRCode(
+      newSubscription.memberId,
+      createdByUserId,
+    )
+
+    return newSubscription
   }
 
   async findCurrentSubscription(

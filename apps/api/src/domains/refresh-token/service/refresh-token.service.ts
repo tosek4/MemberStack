@@ -3,6 +3,7 @@ import crypto from 'crypto'
 import { CreateRefreshTokenDto } from '../types/dto'
 import { RefreshTokenRepository } from '../repositories'
 import { repository } from '@loopback/repository'
+import { EConfigKeys } from '../../../config'
 
 @injectable()
 export class RefreshTokenService {
@@ -16,7 +17,9 @@ export class RefreshTokenService {
 
     return {
       refreshToken,
-      expiresAt: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
+      expiresAt: new Date(
+        Date.now() + EConfigKeys.jwtRefreshExpiresDays * 24 * 60 * 60 * 1000,
+      ),
     }
   }
 

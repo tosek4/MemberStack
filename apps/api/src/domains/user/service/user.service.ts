@@ -70,12 +70,11 @@ export class UserService {
     })
   }
 
-  async findById(
-    id: number,
-    filter?: FilterExcludingWhere<User>,
-  ): Promise<User> {
+  async findById(id: number): Promise<User> {
     try {
-      return await this.userRepository.findById(id, filter)
+      return await this.userRepository.findById(id, {
+        include: [{ relation: 'role' }],
+      })
     } catch {
       throw new HttpErrors.NotFound(`User ${id} not found`)
     }

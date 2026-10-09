@@ -97,7 +97,7 @@ export class MemberSubscriptionController {
   renewSubscription(
     @param.path.number('id') id: number,
     @requestBody() paymentMethod: PaymentMethod,
-  ): Promise<void> {
+  ): Promise<MemberSubscription> {
     return this.memberSubscriptionService.renewSubscription(id, paymentMethod)
   }
 }

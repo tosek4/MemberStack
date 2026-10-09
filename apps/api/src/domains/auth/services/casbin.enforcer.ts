@@ -25,7 +25,7 @@ export class CasbinEnforcer {
       'pg',
       new Client({
         host: EConfigKeys.dbHost,
-        port: +EConfigKeys.dbPort ?? 5432,
+        port: Number(EConfigKeys.dbPort) || 5432,
         user: EConfigKeys.dbUser,
         password: EConfigKeys.dbPassword,
         database: EConfigKeys.dbName,

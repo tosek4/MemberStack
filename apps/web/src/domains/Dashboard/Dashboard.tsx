@@ -22,10 +22,13 @@ import { useRouter } from 'next/router'
 export const Dashboard = () => {
   const router = useRouter()
   const [period, setPeriod] = useState('7d')
+  const currentDate = new Date()
 
   const { data: overview } = useDashboardOverview()
   const { data: memberActivity = [] } = useDashboardMemberActivity(period)
-  const { data: attendance = [] } = useDashboardAttendance('2026-09')
+  const { data: attendance = [] } = useDashboardAttendance(
+    currentDate.toISOString().split('T')[0],
+  )
   const { data: expiringMembers = [] } = useDashboardExpiringMembers()
   const { data: recentPayments = [] } = useDashboardRecentPayments()
 

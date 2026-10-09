@@ -61,6 +61,7 @@ export class MemberService {
       }
     })
   }
+
   async findById(id: number): Promise<MemberListItem> {
     try {
       const member = await this.memberRepository.findById(id, {
