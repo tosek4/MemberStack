@@ -1,6 +1,7 @@
 import { Entity, hasMany, model, property } from '@loopback/repository'
 import { MemberSubscription } from '../../member-subscription/models'
 import { MemberPlanRelations, MemberPlanStatus } from '../types'
+import { DailyVisit } from '../../daily-visit/models'
 
 @model()
 export class MemberPlan extends Entity {

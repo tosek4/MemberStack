@@ -1,8 +1,14 @@
-import { belongsTo, Entity, model, property } from '@loopback/repository'
+import {
+  belongsTo,
+  Entity,
+  hasMany,
+  model,
+  property,
+} from '@loopback/repository'
 
 import { MemberPlan } from '../../member-plan/models/member-plan.model'
-import { Member } from '../../member/models/member.model'
 import { User } from '../../user/models/user.model'
+import { Attendance } from '../../attendance/models'
 
 @model()
 export class DailyVisit extends Entity {
@@ -69,6 +75,9 @@ export class DailyVisit extends Entity {
 
   @belongsTo(() => User, { name: 'createdBy' })
   createdByUserId: number
+
+  @hasMany(() => Attendance)
+  attendances?: Attendance[]
 
   constructor(data?: Partial<DailyVisit>) {
     super(data)

@@ -6,9 +6,10 @@ import { SecurityBindings, securityId, UserProfile } from '@loopback/security'
 import { MemberPlanRepository } from '../../member-plan/repositories/member-plan.repository'
 import { DailyVisit } from '../models/daily-visit.model'
 import { DailyVisitRepository } from '../repositories'
-import { CreateDailyVisitData, CreateDailyVisitPayload } from '../types'
+import { CreateDailyVisitPayload } from '../types'
 import { PaymentRepository } from '../../payment/repositories'
-import { PaymentMethod } from '../../payment/types'
+import { ATTENDANCE_SERVICE } from '../../attendance/keys'
+import { AttendanceService } from '../../attendance/service'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class DailyVisitService {
@@ -24,6 +25,9 @@ export class DailyVisitService {
 
     @repository(PaymentRepository)
     private readonly paymentRepository: PaymentRepository,
+
+    @inject(ATTENDANCE_SERVICE)
+    private readonly attendanceService: AttendanceService,
   ) {}
 
   async find(): Promise<DailyVisit[]> {
@@ -72,6 +76,14 @@ export class DailyVisitService {
       dailyVisitId: dailyVisit.id!,
       createdByUserId,
     })
+
+    await this.attendanceService.create({
+      checkedInAt: new Date(),
+      attendanceMethod: 'qr',
+      status: 'checked-in',
+      dailyVisitId: dailyVisit.id!,
+      createdByUserId,
+    } as Parameters<AttendanceService['create']>[0])
 
     return dailyVisit
   }

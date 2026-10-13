@@ -2,6 +2,7 @@ import { belongsTo, Entity, model, property } from '@loopback/repository'
 import { Member } from '../../member/models'
 import { User } from '../../user/models'
 import { AttendanceRelations } from '../types'
+import { DailyVisit } from '../../daily-visit/models'
 
 @model()
 export class Attendance extends Entity {
@@ -47,6 +48,9 @@ export class Attendance extends Entity {
 
   @belongsTo(() => User, { name: 'createdBy' })
   createdByUserId: number
+
+  @belongsTo(() => DailyVisit)
+  dailyVisitId?: number
 
   constructor(data?: Partial<Attendance>) {
     super(data)

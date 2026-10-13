@@ -64,6 +64,9 @@ export class AttendanceService {
             ],
           },
         },
+        {
+          relation: 'dailyVisit',
+        },
       ],
       order: ['checkedInAt DESC'],
     })
@@ -71,17 +74,27 @@ export class AttendanceService {
     return attendances.map((attendance) => {
       const member = attendance.member
       const activeSubscription = member?.subscriptions?.[0] ?? null
+      const dailyVisit = attendance.dailyVisit
 
       return {
         id: attendance.id!,
         memberId: attendance.memberId,
-        memberName: member ? `${member.firstName} ${member.lastName}` : '',
+        memberName: member
+          ? `${member.firstName} ${member.lastName}`
+          : `${dailyVisit?.firstName} ${dailyVisit?.lastName}`,
         memberEmail: member?.email ?? '',
         memberSubscriptionId: activeSubscription?.id ?? null,
-        planName: activeSubscription?.membershipPlan?.name ?? null,
+        planName: activeSubscription?.membershipPlan?.name
+          ? activeSubscription?.membershipPlan?.name
+          : !!dailyVisit
+            ? 'Daily Visit'
+            : null,
         checkIn: attendance.checkedInAt,
         checkOut: attendance.checkedOutAt ?? null,
         status: attendance.checkedOutAt ? 'checked-out' : 'checked-in',
+        dailyVisitId: dailyVisit?.id ?? null,
+        dailyVisitPhone: dailyVisit?.phone ?? null,
+        isDailyVisit: !!dailyVisit,
       }
     })
   }

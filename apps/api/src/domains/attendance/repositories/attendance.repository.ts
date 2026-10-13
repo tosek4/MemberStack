@@ -11,6 +11,8 @@ import { MemberRepository } from '../../member/repositories'
 import { User } from '../../user/models'
 import { UserRepository } from '../../user/repositories'
 import { AttendanceListFilters, AttendanceRelations } from '../types'
+import { DailyVisitRepository } from '../../daily-visit/repositories'
+import { DailyVisit } from '../../daily-visit/models'
 
 export class AttendanceRepository extends DefaultCrudRepository<
   Attendance,
@@ -27,12 +29,21 @@ export class AttendanceRepository extends DefaultCrudRepository<
     typeof Attendance.prototype.id
   >
 
+  public readonly dailyVisit: BelongsToAccessor<
+    DailyVisit,
+    typeof Attendance.prototype.id
+  >
+
   constructor(
     @inject('datasources.postgres') dataSource: PostgresDataSource,
     @repository.getter('MemberRepository')
     protected memberRepositoryGetter: Getter<MemberRepository>,
+
     @repository.getter('UserRepository')
     protected userRepositoryGetter: Getter<UserRepository>,
+
+    @repository.getter('DailyVisitRepository')
+    protected dailyVisitRepositoryGetter: Getter<DailyVisitRepository>,
   ) {
     super(Attendance, dataSource)
 
@@ -49,6 +60,16 @@ export class AttendanceRepository extends DefaultCrudRepository<
     this.registerInclusionResolver(
       'createdBy',
       this.createdBy.inclusionResolver,
+    )
+
+    this.dailyVisit = this.createBelongsToAccessorFor(
+      'dailyVisit',
+      dailyVisitRepositoryGetter,
+    )
+
+    this.registerInclusionResolver(
+      'dailyVisit',
+      this.dailyVisit.inclusionResolver,
     )
   }
 
@@ -68,6 +89,9 @@ export class AttendanceRepository extends DefaultCrudRepository<
         m."firstname" ILIKE $${params.length}
         OR m."lastname" ILIKE $${params.length}
         OR m."email" ILIKE $${params.length}
+        or dv."firstname" ILIKE $${params.length}
+        OR dv."lastname" ILIKE $${params.length}
+        OR dv."phone" ILIKE $${params.length}
       )
     `)
     }
@@ -98,6 +122,10 @@ export class AttendanceRepository extends DefaultCrudRepository<
 
     LEFT JOIN "member" m
       ON a."memberid" = m."id"
+
+
+    LEFT JOIN "dailyvisit" dv
+      ON a."dailyvisitid" = dv."id"
 
     ${whereClause}
 

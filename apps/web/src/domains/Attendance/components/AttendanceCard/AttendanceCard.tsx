@@ -21,7 +21,9 @@ export const AttendanceCard: React.FC<AttendanceCardProps> = ({
       : styles.badge.checkedOut
 
   return (
-    <div className={styles.card}>
+    <div
+      className={attendance.isDailyVisit ? styles.cardDailyVisit : styles.card}
+    >
       <div className={styles.header}>
         <div className={styles.member.wrapper}>
           <div className={styles.member.avatar}>

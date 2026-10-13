@@ -11,8 +11,6 @@ export class AttendanceAutoCheckoutService {
   ) {}
 
   async checkOutOpenAttendances(): Promise<number> {
-    const now = new Date()
-
     const openAttendances = await this.attendanceRepository.find({
       where: { checkedOutAt: null as unknown as Date },
     })
@@ -24,13 +22,13 @@ export class AttendanceAutoCheckoutService {
     }
 
     for (const attendance of openAttendances) {
-      const checkedInDay = new Date(attendance.checkedInAt)
-        .toISOString()
-        .slice(0, 10)
-      const endOfCheckInDay = new Date(`${checkedInDay}T23:59:59.999Z`)
+      const checkedInAt = new Date(attendance.checkedInAt)
+
+      const endOfCheckInDay = new Date(checkedInAt)
+      endOfCheckInDay.setHours(23, 59, 59, 999)
 
       await this.attendanceRepository.updateById(attendance.id, {
-        checkedOutAt: now < endOfCheckInDay ? now : endOfCheckInDay,
+        checkedOutAt: endOfCheckInDay,
         status: 'checked-out',
       })
     }

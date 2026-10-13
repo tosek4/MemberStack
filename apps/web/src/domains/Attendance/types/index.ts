@@ -12,6 +12,9 @@ export interface Attendance {
   checkIn: string
   checkOut: string | null
   status: AttendanceStatus
+  dailyVisitId: number | null
+  dailyVisitPhone: string | null
+  isDailyVisit: boolean
 }
 
 export type AttendanceStatusFilter = 'all' | AttendanceStatus

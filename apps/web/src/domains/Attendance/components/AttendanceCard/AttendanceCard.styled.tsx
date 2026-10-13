@@ -1,6 +1,9 @@
 export const styles = {
   card: 'rounded-xl border border-gray-200 bg-white p-5 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800',
 
+  cardDailyVisit:
+    'rounded-xl border border-gray-200 bg-yellow-50 p-5 shadow-sm transition-shadow hover:shadow-md dark:border-gray-700 dark:bg-gray-800',
+
   header: 'flex items-start justify-between gap-4',
 
   member: {
