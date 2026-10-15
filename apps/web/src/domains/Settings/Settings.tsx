@@ -1,4 +1,8 @@
-import React, { useState } from 'react'
+import React, { useEffect, useState } from 'react'
+import { FormProvider, useForm } from 'react-hook-form'
+import { toast } from 'sonner'
+
+import { getApiErrorMessage } from '@/utils/apiError'
 
 import {
   GeneralSettings,
@@ -6,152 +10,144 @@ import {
   SecuritySettings,
 } from './components'
 
+import { getSettings, updateSettings } from './services/settings.service'
 import { SettingsData } from './types'
 import { LABELS } from './utils/labels'
 import { styles } from './Settings.styled'
 
-const initialSettings: SettingsData = {
-  general: {
-    gymName: 'MemberStack Gym',
-    email: 'info@memberstack.com',
-    phone: '+389 70 123 456',
-    address: 'Skopje, North Macedonia',
-    currency: 'EUR',
-  },
-
-  membership: {
-    defaultDuration: 1,
-    expiringSoonDays: 7,
-    gracePeriodDays: 0,
-  },
-
-  security: {
-    sessionTimeout: 60,
-  },
-}
-
 export const Settings: React.FC = () => {
-  const [settings, setSettings] = useState<SettingsData>(initialSettings)
-
+  const [loading, setLoading] = useState(true)
   const [saving, setSaving] = useState(false)
 
-  const handleSave = async () => {
+  const methods = useForm<SettingsData>({
+    mode: 'onSubmit',
+    reValidateMode: 'onChange',
+  })
+
+  const { handleSubmit, reset } = methods
+
+  useEffect(() => {
+    let isMounted = true
+
+    const loadSettings = async () => {
+      try {
+        const data = await getSettings()
+
+        if (isMounted && data) {
+          reset(data)
+        }
+      } catch (error) {
+        if (isMounted) {
+          toast.error(getApiErrorMessage(error))
+        }
+      } finally {
+        if (isMounted) {
+          setLoading(false)
+        }
+      }
+    }
+
+    void loadSettings()
+
+    return () => {
+      isMounted = false
+    }
+  }, [reset])
+
+  const onSubmit = async (data: SettingsData) => {
     setSaving(true)
 
-    // Mock save for now.
-    console.log('Save settings:', settings)
+    try {
+      const updated = await updateSettings(data)
 
-    await new Promise((resolve) => setTimeout(resolve, 500))
+      reset(updated ?? data)
 
-    setSaving(false)
+      toast.success('Settings saved successfully')
+    } catch (error) {
+      toast.error(getApiErrorMessage(error))
+    } finally {
+      setSaving(false)
+    }
   }
 
   const handleCancel = () => {
-    setSettings(initialSettings)
-  }
-
-  const updateGeneral = (value: SettingsData['general']) => {
-    setSettings((current) => ({
-      ...current,
-      general: value,
-    }))
-  }
-
-  const updateMembership = (value: SettingsData['membership']) => {
-    setSettings((current) => ({
-      ...current,
-      membership: value,
-    }))
-  }
-
-  const updateSecurity = (value: SettingsData['security']) => {
-    setSettings((current) => ({
-      ...current,
-      security: value,
-    }))
+    reset()
   }
 
   return (
     <main className={styles.root}>
       <header className={styles.header.wrapper}>
         <h1 className={styles.header.title}>{LABELS.title}</h1>
-
         <p className={styles.header.subtitle}>{LABELS.subtitle}</p>
       </header>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>{LABELS.general.title}</h2>
+      {loading ? (
+        <p role="status">Loading settings...</p>
+      ) : (
+        <FormProvider {...methods}>
+          <form onSubmit={handleSubmit(onSubmit)}>
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>{LABELS.general.title}</h2>
+                <p className={styles.sectionDescription}>
+                  {LABELS.general.description}
+                </p>
+              </div>
 
-          <p className={styles.sectionDescription}>
-            {LABELS.general.description}
-          </p>
-        </div>
+              <div className={styles.sectionBody}>
+                <GeneralSettings />
+              </div>
+            </section>
 
-        <div className={styles.sectionBody}>
-          <GeneralSettings
-            settings={settings.general}
-            onChange={updateGeneral}
-          />
-        </div>
-      </section>
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>
+                  {LABELS.membership.title}
+                </h2>
+                <p className={styles.sectionDescription}>
+                  {LABELS.membership.description}
+                </p>
+              </div>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>{LABELS.membership.title}</h2>
+              <div className={styles.sectionBody}>
+                <MembershipSettings />
+              </div>
+            </section>
 
-          <p className={styles.sectionDescription}>
-            {LABELS.membership.description}
-          </p>
-        </div>
+            <section className={styles.section}>
+              <div className={styles.sectionHeader}>
+                <h2 className={styles.sectionTitle}>{LABELS.security.title}</h2>
+                <p className={styles.sectionDescription}>
+                  {LABELS.security.description}
+                </p>
+              </div>
 
-        <div className={styles.sectionBody}>
-          <MembershipSettings
-            settings={settings.membership}
-            onChange={updateMembership}
-          />
-        </div>
-      </section>
+              <div className={styles.sectionBody}>
+                <SecuritySettings />
+              </div>
+            </section>
 
-      <section className={styles.section}>
-        <div className={styles.sectionHeader}>
-          <h2 className={styles.sectionTitle}>{LABELS.security.title}</h2>
+            <div className={styles.footer}>
+              <button
+                type="button"
+                className={styles.button.cancel}
+                onClick={handleCancel}
+                disabled={loading || saving}
+              >
+                {LABELS.actions.cancel}
+              </button>
 
-          <p className={styles.sectionDescription}>
-            {LABELS.security.description}
-          </p>
-        </div>
-
-        <div className={styles.sectionBody}>
-          <SecuritySettings
-            settings={settings.security}
-            onChange={updateSecurity}
-            onChangePassword={() => {
-              console.log('Change password')
-            }}
-          />
-        </div>
-      </section>
-
-      <div className={styles.footer}>
-        <button
-          type="button"
-          className={styles.button.cancel}
-          onClick={handleCancel}
-          disabled={saving}
-        >
-          {LABELS.actions.cancel}
-        </button>
-
-        <button
-          type="button"
-          className={styles.button.save}
-          onClick={handleSave}
-          disabled={saving}
-        >
-          {saving ? LABELS.actions.saving : LABELS.actions.save}
-        </button>
-      </div>
+              <button
+                type="submit"
+                className={styles.button.save}
+                disabled={loading || saving}
+              >
+                {saving ? LABELS.actions.saving : LABELS.actions.save}
+              </button>
+            </div>
+          </form>
+        </FormProvider>
+      )}
     </main>
   )
 }

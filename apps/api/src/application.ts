@@ -62,6 +62,8 @@ import { AIAssistantService } from './domains/ai/services/ai-assistant.service'
 import { AI_ASSISTANT_SERVICE } from './domains/ai/keys'
 import { SubscriptionExpirationService } from './domains/member-subscription/services/subscription-expiration.service'
 import { AttendanceAutoCheckoutService } from './domains/attendance/service/attendance-autocheckout.service'
+import { SETTINGS_SERVICE } from './domains/settings/keys'
+import { SettingsService } from './domains/settings/service'
 
 export { ApplicationConfig }
 export class MemberstackApiApplication extends BootMixin(
@@ -153,6 +155,8 @@ export class MemberstackApiApplication extends BootMixin(
     this.bind(ATTENDANCE_AUTO_CHECKOUT_SERVICE).toClass(
       AttendanceAutoCheckoutService,
     )
+
+    this.bind(SETTINGS_SERVICE).toClass(SettingsService)
   }
 
   setupComponents() {

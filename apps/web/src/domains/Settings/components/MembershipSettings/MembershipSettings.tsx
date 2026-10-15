@@ -1,13 +1,16 @@
 import React from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { LABELS } from '../../utils/labels'
-import { MembershipSettingsProps } from './types'
 import { styles } from './MembershipSettings.styled'
+import { SettingsData } from '../../types'
 
-export const MembershipSettings: React.FC<MembershipSettingsProps> = ({
-  settings,
-  onChange,
-}) => {
+export const MembershipSettings: React.FC = () => {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<SettingsData>()
+
   return (
     <div className={styles.root}>
       <div className={styles.grid}>
@@ -19,15 +22,19 @@ export const MembershipSettings: React.FC<MembershipSettingsProps> = ({
           <input
             type="number"
             min={1}
-            value={settings.defaultDuration}
             className={styles.input}
-            onChange={(e) =>
-              onChange({
-                ...settings,
-                defaultDuration: Number(e.target.value),
-              })
-            }
+            {...register('membership.defaultDuration', {
+              required: 'Default duration is required',
+              valueAsNumber: true,
+              min: { value: 1, message: 'Must be at least 1' },
+            })}
           />
+
+          {errors.membership?.defaultDuration && (
+            <p className={styles.error}>
+              {errors.membership.defaultDuration.message}
+            </p>
+          )}
 
           <p className={styles.help}>{LABELS.membership.defaultDurationHelp}</p>
         </div>
@@ -40,15 +47,19 @@ export const MembershipSettings: React.FC<MembershipSettingsProps> = ({
           <input
             type="number"
             min={1}
-            value={settings.expiringSoonDays}
             className={styles.input}
-            onChange={(e) =>
-              onChange({
-                ...settings,
-                expiringSoonDays: Number(e.target.value),
-              })
-            }
+            {...register('membership.expiringSoonDays', {
+              required: 'Expiring soon days is required',
+              valueAsNumber: true,
+              min: { value: 1, message: 'Must be at least 1' },
+            })}
           />
+
+          {errors.membership?.expiringSoonDays && (
+            <p className={styles.error}>
+              {errors.membership.expiringSoonDays.message}
+            </p>
+          )}
 
           <p className={styles.help}>
             {LABELS.membership.expiringSoonDaysHelp}
@@ -63,15 +74,18 @@ export const MembershipSettings: React.FC<MembershipSettingsProps> = ({
           <input
             type="number"
             min={0}
-            value={settings.gracePeriodDays}
             className={styles.input}
-            onChange={(e) =>
-              onChange({
-                ...settings,
-                gracePeriodDays: Number(e.target.value),
-              })
-            }
+            {...register('membership.gracePeriodDays', {
+              valueAsNumber: true,
+              min: { value: 0, message: 'Cannot be negative' },
+            })}
           />
+
+          {errors.membership?.gracePeriodDays && (
+            <p className={styles.error}>
+              {errors.membership.gracePeriodDays.message}
+            </p>
+          )}
 
           <p className={styles.help}>{LABELS.membership.gracePeriodDaysHelp}</p>
         </div>

@@ -2,15 +2,19 @@ import React, { useEffect, useState } from 'react'
 import { Check, ChevronLeft, ChevronRight } from 'lucide-react'
 
 import { styles } from './MembershipPlans.styled'
-import { useMembershipPlans } from '@/domains/MembershipPlans/services/membershipPlans.queries'
+import { formatPrice } from '../../utils/formatPrice'
+import { membershipPlansProps } from '../../types'
+import { usePublicMembershipPlans } from '../../services/publicSettings.queries'
 
-export const MembershipPlans: React.FC = () => {
-  const { data: membershipPlans = [], isLoading } = useMembershipPlans()
-
+export const MembershipPlans: React.FC<membershipPlansProps> = ({
+  currency,
+}) => {
+  const { data: membershipPlans = [], isLoading } = usePublicMembershipPlans()
+  console.log('membershipPlans', membershipPlans)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [visiblePlansCount, setVisiblePlansCount] = useState(3)
 
-  const plans = membershipPlans.filter(
+  const plans = membershipPlans?.filter(
     (plan) => plan.status === 'active' && !plan.isDailyPlan,
   )
 
@@ -120,8 +124,7 @@ export const MembershipPlans: React.FC = () => {
                       </p>
 
                       <div className={styles.price}>
-                        <span className={styles.currency}>€</span>
-                        {plan.price}
+                        {formatPrice(plan.price, currency ?? '')}
                       </div>
 
                       <p className={styles.duration}>

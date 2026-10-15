@@ -29,4 +29,6 @@ export const styles = {
 
     save: 'rounded-lg bg-primary-600 px-5 py-2.5 text-sm font-medium text-white hover:bg-primary-700 focus:outline-none focus:ring-4 focus:ring-primary-300 disabled:cursor-not-allowed disabled:opacity-50',
   },
+
+  error: 'text-sm text-red-600 dark:text-red-400',
 } as const

@@ -3,16 +3,15 @@ import { ArrowRight, Lock } from 'lucide-react'
 
 import { styles } from './Hero.styled'
 import Link from 'next/link'
+import { heroProps } from '../../types'
 
-export const Hero: React.FC = () => {
+export const Hero : React.FC<heroProps> = ({ gymName }) =>  {
   return (
     <section className={styles.section}>
       <div className={styles.background} />
 
       <header className={styles.header}>
-        <div className={styles.logo}>
-          MEMBER<span>STACK</span>
-        </div>
+        <div className={styles.logo}>{gymName ?? ''}</div>
 
         <Link href="/login" className={styles.loginButton}>
           <Lock size={14} />

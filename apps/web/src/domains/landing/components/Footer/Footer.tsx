@@ -1,21 +1,35 @@
 import React from 'react'
 
-import {styles} from './Footer.styled'
+import { styles } from './Footer.styled'
+import { footerProps } from '../../types'
 
-export const Footer: React.FC = () => {
+export const Footer: React.FC<footerProps> = ({
+  gymName,
+  email,
+  phone,
+  address,
+}) => {
   return (
     <footer className={styles.footer}>
       <div className={styles.container}>
-        <div className={styles.logo}>
-          MEMBER<span>STACK</span>
-        </div>
+        <div className={styles.logo}>{gymName ?? ''}</div>
+        {email && (
+          <a href={`mailto:${email}`} className={styles.text}>
+            {email}
+          </a>
+        )}
 
-        <p className={styles.text}>
-          Train hard. Live strong.
-        </p>
+        {phone && (
+          <a href={`tel:${phone}`} className={styles.text}>
+            {phone}
+          </a>
+        )}
+
+        {address && <p className={styles.text}>{address}</p>}
 
         <p className={styles.copyright}>
-          © {new Date().getFullYear()} MemberStack. All rights reserved.
+          © {new Date().getFullYear()}
+          {gymName ? ` ${gymName}.` : '.'} All rights reserved.
         </p>
       </div>
     </footer>

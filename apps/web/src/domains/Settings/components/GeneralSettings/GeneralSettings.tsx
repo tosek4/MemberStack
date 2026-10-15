@@ -1,22 +1,15 @@
 import React from 'react'
+import { useFormContext } from 'react-hook-form'
 
 import { LABELS } from '../../utils/labels'
-import { GeneralSettingsProps } from './types'
 import { styles } from './GeneralSettings.styled'
+import { SettingsData } from '../../types'
 
-export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
-  settings,
-  onChange,
-}) => {
-  const update = <K extends keyof typeof settings>(
-    field: K,
-    value: (typeof settings)[K],
-  ) => {
-    onChange({
-      ...settings,
-      [field]: value,
-    })
-  }
+export const GeneralSettings: React.FC = () => {
+  const {
+    register,
+    formState: { errors },
+  } = useFormContext<SettingsData>()
 
   return (
     <div className={styles.root}>
@@ -26,10 +19,15 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
           <input
             type="text"
-            value={settings.gymName}
             className={styles.input}
-            onChange={(e) => update('gymName', e.target.value)}
+            {...register('general.gymName', {
+              required: 'Gym name is required',
+            })}
           />
+
+          {errors.general?.gymName && (
+            <p className={styles.error}>{errors.general.gymName.message}</p>
+          )}
         </div>
 
         <div className={styles.field}>
@@ -37,10 +35,19 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
           <input
             type="email"
-            value={settings.email}
             className={styles.input}
-            onChange={(e) => update('email', e.target.value)}
+            {...register('general.email', {
+              required: 'Email is required',
+              pattern: {
+                value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                message: 'Enter a valid email',
+              },
+            })}
           />
+
+          {errors.general?.email && (
+            <p className={styles.error}>{errors.general.email.message}</p>
+          )}
         </div>
 
         <div className={styles.field}>
@@ -48,25 +55,36 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
           <input
             type="tel"
-            value={settings.phone}
             className={styles.input}
-            onChange={(e) => update('phone', e.target.value)}
+            {...register('general.phone', {
+              required: 'Phone is required',
+            })}
           />
+
+          {errors.general?.phone && (
+            <p className={styles.error}>{errors.general.phone.message}</p>
+          )}
         </div>
 
         <div className={styles.field}>
           <label className={styles.label}>{LABELS.general.currency}</label>
 
           <select
-            value={settings.currency}
             className={styles.select}
-            onChange={(e) => update('currency', e.target.value)}
+            {...register('general.currency', {
+              required: 'Currency is required',
+            })}
           >
+            <option value="">Select currency</option>
             <option value="EUR">{LABELS.currency.eur}</option>
             <option value="USD">{LABELS.currency.usd}</option>
             <option value="GBP">{LABELS.currency.gbp}</option>
             <option value="MKD">{LABELS.currency.mkd}</option>
           </select>
+
+          {errors.general?.currency && (
+            <p className={styles.error}>{errors.general.currency.message}</p>
+          )}
         </div>
       </div>
 
@@ -75,10 +93,15 @@ export const GeneralSettings: React.FC<GeneralSettingsProps> = ({
 
         <input
           type="text"
-          value={settings.address}
           className={styles.input}
-          onChange={(e) => update('address', e.target.value)}
+          {...register('general.address', {
+            required: 'Address is required',
+          })}
         />
+
+        {errors.general?.address && (
+          <p className={styles.error}>{errors.general.address.message}</p>
+        )}
       </div>
     </div>
   )

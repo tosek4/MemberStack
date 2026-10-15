@@ -1,9 +1,10 @@
 import React from 'react'
-import {Smartphone, ArrowRight} from 'lucide-react'
+import { Smartphone, ArrowRight } from 'lucide-react'
 
-import {styles} from './MobileApp.styled'
+import { styles } from './MobileApp.styled'
+import { mobileAppProps } from '../../types'
 
-export const MobileApp: React.FC = () => {
+export const MobileApp: React.FC<mobileAppProps> = ({ gymName }) => {
   return (
     <section className={styles.section}>
       <div className={styles.container}>
@@ -11,18 +12,13 @@ export const MobileApp: React.FC = () => {
           <Smartphone size={30} />
         </div>
 
-        <p className={styles.eyebrow}>
-          MEMBERSTACK MOBILE
-        </p>
+        <p className={styles.eyebrow}>{gymName} MOBILE</p>
 
-        <h2 className={styles.title}>
-          Your gym in your pocket.
-        </h2>
+        <h2 className={styles.title}>Your gym in your pocket.</h2>
 
         <p className={styles.description}>
-          Manage your membership, keep track of your
-          activity and stay connected with your gym
-          wherever you go.
+          Manage your membership, keep track of your activity and stay connected
+          with your gym wherever you go.
         </p>
 
         <button type="button" className={styles.button}>
@@ -30,9 +26,7 @@ export const MobileApp: React.FC = () => {
           <ArrowRight size={18} />
         </button>
 
-        <p className={styles.comingSoon}>
-          Available soon for iOS and Android
-        </p>
+        <p className={styles.comingSoon}>Available soon for iOS and Android</p>
       </div>
     </section>
   )

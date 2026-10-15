@@ -6,15 +6,23 @@ import { About } from './components/About/About'
 import { MobileApp } from './components/MobileApp/MobileApp'
 import { Footer } from './components/Footer/Footer'
 import { MembershipPlans } from './components/MembershipPlans/MembershipPlans'
+import { usePublicSettings } from './services/publicSettings.queries'
 
 export const Landing: React.FC = () => {
+  const { data: settings } = usePublicSettings()
+  console.log('settings', settings)
   return (
     <main className={styles.page}>
-      <Hero />
+      <Hero gymName={settings?.gymName} />
       <About />
-      <MembershipPlans />
-      <MobileApp />
-      <Footer />
+      <MembershipPlans currency={settings?.currency} />
+      <MobileApp gymName={settings?.gymName} />
+      <Footer
+        gymName={settings?.gymName}
+        email={settings?.email}
+        phone={settings?.phone}
+        address={settings?.address}
+      />
     </main>
   )
 }

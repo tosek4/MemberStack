@@ -25,6 +25,16 @@ import {
 } from './member-plan.docs'
 import { authenticate } from '@loopback/authentication'
 
+@authenticate('jwt')
+@authorize({
+  allowedRoles: [
+    AppRole.ADMIN,
+    AppRole.SUPER_ADMIN,
+    AppRole.TRAINER,
+    AppRole.MANAGER,
+  ],
+  voters: ['authorization.authorizers.role'],
+})
 @api({ basePath: '/member-plans' })
 export class MemberPlanController {
   constructor(
@@ -40,16 +50,6 @@ export class MemberPlanController {
     return this.memberPlanService.getAllMemberPlans(filter)
   }
 
-  @authenticate('jwt')
-  @authorize({
-    allowedRoles: [
-      AppRole.ADMIN,
-      AppRole.SUPER_ADMIN,
-      AppRole.TRAINER,
-      AppRole.MANAGER,
-    ],
-    voters: ['authorization.authorizers.role'],
-  })
   @post('/')
   @response(200, CreateMemberPlanResponseSchema)
   create(
@@ -59,48 +59,18 @@ export class MemberPlanController {
     return this.memberPlanService.create(plan)
   }
 
-  @authenticate('jwt')
-  @authorize({
-    allowedRoles: [
-      AppRole.ADMIN,
-      AppRole.SUPER_ADMIN,
-      AppRole.TRAINER,
-      AppRole.MANAGER,
-    ],
-    voters: ['authorization.authorizers.role'],
-  })
   @get('/count')
   @response(200, MemberPlanCountResponseSchema)
   count(@param.where(MemberPlan) where?: Where<MemberPlan>): Promise<Count> {
     return this.memberPlanService.count(where)
   }
 
-  @authenticate('jwt')
-  @authorize({
-    allowedRoles: [
-      AppRole.ADMIN,
-      AppRole.SUPER_ADMIN,
-      AppRole.TRAINER,
-      AppRole.MANAGER,
-    ],
-    voters: ['authorization.authorizers.role'],
-  })
   @get('/{id}')
   @response(200, MemberPlanGetByIdResponseSchema)
   findById(@param.path.number('id') id: number): Promise<MemberPlan> {
     return this.memberPlanService.findById(id)
   }
 
-  @authenticate('jwt')
-  @authorize({
-    allowedRoles: [
-      AppRole.ADMIN,
-      AppRole.SUPER_ADMIN,
-      AppRole.TRAINER,
-      AppRole.MANAGER,
-    ],
-    voters: ['authorization.authorizers.role'],
-  })
   @patch('/{id}')
   @response(204, MemberPlanUpdateResponseSchema)
   async updateById(
@@ -111,16 +81,6 @@ export class MemberPlanController {
     await this.memberPlanService.updateById(id, plan)
   }
 
-  @authenticate('jwt')
-  @authorize({
-    allowedRoles: [
-      AppRole.ADMIN,
-      AppRole.SUPER_ADMIN,
-      AppRole.TRAINER,
-      AppRole.MANAGER,
-    ],
-    voters: ['authorization.authorizers.role'],
-  })
   @del('/{id}')
   @response(204, { description: 'MemberPlan DELETE success' })
   async deleteById(@param.path.number('id') id: number): Promise<void> {
