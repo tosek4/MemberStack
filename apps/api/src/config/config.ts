@@ -14,6 +14,7 @@ const {
   JWT_REFRESH_SECRET,
   JWT_ACCESS_EXPIRES_IN,
   JWT_REFRESH_EXPIRES_DAYS,
+  MEMBER_JWT_SECRET,
 } = process.env
 
 export const EConfigKeys = {
@@ -32,4 +33,5 @@ export const EConfigKeys = {
   jwtRefreshSecret: JWT_REFRESH_SECRET as string,
   jwtAccessExpiresIn: JWT_ACCESS_EXPIRES_IN || '15m',
   jwtRefreshExpiresDays: Number(JWT_REFRESH_EXPIRES_DAYS || 7),
+  memberJwtSecret: MEMBER_JWT_SECRET as string,
 } as const

@@ -99,30 +99,50 @@ export class EmailService {
       subject: 'Your membership is expiring soon',
       text: `Hello ${options.memberName},
 
-Your membership will expire on ${formattedExpirationDate}.
+        Your membership will expire on ${formattedExpirationDate}.
 
-Please contact the gym to renew your membership.
+        Please contact the gym to renew your membership.
 
-Best regards,
-MemberStack Team`,
+        Best regards,
+        MemberStack Team`,
+      html: `
+              <h2>MemberStack</h2>
+
+              <p>Hello ${options.memberName},</p>
+
+              <p>
+                Your membership will expire on
+                <strong>${formattedExpirationDate}</strong>.
+              </p>
+
+              <p>
+                Please contact the gym to renew your membership.
+              </p>
+
+              <p>
+                Best regards,<br />
+                MemberStack Team
+              </p>
+            `,
+    })
+  }
+
+  async sendMemberVerificationCode(options: {
+    to: string
+    code: string
+  }): Promise<void> {
+    await this.sendEmail({
+      to: options.to,
+      subject: 'Your MemberStack verification code',
+      text: `Your verification code is ${options.code}. It expires in 10 minutes. If you did not request this code, you can ignore this email.`,
       html: `
       <h2>MemberStack</h2>
-
-      <p>Hello ${options.memberName},</p>
-
-      <p>
-        Your membership will expire on
-        <strong>${formattedExpirationDate}</strong>.
+      <p>Use the following code to sign in to your member account:</p>
+      <p style="font-size: 28px; font-weight: bold; letter-spacing: 6px;">
+        ${options.code}
       </p>
-
-      <p>
-        Please contact the gym to renew your membership.
-      </p>
-
-      <p>
-        Best regards,<br />
-        MemberStack Team
-      </p>
+      <p>This code expires in 10 minutes.</p>
+      <p>If you did not request this code, ignore this email.</p>
     `,
     })
   }

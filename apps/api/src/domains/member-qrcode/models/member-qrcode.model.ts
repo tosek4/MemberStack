@@ -12,9 +12,6 @@ export class MemberQRCode extends Entity {
   })
   id?: number
 
-  @belongsTo(() => Member)
-  memberId: number
-
   @property({
     type: 'string',
     required: true,
@@ -52,6 +49,15 @@ export class MemberQRCode extends Entity {
     required: true,
   })
   createdAt: Date
+
+  @property({
+    type: 'string',
+  })
+  tokenEncrypted?: string
+
+  //relation
+  @belongsTo(() => Member)
+  memberId: number
 
   constructor(data?: Partial<MemberQRCode>) {
     super(data)

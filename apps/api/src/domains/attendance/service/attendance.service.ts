@@ -14,7 +14,7 @@ import {
   AttendanceStats,
 } from '../types'
 import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.service'
-import { MEMBER__QR_CODE_SERVICE } from '../../member-qrcode/keys'
+import { MEMBER_QR_CODE_SERVICE } from '../../member-qrcode/keys'
 import { MemberSubscriptionService } from '../../member-subscription/services'
 import { MEMBER_SUBSCRIPTION_SERVICE } from '../../member-subscription/keys'
 
@@ -24,7 +24,7 @@ export class AttendanceService {
     @repository(AttendanceRepository)
     private attendanceRepository: AttendanceRepository,
 
-    @inject(MEMBER__QR_CODE_SERVICE)
+    @inject(MEMBER_QR_CODE_SERVICE)
     private memberQRCodeService: MemberQRCodeService,
 
     @inject(MEMBER_SUBSCRIPTION_SERVICE)

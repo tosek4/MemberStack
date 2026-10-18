@@ -54,7 +54,7 @@ import { DashboardService } from './domains/dashboard/services/dashboard.service
 import { DASHBOARD_SERVICE } from './domains/dashboard/keys'
 import { DAILY_VISIT_SERVICE } from './domains/daily-visit/keys'
 import { DailyVisitService } from './domains/daily-visit/service'
-import { MEMBER__QR_CODE_SERVICE } from './domains/member-qrcode/keys'
+import { MEMBER_QR_CODE_SERVICE } from './domains/member-qrcode/keys'
 import { MemberQRCodeService } from './domains/member-qrcode/services/member-qrcode.service'
 import { EmailService } from './services/email/email.services'
 import { EMAIL_SERVICE } from './services/email/keys'
@@ -64,6 +64,8 @@ import { SubscriptionExpirationService } from './domains/member-subscription/ser
 import { AttendanceAutoCheckoutService } from './domains/attendance/service/attendance-autocheckout.service'
 import { SETTINGS_SERVICE } from './domains/settings/keys'
 import { SettingsService } from './domains/settings/service'
+import { MemberAuthService } from './domains/member-auth/service'
+import { MEMBER_AUTH_SERVICE } from './domains/member-auth/keys'
 
 export { ApplicationConfig }
 export class MemberstackApiApplication extends BootMixin(
@@ -145,7 +147,7 @@ export class MemberstackApiApplication extends BootMixin(
     this.bind(DASHBOARD_SERVICE).toClass(DashboardService)
     this.bind(DAILY_VISIT_SERVICE).toClass(DailyVisitService)
 
-    this.bind(MEMBER__QR_CODE_SERVICE).toClass(MemberQRCodeService)
+    this.bind(MEMBER_QR_CODE_SERVICE).toClass(MemberQRCodeService)
     this.bind(EMAIL_SERVICE).toClass(EmailService)
 
     this.bind(AI_ASSISTANT_SERVICE).toClass(AIAssistantService)
@@ -155,8 +157,8 @@ export class MemberstackApiApplication extends BootMixin(
     this.bind(ATTENDANCE_AUTO_CHECKOUT_SERVICE).toClass(
       AttendanceAutoCheckoutService,
     )
-
     this.bind(SETTINGS_SERVICE).toClass(SettingsService)
+    this.bind(MEMBER_AUTH_SERVICE).toClass(MemberAuthService)
   }
 
   setupComponents() {

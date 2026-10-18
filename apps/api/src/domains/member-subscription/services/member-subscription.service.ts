@@ -14,7 +14,7 @@ import { PaymentMethod } from '../../payment/types'
 import { PaymentRepository } from '../../payment/repositories'
 import { MemberPlanRepository } from '../../member-plan/repositories'
 import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.service'
-import { MEMBER__QR_CODE_SERVICE } from '../../member-qrcode/keys'
+import { MEMBER_QR_CODE_SERVICE } from '../../member-qrcode/keys'
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class MemberSubscriptionService {
@@ -31,7 +31,7 @@ export class MemberSubscriptionService {
     @repository(MemberPlanRepository)
     private memberPlanRepository: MemberPlanRepository,
 
-    @inject(MEMBER__QR_CODE_SERVICE)
+    @inject(MEMBER_QR_CODE_SERVICE)
     private memberQRCodeService: MemberQRCodeService,
   ) {}
 

@@ -8,6 +8,7 @@ import { MemberQRCode } from '../models/member-qrcode.model'
 import { EmailService } from '../../../services/email/email.services'
 import { MemberRepository } from '../../member/repositories'
 import { inject } from '@loopback/core'
+import { decryptToken, encryptToken } from '../utils/token-crypto.utils'
 
 export class MemberQRCodeService {
   constructor(
@@ -48,6 +49,7 @@ export class MemberQRCodeService {
     const qrCode = await this.memberQRCodeRepository.create({
       memberId,
       tokenHash,
+      tokenEncrypted: encryptToken(token),
       status: 'active',
       issuedAt: new Date().toISOString(),
       createdByUserId,
@@ -66,7 +68,6 @@ export class MemberQRCodeService {
       throw error
     }
 
-   
     await this.memberQRCodeRepository.updateAll(
       { status: 'revoked', revokedAt: new Date().toISOString() },
       { memberId, status: 'active', id: { neq: qrCode.id } },
@@ -98,12 +99,16 @@ export class MemberQRCodeService {
   }
 
   async findActiveQRCode(memberId: number): Promise<MemberQRCode | null> {
-    return this.memberQRCodeRepository.findOne({
-      where: {
-        memberId,
-        status: 'active',
-      },
+    return await this.memberQRCodeRepository.findOne({
+      where: { memberId, status: 'active' },
+      order: ['issuedAt DESC'],
     })
+  }
+
+  async getActiveToken(memberId: number): Promise<string | null> {
+    const record = await this.findActiveQRCode(memberId)
+    if (!record?.tokenEncrypted) return null
+    return decryptToken(record.tokenEncrypted)
   }
 
   async verifyToken(token: string): Promise<MemberQRCode | null> {
