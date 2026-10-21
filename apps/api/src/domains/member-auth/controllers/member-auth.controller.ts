@@ -12,6 +12,7 @@ import {
 import { MemberAuthService } from '../service/member-auth.service'
 import {
   CreateMemberCodeRequestSchema,
+  LogoutRequestSchema,
   MeResponseSchema,
   MyQrCodeResponseSchema,
   RefreshRequestSchema,
@@ -103,5 +104,16 @@ export class MemberAuthController {
   }> {
     const token = extractBearerToken(this.request.headers.authorization)
     return this.memberAuthService.getMemberSubscriptionHistory(token)
+  }
+
+  @post('/logout')
+  @response(204, { description: 'Refresh token revoked' })
+  async logout(
+    @requestBody(LogoutRequestSchema)
+    body: {
+      refreshToken: string
+    },
+  ): Promise<void> {
+    await this.memberAuthService.logout(body.refreshToken)
   }
 }

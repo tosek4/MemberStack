@@ -46,7 +46,7 @@ export const VerifyCodeBodyRequestSchema = {
   },
   required: true,
 }
-//
+
 const refreshSchema: SchemaObject = {
   type: 'object',
   required: ['refreshToken'],
@@ -88,4 +88,25 @@ export const MyQrCodeResponseSchema = {
       },
     },
   },
+}
+
+export const logoutBodySchema: SchemaObject = {
+  type: 'object',
+  required: ['refreshToken'],
+  properties: {
+    refreshToken: { type: 'string', minLength: 1, maxLength: 200 },
+  },
+}
+
+
+
+
+export const LogoutRequestSchema = {
+  description: 'Logout a member by revoking their refresh token',
+  content: {
+    'application/json': {
+      schema: logoutBodySchema,
+    },
+  },
+  required: true,
 }

@@ -242,6 +242,18 @@ export class MemberAuthService {
 
     return { subscriptions: memberData?.subscriptions || [] }
   }
+
+  async logout(refreshToken: string): Promise<void> {
+    await this.refreshTokenRepository.updateAll(
+      { revokedAt: new Date() },
+      {
+        tokenHash: hashRefreshToken(refreshToken),
+        revokedAt: null as unknown as Date | undefined,
+      },
+    )
+  }
+
+  // ---------------------------- Private Methods ----------------------------
   private async findActiveMemberByEmail(email: string): Promise<Member | null> {
     const member = await this.memberRepository.findOne({ where: { email } })
     return member?.status === MemberStatus.ACTIVE ? member : null
