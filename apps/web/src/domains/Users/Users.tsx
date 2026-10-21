@@ -57,7 +57,6 @@ export const Users: React.FC = () => {
 
   const handleEdit = (user: User) => {
     router.push(`/users/${user.id}`)
-    console.log('Edit staff member:', user)
   }
 
   const rolesFilters = [

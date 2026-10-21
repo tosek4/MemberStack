@@ -17,3 +17,17 @@ export interface MemberData {
     }
   }
 }
+
+export interface MemberSubscriptionData {
+  id?: number
+  status?: string
+  startedAt?: Date | undefined
+  expiresAt?: Date | undefined
+  membershipPlan?: {
+    id?: number
+    name: string
+    description?: string
+    price: number
+    duration: number
+  }
+}

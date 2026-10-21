@@ -10,7 +10,6 @@ import { usePublicSettings } from './services/publicSettings.queries'
 
 export const Landing: React.FC = () => {
   const { data: settings } = usePublicSettings()
-  console.log('settings', settings)
   return (
     <main className={styles.page}>
       <Hero gymName={settings?.gymName} />

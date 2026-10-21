@@ -17,7 +17,7 @@ import {
   MemberAuthCodeRepository,
   MemberRefreshTokenRepository,
 } from '../repositories'
-import { MemberData } from '../types'
+import { MemberData, MemberSubscriptionData } from '../types'
 import {
   generateLoginCode,
   generateRefreshToken,
@@ -61,7 +61,6 @@ export class MemberAuthService {
     @inject(MEMBER_QR_CODE_SERVICE)
     private memberQRCodeService: MemberQRCodeService,
   ) {}
-
 
   async createRequestCode(email: string): Promise<void> {
     const normalizedEmail = normalizeEmail(email)
@@ -216,6 +215,33 @@ export class MemberAuthService {
     return { token }
   }
 
+  async getMemberSubscriptionHistory(
+    token: string,
+  ): Promise<{ subscriptions: MemberSubscriptionData[] }> {
+    const memberId = verifyMemberAccessToken(token)
+
+    const member = await this.findActiveMemberById(memberId)
+    if (!member) {
+      throw new HttpErrors.Unauthorized('Invalid or expired access token.')
+    }
+
+    const memberData = await this.memberRepository
+      .findById(memberId, {
+        include: [
+          {
+            relation: 'subscriptions',
+            scope: {
+              where: { status: { neq: 'active' } },
+              order: ['startedAt DESC', 'expiresAt DESC'],
+              include: ['membershipPlan'],
+            },
+          },
+        ],
+      })
+      .catch(() => null)
+
+    return { subscriptions: memberData?.subscriptions || [] }
+  }
   private async findActiveMemberByEmail(email: string): Promise<Member | null> {
     const member = await this.memberRepository.findOne({ where: { email } })
     return member?.status === MemberStatus.ACTIVE ? member : null

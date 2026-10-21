@@ -28,6 +28,7 @@ export interface PublicSettings {
 export type MembershipPlanStatus = 'active' | 'inactive'
 
 export interface PublicMembershipPlan {
+  id?: number
   name: string
   price: number
   currency: string

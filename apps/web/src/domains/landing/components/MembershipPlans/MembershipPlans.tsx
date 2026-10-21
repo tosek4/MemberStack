@@ -10,7 +10,6 @@ export const MembershipPlans: React.FC<membershipPlansProps> = ({
   currency,
 }) => {
   const { data: membershipPlans = [], isLoading } = usePublicMembershipPlans()
-  console.log('membershipPlans', membershipPlans)
   const [currentIndex, setCurrentIndex] = useState(0)
   const [visiblePlansCount, setVisiblePlansCount] = useState(3)
 
@@ -107,7 +106,7 @@ export const MembershipPlans: React.FC<membershipPlansProps> = ({
                 const isPopular = plan.name === 'Premium'
 
                 return (
-                  <div key={plan.id} className={styles.slide}>
+                  <div key={plan?.id} className={styles.slide}>
                     <div
                       className={`${styles.card} ${
                         isPopular ? styles.popularCard : ''

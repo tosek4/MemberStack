@@ -110,8 +110,6 @@ export class AIAssistantService {
 
       const toolOutputs = await Promise.all(
         functionCalls.map(async (call) => {
-          console.log('call=====', call)
-
           try {
             const args: unknown = JSON.parse(call.arguments || '{}')
             const result = await this.executeTool(call.name, args)

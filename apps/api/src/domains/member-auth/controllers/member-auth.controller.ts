@@ -17,7 +17,7 @@ import {
   RefreshRequestSchema,
   VerifyCodeBodyRequestSchema,
 } from './member-auth.docs'
-import { MemberData } from '../types'
+import { MemberData, MemberSubscriptionData } from '../types'
 import { extractBearerToken, verifyMemberAccessToken } from '../utils'
 
 @api({ basePath: '/member-auth' })
@@ -94,5 +94,14 @@ export class MemberAuthController {
   async myQrCode(): Promise<{ token: string }> {
     const token = extractBearerToken(this.request.headers.authorization)
     return this.memberAuthService.getMemberQrCode(token)
+  }
+
+  @get('/subscription-history')
+  @response(200, MyQrCodeResponseSchema)
+  async mySubscriptionHistory(): Promise<{
+    subscriptions: MemberSubscriptionData[]
+  }> {
+    const token = extractBearerToken(this.request.headers.authorization)
+    return this.memberAuthService.getMemberSubscriptionHistory(token)
   }
 }
