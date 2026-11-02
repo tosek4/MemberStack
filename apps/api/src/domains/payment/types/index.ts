@@ -8,12 +8,7 @@ export interface PaymentRelations {
   createdBy?: UserWithRelations
 }
 
-export type PaymentMethod =
-  | 'cash'
-  | 'card'
-  | 'bank_transfer'
-  | 'paypal'
-  | 'other'
+export type PaymentMethod = 'cash' | 'card' | 'bank_transfer' | 'paypal' | 'other'
 
 export type PaymentStatus = 'paid' | 'pending' | 'failed' | 'refunded'
 

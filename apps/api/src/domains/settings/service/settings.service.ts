@@ -6,7 +6,6 @@ import { SettingsRepository } from '../repositories'
 import { PublicSettings, SettingsData } from '../types'
 import { DEFAULT_SETTINGS, SETTINGS_ID } from '../utils'
 
-
 @injectable({ scope: BindingScope.TRANSIENT })
 export class SettingsService {
   constructor(
@@ -102,7 +101,7 @@ export class SettingsService {
   }
 
   private validateSettings(data: SettingsData): void {
-    if (!data || !data.general || !data.membership || !data.security) {
+    if (!data?.general || !data.membership || !data.security) {
       throw new HttpErrors.BadRequest('All settings sections are required')
     }
 

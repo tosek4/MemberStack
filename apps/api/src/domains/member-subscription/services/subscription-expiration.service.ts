@@ -46,9 +46,7 @@ export class SubscriptionExpirationService {
       )
     }
 
-    console.log(
-      `[SubscriptionExpirationService] Expired ${subscriptions.length} subscription(s).`,
-    )
+    console.log(`[SubscriptionExpirationService] Expired ${subscriptions.length} subscription(s).`)
   }
 
   async notifyExpiringSubscriptions(): Promise<void> {
@@ -77,23 +75,17 @@ export class SubscriptionExpirationService {
     })
 
     if (subscriptions.length === 0) {
-      console.log(
-        '[SubscriptionExpirationService] No subscriptions expiring in 7 days.',
-      )
+      console.log('[SubscriptionExpirationService] No subscriptions expiring in 7 days.')
 
       return
     }
 
     for (const subscription of subscriptions) {
       try {
-        const member = await this.memberRepository.findById(
-          subscription.memberId,
-        )
+        const member = await this.memberRepository.findById(subscription.memberId)
 
         if (!member.email) {
-          console.warn(
-            `[SubscriptionExpirationService] Member ${member.id} has no email.`,
-          )
+          console.warn(`[SubscriptionExpirationService] Member ${member.id} has no email.`)
 
           continue
         }

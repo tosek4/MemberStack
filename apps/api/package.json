@@ -18,8 +18,8 @@
     "build:watch": "lb-tsc --watch",
     "lint": "npm run eslint && npm run prettier:check",
     "lint:fix": "npm run eslint:fix && npm run prettier:fix",
-    "prettier:cli": "lb-prettier \"**/*.ts\" \"**/*.js\"",
-    "prettier:check": "npm run prettier:cli -- -l",
+    "prettier:cli": "prettier \"src/**/*.ts\"",
+    "prettier:check": "npm run prettier:cli -- --check",
     "prettier:fix": "npm run prettier:cli -- --write",
     "eslint": "lb-eslint --report-unused-disable-directives .",
     "eslint:fix": "npm run eslint -- --fix",
@@ -36,7 +36,8 @@
     "clean": "lb-clean dist *.tsbuildinfo .eslintcache",
     "rebuild": "npm run clean && npm run build",
     "migrate": "ts-node src/migrate.ts",
-    "test:unit": "npm run build && node --test --test-reporter=spec \"dist/__tests__/unit/**/*.js\""
+    "test:unit": "npm run build && node --test --test-reporter=spec \"dist/__tests__/unit/**/*.js\"",
+    "typecheck": "tsc --noEmit"
   },
   "repository": {
     "type": "git",
@@ -88,8 +89,6 @@
     "@types/nodemailer": "^8.0.2",
     "@types/pg": "^8.20.0",
     "@types/qrcode": "^1.5.6",
-    "@typescript-eslint/eslint-plugin": "8.72.0",
-    "@typescript-eslint/parser": "8.72.0",
     "eslint": "^8.57.1",
     "source-map-support": "^0.5.21",
     "typescript": "~5.2.2"

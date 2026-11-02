@@ -1,13 +1,6 @@
-import { BindingScope, inject, injectable } from '@loopback/core'
-import {
-  Count,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository'
+import { BindingScope, injectable } from '@loopback/core'
+import { Count, repository, Where } from '@loopback/repository'
 import { HttpErrors } from '@loopback/rest'
-import { PasswordHasherService } from '../../auth/services/password-hasher.service'
 import { User } from '../models'
 import { UserRepository } from '../repositories'
 import { CreateUserDto, UpdateUserDto, UserListFilters } from '../types'
@@ -93,15 +86,13 @@ export class UserService {
   }
 
   async updateById(id: number, data: UpdateUserDto): Promise<void> {
-    const { password, ...rest } = data
-
     const update: Partial<User> = {
-      firstName: rest.firstName,
-      lastName: rest.lastName,
-      email: rest.email,
-      phone: rest.phone,
-      isActive: rest.isActive,
-      roleId: rest.roleId,
+      firstName: data.firstName,
+      lastName: data.lastName,
+      email: data.email,
+      phone: data.phone,
+      isActive: data.isActive,
+      roleId: data.roleId,
     }
 
     // Remove undefined keys

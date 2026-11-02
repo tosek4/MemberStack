@@ -26,25 +26,13 @@ export class UserRepository extends DefaultCrudRepository<
 > {
   public readonly role: BelongsToAccessor<Role, typeof User.prototype.id>
 
-  public readonly refreshTokens: HasManyRepositoryFactory<
-    RefreshToken,
-    typeof User.prototype.id
-  >
+  public readonly refreshTokens: HasManyRepositoryFactory<RefreshToken, typeof User.prototype.id>
 
-  public readonly members: HasManyRepositoryFactory<
-    Member,
-    typeof User.prototype.id
-  >
+  public readonly members: HasManyRepositoryFactory<Member, typeof User.prototype.id>
 
-  public readonly payments: HasManyRepositoryFactory<
-    Payment,
-    typeof User.prototype.id
-  >
+  public readonly payments: HasManyRepositoryFactory<Payment, typeof User.prototype.id>
 
-  public readonly attendances: HasManyRepositoryFactory<
-    Attendance,
-    typeof User.prototype.id
-  >
+  public readonly attendances: HasManyRepositoryFactory<Attendance, typeof User.prototype.id>
 
   constructor(
     @inject('datasources.postgres') dataSource: PostgresDataSource,
@@ -68,31 +56,19 @@ export class UserRepository extends DefaultCrudRepository<
       'refreshTokens',
       refreshTokenRepositoryGetter,
     )
-    this.registerInclusionResolver(
-      'refreshTokens',
-      this.refreshTokens.inclusionResolver,
-    )
+    this.registerInclusionResolver('refreshTokens', this.refreshTokens.inclusionResolver)
 
-    this.members = this.createHasManyRepositoryFactoryFor(
-      'members',
-      memberRepositoryGetter,
-    )
+    this.members = this.createHasManyRepositoryFactoryFor('members', memberRepositoryGetter)
     this.registerInclusionResolver('members', this.members.inclusionResolver)
 
-    this.payments = this.createHasManyRepositoryFactoryFor(
-      'payments',
-      paymentRepositoryGetter,
-    )
+    this.payments = this.createHasManyRepositoryFactoryFor('payments', paymentRepositoryGetter)
     this.registerInclusionResolver('payments', this.payments.inclusionResolver)
 
     this.attendances = this.createHasManyRepositoryFactoryFor(
       'attendances',
       attendanceRepositoryGetter,
     )
-    this.registerInclusionResolver(
-      'attendances',
-      this.attendances.inclusionResolver,
-    )
+    this.registerInclusionResolver('attendances', this.attendances.inclusionResolver)
   }
 
   async findIdsForList(filters?: UserListFilters): Promise<number[]> {
@@ -133,8 +109,7 @@ export class UserRepository extends DefaultCrudRepository<
       `)
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
     const query = `
       SELECT u."id"

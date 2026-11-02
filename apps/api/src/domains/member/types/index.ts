@@ -27,19 +27,16 @@ export type MemberListItem = Omit<Member, keyof Member> & {
   phone?: string
   birthDate: Date
   gender?: string
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   emergency_contact?: string
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   profile_image?: string
   status: string
   createdByUserId: number
   latestSubscription: ActiveSubscription | null
 }
 
-export type MemberListStatus =
-  | 'all'
-  | 'active'
-  | 'expiring'
-  | 'expired'
-  | 'noSubscription'
+export type MemberListStatus = 'all' | 'active' | 'expiring' | 'expired' | 'noSubscription'
 
 export interface MemberListFilters {
   search?: string

@@ -15,9 +15,7 @@ export class PublicMemberPlanController {
 
   @get('/')
   @response(200, MemberPlanResponseSchema)
-  find(
-    @param.filter(MemberPlan) filter?: Filter<MemberPlan>,
-  ): Promise<MemberPlan[]> {
+  find(@param.filter(MemberPlan) filter?: Filter<MemberPlan>): Promise<MemberPlan[]> {
     return this.memberPlanService.getAllMemberPlans(filter)
   }
 }

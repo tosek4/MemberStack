@@ -27,29 +27,17 @@ export class TimestampingRepository<
     return super.create(entity, options)
   }
 
-  async updateAll(
-    data: DataObject<T>,
-    where?: Where<T>,
-    options?: Options,
-  ): Promise<Count> {
+  async updateAll(data: DataObject<T>, where?: Where<T>, options?: Options): Promise<Count> {
     data.updatedAt = new Date()
     return super.updateAll(data, where, options)
   }
 
-  async replaceById(
-    id: ID,
-    data: DataObject<T>,
-    options?: Options,
-  ): Promise<void> {
+  async replaceById(id: ID, data: DataObject<T>, options?: Options): Promise<void> {
     data.updatedAt = new Date()
     return super.replaceById(id, data, options)
   }
 
-  async updateById(
-    id: ID,
-    data: DataObject<T>,
-    options?: Options,
-  ): Promise<void> {
+  async updateById(id: ID, data: DataObject<T>, options?: Options): Promise<void> {
     data.updatedAt = new Date()
     return super.updateById(id, data, options)
   }

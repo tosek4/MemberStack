@@ -34,9 +34,7 @@ export class AuthService {
     if (userExists) {
       throw new HttpErrors.BadRequest('User already exists.')
     }
-    const passwordHash = await this.passwordHasherService.hashPassword(
-      user.password,
-    )
+    const passwordHash = await this.passwordHasherService.hashPassword(user.password)
 
     const createdUser = await this.userService.create({
       ...user,
@@ -78,13 +76,11 @@ export class AuthService {
       userId: user.id,
       expiresAt: tokens.expiresAt,
     })
-    await this.userService.updateUserToken(
-      user.id,
-      credentials.deviceToken ?? '',
-    )
+    await this.userService.updateUserToken(user.id, credentials.deviceToken ?? '')
 
     const accessTokenExpiryAt = getAccessTokenExpiry(this.tokenExpiresIn)
 
+    // eslint-disable-next-line @typescript-eslint/no-unused-vars
     const { passwordHash, ...userData } = user
 
     return {
@@ -98,8 +94,7 @@ export class AuthService {
   }
 
   async refresh(refreshToken: string): Promise<RefreshTokenResult> {
-    const refreshTokenDB =
-      await this.refreshTokenService.findByToken(refreshToken)
+    const refreshTokenDB = await this.refreshTokenService.findByToken(refreshToken)
 
     if (!refreshTokenDB) {
       throw new HttpErrors.Unauthorized('Invalid refresh token.')

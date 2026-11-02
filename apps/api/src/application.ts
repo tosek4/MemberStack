@@ -1,9 +1,6 @@
 import { BootMixin } from '@loopback/boot'
-import { ApplicationConfig, BindingScope } from '@loopback/core'
-import {
-  RestExplorerBindings,
-  RestExplorerComponent,
-} from '@loopback/rest-explorer'
+import { ApplicationConfig } from '@loopback/core'
+import { RestExplorerBindings, RestExplorerComponent } from '@loopback/rest-explorer'
 import { RepositoryMixin } from '@loopback/repository'
 import { RestApplication } from '@loopback/rest'
 import { ServiceMixin } from '@loopback/service-proxy'
@@ -20,10 +17,7 @@ import {
 } from './domains/auth/key'
 import { USERS_SERVICE } from './domains/user/keys'
 import { AuthService } from './domains/auth/services/auth.service'
-import {
-  JWTAuthenticationComponent,
-  TokenServiceBindings,
-} from '@loopback/authentication-jwt'
+import { JWTAuthenticationComponent, TokenServiceBindings } from '@loopback/authentication-jwt'
 import { WinstonLogger } from '@loopback/logging'
 import { PasswordHasherService } from './domains/auth/services/password-hasher.service'
 import { JwtService } from './domains/auth/services/jwt.service'
@@ -42,10 +36,7 @@ import {
 } from './domains/member-subscription/keys'
 import { MemberSubscriptionService } from './domains/member-subscription/services'
 import { AttendanceService } from './domains/attendance/service'
-import {
-  ATTENDANCE_AUTO_CHECKOUT_SERVICE,
-  ATTENDANCE_SERVICE,
-} from './domains/attendance/keys'
+import { ATTENDANCE_AUTO_CHECKOUT_SERVICE, ATTENDANCE_SERVICE } from './domains/attendance/keys'
 import { PAYMENT_SERVICE } from './domains/payment/keys'
 import { PaymentService } from './domains/payment/service'
 import { RoleService } from './domains/role/service'
@@ -132,9 +123,7 @@ export class MemberstackApiApplication extends BootMixin(
 
     this.bind('services.refreshToken').toClass(RefreshTokenService)
 
-    this.bind('authorization.authorizers.role').toProvider(
-      RoleAuthorizerProvider,
-    )
+    this.bind('authorization.authorizers.role').toProvider(RoleAuthorizerProvider)
 
     this.bind(TokenServiceBindings.TOKEN_SERVICE).toAlias(JWT_SERVICE)
 
@@ -151,12 +140,8 @@ export class MemberstackApiApplication extends BootMixin(
     this.bind(EMAIL_SERVICE).toClass(EmailService)
 
     this.bind(AI_ASSISTANT_SERVICE).toClass(AIAssistantService)
-    this.bind(MEMBER_SUBSCRIPTION_EXPIRATION_SERVICE).toClass(
-      SubscriptionExpirationService,
-    )
-    this.bind(ATTENDANCE_AUTO_CHECKOUT_SERVICE).toClass(
-      AttendanceAutoCheckoutService,
-    )
+    this.bind(MEMBER_SUBSCRIPTION_EXPIRATION_SERVICE).toClass(SubscriptionExpirationService)
+    this.bind(ATTENDANCE_AUTO_CHECKOUT_SERVICE).toClass(AttendanceAutoCheckoutService)
     this.bind(SETTINGS_SERVICE).toClass(SettingsService)
     this.bind(MEMBER_AUTH_SERVICE).toClass(MemberAuthService)
   }

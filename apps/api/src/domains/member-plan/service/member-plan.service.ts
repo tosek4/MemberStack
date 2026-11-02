@@ -1,11 +1,5 @@
 import { BindingScope, injectable } from '@loopback/core'
-import {
-  Count,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository'
+import { Count, Filter, FilterExcludingWhere, repository, Where } from '@loopback/repository'
 import { HttpErrors } from '@loopback/rest'
 import { MemberPlan } from '../models'
 import { MemberPlanRepository } from '../repositories'
@@ -28,10 +22,7 @@ export class MemberPlanService {
     })
   }
 
-  async findById(
-    id: number,
-    filter?: FilterExcludingWhere<MemberPlan>,
-  ): Promise<MemberPlan> {
+  async findById(id: number, filter?: FilterExcludingWhere<MemberPlan>): Promise<MemberPlan> {
     try {
       return await this.memberPlanRepository.findById(id, filter)
     } catch {

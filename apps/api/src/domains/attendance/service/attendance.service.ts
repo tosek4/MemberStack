@@ -1,18 +1,9 @@
 import { BindingScope, inject, injectable } from '@loopback/core'
-import {
-  Count,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository'
+import { Count, FilterExcludingWhere, repository, Where } from '@loopback/repository'
 import { HttpErrors } from '@loopback/rest'
 import { Attendance } from '../models'
 import { AttendanceRepository } from '../repositories'
-import {
-  AttendanceListFilters,
-  AttendanceListItem,
-  AttendanceStats,
-} from '../types'
+import { AttendanceListFilters, AttendanceListItem, AttendanceStats } from '../types'
 import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.service'
 import { MEMBER_QR_CODE_SERVICE } from '../../member-qrcode/keys'
 import { MemberSubscriptionService } from '../../member-subscription/services'
@@ -32,8 +23,7 @@ export class AttendanceService {
   ) {}
 
   async find(filters?: AttendanceListFilters): Promise<AttendanceListItem[]> {
-    const attendanceIds =
-      await this.attendanceRepository.findIdsForList(filters)
+    const attendanceIds = await this.attendanceRepository.findIdsForList(filters)
 
     if (attendanceIds.length === 0) {
       return []
@@ -86,7 +76,7 @@ export class AttendanceService {
         memberSubscriptionId: activeSubscription?.id ?? null,
         planName: activeSubscription?.membershipPlan?.name
           ? activeSubscription?.membershipPlan?.name
-          : !!dailyVisit
+          : dailyVisit
             ? 'Daily Visit'
             : null,
         checkIn: attendance.checkedInAt,
@@ -132,10 +122,7 @@ export class AttendanceService {
     return this.attendanceRepository.create(data)
   }
 
-  async findById(
-    id: number,
-    filter?: FilterExcludingWhere<Attendance>,
-  ): Promise<Attendance> {
+  async findById(id: number, filter?: FilterExcludingWhere<Attendance>): Promise<Attendance> {
     try {
       return await this.attendanceRepository.findById(id, filter)
     } catch {
@@ -164,20 +151,15 @@ export class AttendanceService {
       throw new HttpErrors.Unauthorized('Invalid or inactive QR code')
     }
 
-    const subscription =
-      await this.memberSubscriptionService.findCurrentSubscription(
-        qrCode.memberId,
-      )
-
-    if (!subscription) {
-      throw new HttpErrors.Forbidden(
-        'Member does not have an active membership',
-      )
-    }
-
-    const openAttendance = await this.attendanceRepository.findOpenAttendance(
+    const subscription = await this.memberSubscriptionService.findCurrentSubscription(
       qrCode.memberId,
     )
+
+    if (!subscription) {
+      throw new HttpErrors.Forbidden('Member does not have an active membership')
+    }
+
+    const openAttendance = await this.attendanceRepository.findOpenAttendance(qrCode.memberId)
 
     if (openAttendance) {
       throw new HttpErrors.Conflict('Member is already checked in')

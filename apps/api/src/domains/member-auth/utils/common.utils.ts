@@ -1,10 +1,8 @@
 import { HttpErrors } from '@loopback/rest'
 
-export const normalizeEmail = (email: string): string =>
-  email.trim().toLowerCase()
+export const normalizeEmail = (email: string): string => email.trim().toLowerCase()
 
-export const isExpired = (date: Date | string): boolean =>
-  new Date(date).getTime() <= Date.now()
+export const isExpired = (date: Date | string): boolean => new Date(date).getTime() <= Date.now()
 
 export function extractBearerToken(authHeader?: string): string {
   if (!authHeader?.startsWith('Bearer ')) {

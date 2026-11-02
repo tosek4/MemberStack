@@ -22,4 +22,3 @@ export interface RefreshTokenPayload {
   sub: number
   tokenId: number
 }
-

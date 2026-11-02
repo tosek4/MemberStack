@@ -31,7 +31,7 @@ export const EConfigKeys = {
   adminUsername: ADMIN_USERNAME as string,
   jwtSecret: ENV_JWT_SECRET as string,
   jwtRefreshSecret: JWT_REFRESH_SECRET as string,
-  jwtAccessExpiresIn: JWT_ACCESS_EXPIRES_IN || '15m',
-  jwtRefreshExpiresDays: Number(JWT_REFRESH_EXPIRES_DAYS || 7),
+  jwtAccessExpiresIn: JWT_ACCESS_EXPIRES_IN ?? '15m',
+  jwtRefreshExpiresDays: Number(JWT_REFRESH_EXPIRES_DAYS ?? 7),
   memberJwtSecret: MEMBER_JWT_SECRET as string,
 } as const

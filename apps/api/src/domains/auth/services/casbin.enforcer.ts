@@ -15,10 +15,7 @@ export class CasbinEnforcer {
   }
 
   async initEnforcer() {
-    const conf = path.join(
-      __dirname,
-      './../../../../src/fixtures/rbac_model.conf',
-    )
+    const conf = path.join(__dirname, './../../../../src/fixtures/rbac_model.conf')
 
     // TODO: Switch to Typeorm Adapter after the juggler refactor
     const adapter = await BasicAdapter.newAdapter(

@@ -1,4 +1,4 @@
-import { SchemaObject } from "@loopback/rest"
+import { SchemaObject } from '@loopback/rest'
 
 export const createUserSchema: SchemaObject = {
   type: 'object',

@@ -3,6 +3,7 @@ import {
   Authorizer,
   AuthorizationDecision,
   AuthorizationContext,
+  AuthorizationMetadata,
 } from '@loopback/authorization'
 import { UserProfile } from '../../user/types/user-profile'
 import { RestBindings, Request } from '@loopback/rest'
@@ -23,7 +24,7 @@ export class RoleAuthorizerProvider implements Provider<Authorizer> {
 
   async authorize(
     context: AuthorizationContext,
-    metadata: any,
+    metadata: AuthorizationMetadata,
   ): Promise<AuthorizationDecision> {
     let user = context.principals[0] as UserProfile
 

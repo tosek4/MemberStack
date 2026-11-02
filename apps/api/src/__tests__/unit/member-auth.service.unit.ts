@@ -4,10 +4,12 @@ import { createStubInstance, expect, sinon } from '@loopback/testlab'
 import { describe, it } from 'node:test'
 import { MemberStatus } from '../../domains/member/types/member-status'
 import { MemberRepository } from '../../domains/member/repositories'
-import { MemberAuthCodeRepository, MemberRefreshTokenRepository } from '../../domains/member-auth/repositories'
+import {
+  MemberAuthCodeRepository,
+  MemberRefreshTokenRepository,
+} from '../../domains/member-auth/repositories'
 import { MemberAuthService } from '../../domains/member-auth/service'
 import { hashLoginCode, hashRefreshToken } from '../../domains/member-auth/utils'
-
 
 const EMAIL = 'member@example.com'
 const CODE = '123456'
@@ -37,9 +39,7 @@ const refreshRecord = (overrides: Record<string, unknown> = {}) => ({
 function setup() {
   const memberRepository = createStubInstance(MemberRepository)
   const codeRepository = createStubInstance(MemberAuthCodeRepository)
-  const refreshTokenRepository = createStubInstance(
-    MemberRefreshTokenRepository,
-  )
+  const refreshTokenRepository = createStubInstance(MemberRefreshTokenRepository)
   const emailService = { sendMemberVerificationCode: sinon.stub().resolves() }
 
   const service = new MemberAuthService(
@@ -53,7 +53,9 @@ function setup() {
   return { service, memberRepository, codeRepository, refreshTokenRepository }
 }
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 describe('MemberAuthService.verifyCode', () => {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('issues tokens for the right code and burns the code', async () => {
     const t = setup()
     t.codeRepository.stubs.findOne.resolves(codeRecord() as never)
@@ -68,6 +70,7 @@ describe('MemberAuthService.verifyCode', () => {
     sinon.assert.calledOnce(t.refreshTokenRepository.stubs.create)
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('rejects a wrong code and counts the attempt', async () => {
     const t = setup()
     t.codeRepository.stubs.findOne.resolves(codeRecord() as never)
@@ -82,11 +85,10 @@ describe('MemberAuthService.verifyCode', () => {
     sinon.assert.notCalled(t.refreshTokenRepository.stubs.create)
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('locks the code after 5 wrong attempts, even for the right code', async () => {
     const t = setup()
-    t.codeRepository.stubs.findOne.resolves(
-      codeRecord({ attempts: 5 }) as never,
-    )
+    t.codeRepository.stubs.findOne.resolves(codeRecord({ attempts: 5 }) as never)
 
     await expect(t.service.verifyCode(EMAIL, CODE)).to.be.rejectedWith(
       /Invalid or expired verification code/,
@@ -96,6 +98,7 @@ describe('MemberAuthService.verifyCode', () => {
     sinon.assert.notCalled(t.refreshTokenRepository.stubs.create)
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('rejects an expired code', async () => {
     const t = setup()
     t.codeRepository.stubs.findOne.resolves(
@@ -109,6 +112,7 @@ describe('MemberAuthService.verifyCode', () => {
     sinon.assert.notCalled(t.refreshTokenRepository.stubs.create)
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('rejects when there is no code, as after it was already used', async () => {
     const t = setup()
     t.codeRepository.stubs.findOne.resolves(null)
@@ -118,6 +122,7 @@ describe('MemberAuthService.verifyCode', () => {
     )
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('rejects a member who is not active', async () => {
     const t = setup()
     t.codeRepository.stubs.findOne.resolves(codeRecord() as never)
@@ -134,7 +139,9 @@ describe('MemberAuthService.verifyCode', () => {
   })
 })
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 describe('MemberAuthService.refresh', () => {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('rotates a valid refresh token', async () => {
     const t = setup()
     t.refreshTokenRepository.stubs.findOne.resolves(refreshRecord() as never)
@@ -150,6 +157,7 @@ describe('MemberAuthService.refresh', () => {
     sinon.assert.calledOnce(t.refreshTokenRepository.stubs.create)
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('rejects a token that was already revoked', async () => {
     const t = setup()
     t.refreshTokenRepository.stubs.findOne.resolves(
@@ -163,6 +171,7 @@ describe('MemberAuthService.refresh', () => {
     sinon.assert.notCalled(t.refreshTokenRepository.stubs.create)
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('rejects when another request rotated the token first', async () => {
     const t = setup()
     t.refreshTokenRepository.stubs.findOne.resolves(refreshRecord() as never)
@@ -176,30 +185,30 @@ describe('MemberAuthService.refresh', () => {
     sinon.assert.notCalled(t.refreshTokenRepository.stubs.create)
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('rejects an unknown token', async () => {
     const t = setup()
     t.refreshTokenRepository.stubs.findOne.resolves(null)
 
-    await expect(t.service.refresh('nope')).to.be.rejectedWith(
-      /Invalid or expired refresh token/,
-    )
+    await expect(t.service.refresh('nope')).to.be.rejectedWith(/Invalid or expired refresh token/)
   })
 })
 
+// eslint-disable-next-line @typescript-eslint/no-floating-promises
 describe('MemberAuthService.logout', () => {
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('revokes the refresh token it is given', async () => {
     const t = setup()
     t.refreshTokenRepository.stubs.updateAll.resolves({ count: 1 })
 
     await t.service.logout('some-token')
 
-    sinon.assert.calledWithMatch(
-      t.refreshTokenRepository.stubs.updateAll,
-      sinon.match.object,
-      { tokenHash: hashRefreshToken('some-token') },
-    )
+    sinon.assert.calledWithMatch(t.refreshTokenRepository.stubs.updateAll, sinon.match.object, {
+      tokenHash: hashRefreshToken('some-token'),
+    })
   })
 
+  // eslint-disable-next-line @typescript-eslint/no-floating-promises
   it('does not fail for an unknown token', async () => {
     const t = setup()
     t.refreshTokenRepository.stubs.updateAll.resolves({ count: 0 })

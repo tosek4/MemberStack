@@ -1,11 +1,5 @@
 import { BindingScope, injectable } from '@loopback/core'
-import {
-  Count,
-  Filter,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository'
+import { Count, Filter, FilterExcludingWhere, repository, Where } from '@loopback/repository'
 import { HttpErrors } from '@loopback/rest'
 import { Role } from '../models'
 import { RoleRepository } from '../repositories'
@@ -25,10 +19,7 @@ export class RoleService {
     return this.roleRepository.find(filter)
   }
 
-  async findById(
-    id: number,
-    filter?: FilterExcludingWhere<Role>,
-  ): Promise<Role> {
+  async findById(id: number, filter?: FilterExcludingWhere<Role>): Promise<Role> {
     try {
       return await this.roleRepository.findById(id, filter)
     } catch {

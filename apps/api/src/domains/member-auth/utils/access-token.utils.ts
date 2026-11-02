@@ -5,9 +5,7 @@ import { EConfigKeys } from '../../../config/config'
 import { Member } from '../../member/models'
 import { ACCESS_TOKEN_EXPIRES_IN } from '../types/constants'
 
-export function signMemberAccessToken(
-  member: Pick<Member, 'id' | 'email'>,
-): string {
+export function signMemberAccessToken(member: Pick<Member, 'id' | 'email'>): string {
   return jwt.sign(
     { type: 'member', memberId: member.id, email: member.email },
     EConfigKeys.memberJwtSecret,
@@ -17,8 +15,7 @@ export function signMemberAccessToken(
 
 /** Returns the memberId from a valid member access token, or throws 401. */
 export function verifyMemberAccessToken(token: string): number {
-  const unauthorized = () =>
-    new HttpErrors.Unauthorized('Invalid or expired access token.')
+  const unauthorized = () => new HttpErrors.Unauthorized('Invalid or expired access token.')
 
   let payload: jwt.JwtPayload | string
   try {

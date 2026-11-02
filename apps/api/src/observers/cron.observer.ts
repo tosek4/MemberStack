@@ -31,9 +31,7 @@ export class CronObserver implements LifeCycleObserver {
       },
     )
 
-    console.log(
-      '[CronObserver] Subscription expiration scheduled for every day at 02:00.',
-    )
+    console.log('[CronObserver] Subscription expiration scheduled for every day at 02:00.')
   }
 
   async stop(): Promise<void> {

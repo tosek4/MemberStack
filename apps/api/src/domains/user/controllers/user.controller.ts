@@ -1,26 +1,10 @@
 import { inject, service } from '@loopback/core'
-import { Count, Filter, Where } from '@loopback/repository'
-import {
-  api,
-  del,
-  get,
-  param,
-  patch,
-  post,
-  put,
-  requestBody,
-  response,
-} from '@loopback/rest'
+import { Count, Where } from '@loopback/repository'
+import { api, del, get, param, patch, post, put, requestBody, response } from '@loopback/rest'
 import { User } from '../models'
 import { UserService } from '../service'
 import { SecurityBindings, securityId } from '@loopback/security'
-import {
-  CreateUserDto,
-  UpdateUserDto,
-  UserListFilters,
-  UserProfile,
-  UserStatus,
-} from '../types'
+import { CreateUserDto, UpdateUserDto, UserProfile, UserStatus } from '../types'
 import {
   CountUserResponseSchema,
   CreateUserRequestBody,

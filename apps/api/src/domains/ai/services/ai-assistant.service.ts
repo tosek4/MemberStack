@@ -63,13 +63,11 @@ export class AIAssistantService {
     }
 
     if (provider !== 'openai') {
-      throw new HttpErrors.InternalServerError(
-        `Unsupported AI provider: ${provider}`,
-      )
+      throw new HttpErrors.InternalServerError(`Unsupported AI provider: ${provider}`)
     }
 
     const client = this.getClient()
-    const model = process.env.OPENAI_MODEL || 'gpt-5'
+    const model = process.env.OPENAI_MODEL ?? 'gpt-5'
 
     let response = await client.responses.create({
       model,
@@ -91,20 +89,19 @@ export class AIAssistantService {
       `.trim(),
       input: trimmedQuestion,
       tools: [...tools],
+      // eslint-disable-next-line @typescript-eslint/naming-convention
       tool_choice: 'auto',
     })
 
     for (let round = 0; round < MAX_TOOL_ROUNDS; round += 1) {
       const functionCalls = response.output.filter(
-        (item): item is OpenAI.Responses.ResponseFunctionToolCall =>
-          item.type === 'function_call',
+        (item): item is OpenAI.Responses.ResponseFunctionToolCall => item.type === 'function_call',
       )
 
       if (functionCalls.length === 0) {
         return {
           answer:
-            response.output_text?.trim() ||
-            'I could not generate an answer for that question.',
+            response.output_text?.trim() || 'I could not generate an answer for that question.',
         }
       }
 
@@ -116,17 +113,17 @@ export class AIAssistantService {
 
             return {
               type: 'function_call_output' as const,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               call_id: call.call_id,
               output: JSON.stringify(result),
             }
           } catch (error) {
             const message =
-              error instanceof Error
-                ? error.message
-                : 'The requested tool could not be executed.'
+              error instanceof Error ? error.message : 'The requested tool could not be executed.'
 
             return {
               type: 'function_call_output' as const,
+              // eslint-disable-next-line @typescript-eslint/naming-convention
               call_id: call.call_id,
               output: JSON.stringify({ error: message }),
             }
@@ -137,7 +134,9 @@ export class AIAssistantService {
       response = await client.responses.create({
         model,
         tools: [...tools],
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         tool_choice: 'auto',
+        // eslint-disable-next-line @typescript-eslint/naming-convention
         previous_response_id: response.id,
         input: toolOutputs,
       })
@@ -175,10 +174,7 @@ export class AIAssistantService {
 
     const parsedDate = new Date(`${args.date}T00:00:00.000Z`)
 
-    if (
-      Number.isNaN(parsedDate.getTime()) ||
-      parsedDate.toISOString().slice(0, 10) !== args.date
-    ) {
+    if (Number.isNaN(parsedDate.getTime()) || parsedDate.toISOString().slice(0, 10) !== args.date) {
       throw new HttpErrors.BadRequest('The supplied date is invalid.')
     }
 
@@ -195,17 +191,13 @@ export class AIAssistantService {
       args.daysAhead < 1 ||
       args.daysAhead > 365
     ) {
-      throw new HttpErrors.BadRequest(
-        'daysAhead must be an integer between 1 and 365.',
-      )
+      throw new HttpErrors.BadRequest('daysAhead must be an integer between 1 and 365.')
     }
 
     return { daysAhead: args.daysAhead }
   }
 
-  private async getAttendanceSummary(
-    args: GetAttendanceSummaryArgs,
-  ): Promise<unknown> {
+  private async getAttendanceSummary(args: GetAttendanceSummaryArgs): Promise<unknown> {
     const stats = await this.attendanceService.getStats(args.date)
 
     return {
@@ -214,9 +206,7 @@ export class AIAssistantService {
     }
   }
 
-  private async getExpiringMemberships(
-    args: GetExpiringMembershipsArgs,
-  ): Promise<unknown> {
+  private async getExpiringMemberships(args: GetExpiringMembershipsArgs): Promise<unknown> {
     const startDate = new Date()
     const endDate = new Date(startDate)
 

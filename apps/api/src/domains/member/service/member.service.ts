@@ -3,11 +3,7 @@ import { Count, repository, Where } from '@loopback/repository'
 import { HttpErrors } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberRepository } from '../repositories'
-import {
-  MemberAvailableForCheckIn,
-  MemberListFilters,
-  MemberListItem,
-} from '../types'
+import { MemberAvailableForCheckIn, MemberListFilters, MemberListItem } from '../types'
 import { MemberQRCodeRepository } from '../../member-qrcode/repositories/member-qrcode.repository'
 import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.service'
 
@@ -77,8 +73,9 @@ export class MemberService {
         ],
       })
       const { subscriptions, ...memberData } = member
+
       return {
-        latestSubscription: member.subscriptions?.[0] ?? null,
+        latestSubscription: subscriptions?.[0] ?? null,
         ...memberData,
       }
     } catch {
@@ -100,9 +97,7 @@ export class MemberService {
     await this.memberRepository.deleteById(id)
   }
 
-  async getAllAvailableForCheckInMembers(): Promise<
-    MemberAvailableForCheckIn[]
-  > {
+  async getAllAvailableForCheckInMembers(): Promise<MemberAvailableForCheckIn[]> {
     const members = await this.memberRepository.findAvailableForCheckInMembers()
 
     return members.map((member) => ({
@@ -129,9 +124,7 @@ export class MemberService {
       return null
     }
 
-    const image = await this.memberQRCodeService.generateQRCodeImage(
-      qrCode.tokenHash,
-    )
+    const image = await this.memberQRCodeService.generateQRCodeImage(qrCode.tokenHash)
 
     return {
       id: qrCode.id!,

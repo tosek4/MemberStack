@@ -1,5 +1,5 @@
-import { inject } from "@loopback/core";
-import { CasbinEnforcer } from "./casbin.enforcer";
+import { inject } from '@loopback/core'
+import { CasbinEnforcer } from './casbin.enforcer'
 
 export class RolesService {
   constructor(

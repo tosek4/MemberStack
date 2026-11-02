@@ -36,11 +36,7 @@ export class EmailService {
     })
   }
 
-  async sendQRCodeEmail(options: {
-    to: string
-    memberName: string
-    image: string
-  }): Promise<void> {
+  async sendQRCodeEmail(options: { to: string; memberName: string; image: string }): Promise<void> {
     const base64Data = options.image.split(',')[1]
     const imageBuffer = Buffer.from(base64Data, 'base64')
 
@@ -84,14 +80,11 @@ export class EmailService {
     memberName: string
     expiresAt: Date
   }): Promise<void> {
-    const formattedExpirationDate = options.expiresAt.toLocaleDateString(
-      'en-GB',
-      {
-        day: '2-digit',
-        month: '2-digit',
-        year: 'numeric',
-      },
-    )
+    const formattedExpirationDate = options.expiresAt.toLocaleDateString('en-GB', {
+      day: '2-digit',
+      month: '2-digit',
+      year: 'numeric',
+    })
 
     await this.transporter.sendMail({
       from: process.env.SMTP_FROM,
@@ -127,10 +120,7 @@ export class EmailService {
     })
   }
 
-  async sendMemberVerificationCode(options: {
-    to: string
-    code: string
-  }): Promise<void> {
+  async sendMemberVerificationCode(options: { to: string; code: string }): Promise<void> {
     await this.sendEmail({
       to: options.to,
       subject: 'Your MemberStack verification code',

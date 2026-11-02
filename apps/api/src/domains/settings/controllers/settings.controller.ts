@@ -14,9 +14,7 @@ import { SettingsDataSchema, UpdateSettingsRequestSchema } from '../schemas'
   voters: ['authorization.authorizers.role'],
 })
 export class SettingsController {
-  constructor(
-    @service(SettingsService) private settingsService: SettingsService,
-  ) {}
+  constructor(@service(SettingsService) private settingsService: SettingsService) {}
 
   @get('/')
   @response(200, {

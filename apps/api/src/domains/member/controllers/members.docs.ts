@@ -57,15 +57,7 @@ export const CreateMemberResponseSchema = {
 
 const createMemberSchema: SchemaObject = {
   type: 'object',
-  required: [
-    'firstName',
-    'lastName',
-    'email',
-    'phone',
-    'birthDate',
-    'gender',
-    'status',
-  ],
+  required: ['firstName', 'lastName', 'email', 'phone', 'birthDate', 'gender', 'status'],
   properties: {
     firstName: {
       type: 'string',

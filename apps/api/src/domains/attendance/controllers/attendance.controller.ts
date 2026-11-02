@@ -1,15 +1,6 @@
 import { service } from '@loopback/core'
-import { Count, CountSchema, Filter, Where } from '@loopback/repository'
-import {
-  api,
-  del,
-  get,
-  param,
-  patch,
-  post,
-  requestBody,
-  response,
-} from '@loopback/rest'
+import { Count, Where } from '@loopback/repository'
+import { api, del, get, param, patch, post, requestBody, response } from '@loopback/rest'
 import { Attendance } from '../models'
 import { AttendanceService } from '../service'
 import {
@@ -24,11 +15,7 @@ import {
   QRCheckInRequestSchema,
   UpdateAttendanceRequestSchema,
 } from './attendance.docs'
-import {
-  AttendanceListItem,
-  AttendanceListStatus,
-  AttendanceStats,
-} from '../types'
+import { AttendanceListItem, AttendanceListStatus, AttendanceStats } from '../types'
 import { authenticate } from '@loopback/authentication'
 import { AppRole } from '../../../enums/app-role.enum'
 import { authorize } from '@loopback/authorization/dist/decorators/authorize'
@@ -67,9 +54,7 @@ export class AttendanceController {
 
   @get('/stats')
   @response(200, AttendanceStatsResponseSchema)
-  async getStats(
-    @param.query.string('date') date: string,
-  ): Promise<AttendanceStats> {
+  async getStats(@param.query.string('date') date: string): Promise<AttendanceStats> {
     return this.attendanceService.getStats(date)
   }
 

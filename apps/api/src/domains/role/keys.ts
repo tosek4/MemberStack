@@ -5,6 +5,4 @@ export namespace RoleBindings {
   export const SERVICE = BindingKey.create<RoleService>('services.RoleService')
 }
 
-export const ROLES_SERVICE = BindingKey.create<RoleService>(
-  'services.RoleService',
-)
+export const ROLES_SERVICE = BindingKey.create<RoleService>('services.RoleService')

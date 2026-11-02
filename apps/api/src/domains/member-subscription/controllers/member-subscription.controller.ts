@@ -1,14 +1,6 @@
 import { service } from '@loopback/core'
-import { Count, CountSchema, Filter, Where } from '@loopback/repository'
-import {
-  api,
-  del,
-  get,
-  param,
-  post,
-  requestBody,
-  response,
-} from '@loopback/rest'
+import { Count, Where } from '@loopback/repository'
+import { api, del, get, param, post, requestBody, response } from '@loopback/rest'
 import { MemberSubscription } from '../models'
 import { MemberSubscriptionService } from '../services'
 import {
@@ -29,12 +21,7 @@ import { authorize } from '@loopback/authorization/dist/decorators/authorize'
 @authenticate('jwt')
 @api({ basePath: '/member-subscriptions' })
 @authorize({
-  allowedRoles: [
-    AppRole.ADMIN,
-    AppRole.SUPER_ADMIN,
-    AppRole.MANAGER,
-    AppRole.RECEPTIONIST,
-  ],
+  allowedRoles: [AppRole.ADMIN, AppRole.SUPER_ADMIN, AppRole.MANAGER, AppRole.RECEPTIONIST],
   voters: ['authorization.authorizers.role'],
 })
 export class MemberSubscriptionController {
@@ -59,16 +46,16 @@ export class MemberSubscriptionController {
   @response(200, CreateMemberSubscriptionResponseSchema)
   create(
     @requestBody(CreateMemberSubscriptionRequestSchema)
-    subscription: Omit<MemberSubscription, 'id' | 'paymentMethod'>,
+    subscription: Omit<MemberSubscription, 'id'> & {
+      paymentMethod: PaymentMethod
+    },
   ): Promise<MemberSubscription> {
     return this.memberSubscriptionService.create(subscription)
   }
 
   @get('/count')
   @response(200, MemberSubscriptionCountResponseSchema)
-  count(
-    @param.where(MemberSubscription) where?: Where<MemberSubscription>,
-  ): Promise<Count> {
+  count(@param.where(MemberSubscription) where?: Where<MemberSubscription>): Promise<Count> {
     return this.memberSubscriptionService.count(where)
   }
 

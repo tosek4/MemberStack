@@ -1,9 +1,5 @@
 import { Getter, inject } from '@loopback/core'
-import {
-  DefaultCrudRepository,
-  HasManyRepositoryFactory,
-  repository,
-} from '@loopback/repository'
+import { DefaultCrudRepository, HasManyRepositoryFactory, repository } from '@loopback/repository'
 import { PostgresDataSource } from '../../../datasources'
 import { Role } from '../models'
 import { User } from '../../user/models'
@@ -15,10 +11,7 @@ export class RoleRepository extends DefaultCrudRepository<
   typeof Role.prototype.id,
   RoleRelations
 > {
-  public readonly users: HasManyRepositoryFactory<
-    User,
-    typeof Role.prototype.id
-  >
+  public readonly users: HasManyRepositoryFactory<User, typeof Role.prototype.id>
 
   constructor(
     @inject('datasources.postgres') dataSource: PostgresDataSource,
@@ -27,10 +20,7 @@ export class RoleRepository extends DefaultCrudRepository<
   ) {
     super(Role, dataSource)
     // Register the relation factory
-    this.users = this.createHasManyRepositoryFactoryFor(
-      'users',
-      userRepositoryGetter,
-    )
+    this.users = this.createHasManyRepositoryFactoryFor('users', userRepositoryGetter)
 
     // Allows you to run queries like: roleRepository.find({include: ['users']})
     this.registerInclusionResolver('users', this.users.inclusionResolver)

@@ -1,25 +1,18 @@
 import { inject, service } from '@loopback/core'
-import {
-  api,
-  get,
-  post,
-  requestBody,
-  response,
-  RestBindings,
-  Request,
-} from '@loopback/rest'
+import { api, get, post, requestBody, response, RestBindings, Request, param } from '@loopback/rest'
 
 import { MemberAuthService } from '../service/member-auth.service'
 import {
   CreateMemberCodeRequestSchema,
   LogoutRequestSchema,
+  MemberCheckInHistoryRequestSchema,
   MeResponseSchema,
   MyQrCodeResponseSchema,
   RefreshRequestSchema,
   VerifyCodeBodyRequestSchema,
 } from './member-auth.docs'
-import { MemberData, MemberSubscriptionData } from '../types'
-import { extractBearerToken, verifyMemberAccessToken } from '../utils'
+import { MemberCheckInHistoryResponse, MemberData, MemberSubscriptionData } from '../types'
+import { extractBearerToken } from '../utils'
 
 @api({ basePath: '/member-auth' })
 export class MemberAuthController {
@@ -115,5 +108,16 @@ export class MemberAuthController {
     },
   ): Promise<void> {
     await this.memberAuthService.logout(body.refreshToken)
+  }
+
+  @get('/check-ins')
+  @response(200, MemberCheckInHistoryRequestSchema)
+  async getMemberCheckInHistory(
+    @param.query.number('limit', { required: false }) limit = 10,
+    @param.query.number('offset', { required: false }) offset = 0,
+  ): Promise<MemberCheckInHistoryResponse> {
+    const token = extractBearerToken(this.request.headers.authorization)
+
+    return this.memberAuthService.getMemberCheckInHistory(token, limit, offset)
   }
 }

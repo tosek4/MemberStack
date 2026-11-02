@@ -17,9 +17,7 @@ export class RefreshTokenService {
 
     return {
       refreshToken,
-      expiresAt: new Date(
-        Date.now() + EConfigKeys.jwtRefreshExpiresDays * 24 * 60 * 60 * 1000,
-      ),
+      expiresAt: new Date(Date.now() + EConfigKeys.jwtRefreshExpiresDays * 24 * 60 * 60 * 1000),
     }
   }
 

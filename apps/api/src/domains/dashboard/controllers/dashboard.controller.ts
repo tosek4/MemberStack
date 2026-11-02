@@ -18,12 +18,7 @@ import { authorize } from '@loopback/authorization/dist/decorators/authorize'
 @authenticate('jwt')
 @api({ basePath: '/dashboard' })
 @authorize({
-  allowedRoles: [
-    AppRole.ADMIN,
-    AppRole.SUPER_ADMIN,
-    AppRole.MANAGER,
-    AppRole.RECEPTIONIST,
-  ],
+  allowedRoles: [AppRole.ADMIN, AppRole.SUPER_ADMIN, AppRole.MANAGER, AppRole.RECEPTIONIST],
   voters: ['authorization.authorizers.role'],
 })
 export class DashboardController {

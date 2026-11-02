@@ -5,19 +5,18 @@ export class Settings extends Entity {
   @property({ type: 'number', id: true, required: true })
   id: number
 
-  @property({ type: 'string', required: true, })
+  @property({ type: 'string', required: true })
   gymName: string
 
-  @property({ type: 'string', required: true,  })
+  @property({ type: 'string', required: true })
   email: string
 
-  @property({ type: 'string', required: true,  })
+  @property({ type: 'string', required: true })
   phone: string
 
   @property({
     type: 'string',
     required: true,
-  
   })
   address: string
 

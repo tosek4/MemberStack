@@ -1,10 +1,5 @@
 import { BindingScope, inject, injectable } from '@loopback/core'
-import {
-  Count,
-  FilterExcludingWhere,
-  repository,
-  Where,
-} from '@loopback/repository'
+import { Count, FilterExcludingWhere, repository, Where } from '@loopback/repository'
 import { HttpErrors } from '@loopback/rest'
 import { MemberSubscription, MemberSubscriptionWithRelations } from '../models'
 import { MemberSubscriptionRepository } from '../repositories'
@@ -36,12 +31,10 @@ export class MemberSubscriptionService {
   ) {}
 
   async create(
-    data: Omit<MemberSubscription, 'id' | 'paymentMethod'>,
+    data: Omit<MemberSubscription, 'id'> & { paymentMethod: PaymentMethod },
   ): Promise<MemberSubscription> {
-    const { paymentMethod, ...subscriptionData } = data as any
-    const memberPlan = await this.memberPlanRepository.findById(
-      subscriptionData.membershipPlanId,
-    )
+    const { paymentMethod, ...subscriptionData } = data
+    const memberPlan = await this.memberPlanRepository.findById(subscriptionData.membershipPlanId)
 
     if (memberPlan.status !== 'active') {
       throw new HttpErrors.BadRequest(
@@ -49,8 +42,7 @@ export class MemberSubscriptionService {
       )
     }
 
-    const newSubscription =
-      await this.memberSubscriptionRepository.create(subscriptionData)
+    const newSubscription = await this.memberSubscriptionRepository.create(subscriptionData)
     const currentDate = new Date()
     const createdByUserId = Number(this.currentUser[securityId])
 
@@ -64,19 +56,13 @@ export class MemberSubscriptionService {
       createdByUserId,
     })
 
-    await this.memberQRCodeService.createQRCode(
-      newSubscription.memberId,
-      createdByUserId,
-    )
+    await this.memberQRCodeService.createQRCode(newSubscription.memberId, createdByUserId)
 
     return newSubscription
   }
 
-  async find(
-    filters?: MemberSubscriptionFilters,
-  ): Promise<MemberSubscription[]> {
-    const subscriptionIds =
-      await this.memberSubscriptionRepository.findIdsForList(filters)
+  async find(filters?: MemberSubscriptionFilters): Promise<MemberSubscription[]> {
+    const subscriptionIds = await this.memberSubscriptionRepository.findIdsForList(filters)
 
     if (subscriptionIds.length === 0) {
       return []
@@ -109,10 +95,7 @@ export class MemberSubscriptionService {
     return this.memberSubscriptionRepository.count(where)
   }
 
-  async updateById(
-    id: number,
-    data: Partial<MemberSubscription>,
-  ): Promise<void> {
+  async updateById(id: number, data: Partial<MemberSubscription>): Promise<void> {
     await this.findById(id)
     await this.memberSubscriptionRepository.updateById(id, data)
   }
@@ -122,10 +105,7 @@ export class MemberSubscriptionService {
     await this.memberSubscriptionRepository.deleteById(id)
   }
 
-  async renewSubscription(
-    id: number,
-    paymentMethod: PaymentMethod,
-  ): Promise<MemberSubscription> {
+  async renewSubscription(id: number, paymentMethod: PaymentMethod): Promise<MemberSubscription> {
     const subscription = await this.findById(id)
 
     if (subscription.membershipPlan?.status !== 'active') {
@@ -170,17 +150,12 @@ export class MemberSubscriptionService {
       createdByUserId,
     })
 
-    await this.memberQRCodeService.createQRCode(
-      newSubscription.memberId,
-      createdByUserId,
-    )
+    await this.memberQRCodeService.createQRCode(newSubscription.memberId, createdByUserId)
 
     return newSubscription
   }
 
-  async findCurrentSubscription(
-    memberId: number,
-  ): Promise<MemberSubscription | null> {
+  async findCurrentSubscription(memberId: number): Promise<MemberSubscription | null> {
     const now = new Date()
 
     return this.memberSubscriptionRepository.findOne({

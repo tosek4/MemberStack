@@ -1,10 +1,4 @@
-import {
-  belongsTo,
-  Entity,
-  hasMany,
-  model,
-  property,
-} from '@loopback/repository'
+import { belongsTo, Entity, hasMany, model, property } from '@loopback/repository'
 import { Member } from '../../member/models'
 import { MemberPlan } from '../../member-plan/models'
 import { User } from '../../user/models'
@@ -76,5 +70,4 @@ export class MemberSubscription extends Entity {
   }
 }
 
-export type MemberSubscriptionWithRelations = MemberSubscription &
-  MemberSubscriptionRelations
+export type MemberSubscriptionWithRelations = MemberSubscription & MemberSubscriptionRelations

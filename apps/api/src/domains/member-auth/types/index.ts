@@ -31,3 +31,32 @@ export interface MemberSubscriptionData {
     duration: number
   }
 }
+
+export interface MemberCheckInHistoryItem {
+  id: number
+  checkIn: Date
+  checkOut: Date | null
+  status: 'checked-in' | 'checked-out'
+}
+
+export interface PaginationParams {
+  limit?: number
+  offset?: number
+}
+
+export interface PaginationMetadata {
+  limit: number
+  offset: number
+  total: number
+  hasMore: boolean
+}
+
+export interface MemberCheckInHistoryResponse {
+  checkIns: MemberCheckInHistoryItem[]
+  pagination: {
+    limit: number
+    offset: number
+    total: number
+    hasMore: boolean
+  }
+}

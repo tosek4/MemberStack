@@ -1,22 +1,9 @@
 import { service } from '@loopback/core'
 import { Count, Where } from '@loopback/repository'
-import {
-  api,
-  del,
-  get,
-  param,
-  patch,
-  post,
-  requestBody,
-  response,
-} from '@loopback/rest'
+import { api, del, get, param, patch, post, requestBody, response } from '@loopback/rest'
 import { Member } from '../models'
 import { MemberService } from '../service'
-import {
-  MemberAvailableForCheckIn,
-  MemberListItem,
-  MemberListStatus,
-} from '../types'
+import { MemberAvailableForCheckIn, MemberListItem, MemberListStatus } from '../types'
 import {
   CreateMemberRequestSchema,
   CreateMemberResponseSchema,

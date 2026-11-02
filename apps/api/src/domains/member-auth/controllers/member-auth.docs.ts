@@ -98,14 +98,40 @@ export const logoutBodySchema: SchemaObject = {
   },
 }
 
-
-
-
 export const LogoutRequestSchema = {
   description: 'Logout a member by revoking their refresh token',
   content: {
     'application/json': {
       schema: logoutBodySchema,
+    },
+  },
+  required: true,
+}
+
+export const memberCheckInHistoryBodySchema: SchemaObject = {
+  type: 'object',
+  properties: {
+    checkIns: {
+      type: 'array',
+      items: { type: 'object' },
+    },
+    pagination: {
+      type: 'object',
+      properties: {
+        limit: { type: 'number' },
+        offset: { type: 'number' },
+        total: { type: 'number' },
+        hasMore: { type: 'boolean' },
+      },
+    },
+  },
+}
+
+export const MemberCheckInHistoryRequestSchema = {
+  description: 'Get the check-in history of the logged-in member',
+  content: {
+    'application/json': {
+      schema: memberCheckInHistoryBodySchema,
     },
   },
   required: true,

@@ -1,9 +1,5 @@
-import {MemberstackApiApplication} from '../..';
-import {
-  createRestAppClient,
-  givenHttpServerConfig,
-  Client,
-} from '@loopback/testlab';
+import { MemberstackApiApplication } from '../..'
+import { createRestAppClient, givenHttpServerConfig, Client } from '@loopback/testlab'
 
 export async function setupApplication(): Promise<AppWithClient> {
   const restConfig = givenHttpServerConfig({
@@ -12,21 +8,21 @@ export async function setupApplication(): Promise<AppWithClient> {
     //
     // host: process.env.HOST,
     // port: +process.env.PORT,
-  });
+  })
 
   const app = new MemberstackApiApplication({
     rest: restConfig,
-  });
+  })
 
-  await app.boot();
-  await app.start();
+  await app.boot()
+  await app.start()
 
-  const client = createRestAppClient(app);
+  const client = createRestAppClient(app)
 
-  return {app, client};
+  return { app, client }
 }
 
 export interface AppWithClient {
-  app: MemberstackApiApplication;
-  client: Client;
+  app: MemberstackApiApplication
+  client: Client
 }

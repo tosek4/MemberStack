@@ -1,5 +1,5 @@
 import { CountSchema } from '@loopback/repository'
-import { getModelSchemaRef, SchemaObject } from '@loopback/rest'
+import { getModelSchemaRef } from '@loopback/rest'
 import { User } from '../models'
 import { createUserSchema, updateUserSchema } from '../schemas'
 

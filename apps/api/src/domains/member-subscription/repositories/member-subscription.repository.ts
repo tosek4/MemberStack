@@ -15,30 +15,21 @@ import { User } from '../../user/models'
 import { UserRepository } from '../../user/repositories'
 import { Payment } from '../../payment/models'
 import { PaymentRepository } from '../../payment/repositories'
-import {
-  MemberSubscriptionFilters,
-  MemberSubscriptionRelations,
-} from '../types'
+import { MemberSubscriptionFilters, MemberSubscriptionRelations } from '../types'
 
 export class MemberSubscriptionRepository extends DefaultCrudRepository<
   MemberSubscription,
   typeof MemberSubscription.prototype.id,
   MemberSubscriptionRelations
 > {
-  public readonly member: BelongsToAccessor<
-    Member,
-    typeof MemberSubscription.prototype.id
-  >
+  public readonly member: BelongsToAccessor<Member, typeof MemberSubscription.prototype.id>
 
   public readonly membershipPlan: BelongsToAccessor<
     MemberPlan,
     typeof MemberSubscription.prototype.id
   >
 
-  public readonly createdBy: BelongsToAccessor<
-    User,
-    typeof MemberSubscription.prototype.id
-  >
+  public readonly createdBy: BelongsToAccessor<User, typeof MemberSubscription.prototype.id>
 
   public readonly payments: HasManyRepositoryFactory<
     Payment,
@@ -58,34 +49,19 @@ export class MemberSubscriptionRepository extends DefaultCrudRepository<
   ) {
     super(MemberSubscription, dataSource)
 
-    this.member = this.createBelongsToAccessorFor(
-      'member',
-      memberRepositoryGetter,
-    )
+    this.member = this.createBelongsToAccessorFor('member', memberRepositoryGetter)
     this.registerInclusionResolver('member', this.member.inclusionResolver)
 
     this.membershipPlan = this.createBelongsToAccessorFor(
       'membershipPlan',
       memberPlanRepositoryGetter,
     )
-    this.registerInclusionResolver(
-      'membershipPlan',
-      this.membershipPlan.inclusionResolver,
-    )
+    this.registerInclusionResolver('membershipPlan', this.membershipPlan.inclusionResolver)
 
-    this.createdBy = this.createBelongsToAccessorFor(
-      'createdBy',
-      userRepositoryGetter,
-    )
-    this.registerInclusionResolver(
-      'createdBy',
-      this.createdBy.inclusionResolver,
-    )
+    this.createdBy = this.createBelongsToAccessorFor('createdBy', userRepositoryGetter)
+    this.registerInclusionResolver('createdBy', this.createdBy.inclusionResolver)
 
-    this.payments = this.createHasManyRepositoryFactoryFor(
-      'payments',
-      paymentRepositoryGetter,
-    )
+    this.payments = this.createHasManyRepositoryFactoryFor('payments', paymentRepositoryGetter)
     this.registerInclusionResolver('payments', this.payments.inclusionResolver)
   }
 
@@ -117,8 +93,7 @@ export class MemberSubscriptionRepository extends DefaultCrudRepository<
     `)
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
     const query = `
     SELECT ms."id"

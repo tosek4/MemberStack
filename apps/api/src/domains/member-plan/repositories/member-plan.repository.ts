@@ -1,9 +1,5 @@
 import { Getter, inject } from '@loopback/core'
-import {
-  DefaultCrudRepository,
-  HasManyRepositoryFactory,
-  repository,
-} from '@loopback/repository'
+import { DefaultCrudRepository, HasManyRepositoryFactory, repository } from '@loopback/repository'
 import { PostgresDataSource } from '../../../datasources'
 import { MemberPlan } from '../models'
 import { MemberSubscription } from '../../member-subscription/models'
@@ -31,9 +27,6 @@ export class MemberPlanRepository extends DefaultCrudRepository<
       'subscriptions',
       memberSubscriptionRepositoryGetter,
     )
-    this.registerInclusionResolver(
-      'subscriptions',
-      this.subscriptions.inclusionResolver,
-    )
+    this.registerInclusionResolver('subscriptions', this.subscriptions.inclusionResolver)
   }
 }

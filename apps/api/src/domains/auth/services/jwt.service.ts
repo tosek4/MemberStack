@@ -21,9 +21,7 @@ export class JwtService implements TokenService {
 
   async generateToken(userProfile: UserProfile): Promise<string> {
     if (!userProfile) {
-      throw new HttpErrors.Unauthorized(
-        'Error generating token : userProfile is null',
-      )
+      throw new HttpErrors.Unauthorized('Error generating token : userProfile is null')
     }
 
     const userInfoForToken = {
@@ -34,7 +32,7 @@ export class JwtService implements TokenService {
     }
 
     try {
-      return await signAsync(userInfoForToken, this.jwtSecret, {
+      return signAsync(userInfoForToken, this.jwtSecret, {
         expiresIn: this.jwtExpiresIn,
       })
     } catch (error) {
@@ -43,11 +41,8 @@ export class JwtService implements TokenService {
   }
 
   async verifyToken(token: string): Promise<UserProfile> {
-
     if (!token) {
-      throw new HttpErrors.Unauthorized(
-        `Error verifying token : 'token' is null`,
-      )
+      throw new HttpErrors.Unauthorized(`Error verifying token : 'token' is null`)
     }
 
     try {
@@ -60,12 +55,9 @@ export class JwtService implements TokenService {
         role: decodedToken.role,
       }
 
-
       return userProfile
     } catch (error) {
-      throw new HttpErrors.Unauthorized(
-        `Error verifying token : ${error.message}`,
-      )
+      throw new HttpErrors.Unauthorized(`Error verifying token : ${error.message}`)
     }
   }
 }

@@ -7,9 +7,7 @@ export class SettingsRepository extends DefaultCrudRepository<
   Settings,
   typeof Settings.prototype.id
 > {
-  constructor(
-    @inject('datasources.postgres') dataSource: PostgresDataSource,
-  ) {
+  constructor(@inject('datasources.postgres') dataSource: PostgresDataSource) {
     super(Settings, dataSource)
   }
 }

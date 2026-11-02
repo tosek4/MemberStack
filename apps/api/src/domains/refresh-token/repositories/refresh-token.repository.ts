@@ -1,9 +1,5 @@
 import { Getter, inject } from '@loopback/core'
-import {
-  BelongsToAccessor,
-  DefaultCrudRepository,
-  repository,
-} from '@loopback/repository'
+import { BelongsToAccessor, DefaultCrudRepository, repository } from '@loopback/repository'
 import { PostgresDataSource } from '../../../datasources'
 import { RefreshToken } from '../models'
 import { User } from '../../user/models'
@@ -15,10 +11,7 @@ export class RefreshTokenRepository extends DefaultCrudRepository<
   typeof RefreshToken.prototype.id,
   RefreshTokenRelations
 > {
-  public readonly user: BelongsToAccessor<
-    User,
-    typeof RefreshToken.prototype.id
-  >
+  public readonly user: BelongsToAccessor<User, typeof RefreshToken.prototype.id>
 
   constructor(
     @inject('datasources.postgres') dataSource: PostgresDataSource,

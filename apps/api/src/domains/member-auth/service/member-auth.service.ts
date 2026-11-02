@@ -7,17 +7,14 @@ import { EMAIL_SERVICE } from '../../../services/email/keys'
 import { Member } from '../../member/models'
 import { MemberRepository } from '../../member/repositories'
 import { MemberStatus } from '../../member/types/member-status'
+import { CODE_TTL_MS, MAX_ATTEMPTS, REFRESH_TTL_MS, REQUEST_COOLDOWN_MS } from '../types/constants'
+import { MemberAuthCodeRepository, MemberRefreshTokenRepository } from '../repositories'
 import {
-  CODE_TTL_MS,
-  MAX_ATTEMPTS,
-  REFRESH_TTL_MS,
-  REQUEST_COOLDOWN_MS,
-} from '../types/constants'
-import {
-  MemberAuthCodeRepository,
-  MemberRefreshTokenRepository,
-} from '../repositories'
-import { MemberData, MemberSubscriptionData } from '../types'
+  MemberCheckInHistoryItem,
+  MemberCheckInHistoryResponse,
+  MemberData,
+  MemberSubscriptionData,
+} from '../types'
 import {
   generateLoginCode,
   generateRefreshToken,
@@ -31,17 +28,16 @@ import {
 } from '../utils'
 import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.service'
 import { MEMBER_QR_CODE_SERVICE } from '../../member-qrcode/keys'
-
+import { AttendanceRepository } from '../../attendance/repositories'
+import { Attendance } from '../../attendance/models'
 export interface TokenPair {
   accessToken: string
   refreshToken: string
 }
 
-const invalidCodeError = () =>
-  new HttpErrors.Unauthorized('Invalid or expired verification code.')
+const invalidCodeError = () => new HttpErrors.Unauthorized('Invalid or expired verification code.')
 
-const invalidRefreshError = () =>
-  new HttpErrors.Unauthorized('Invalid or expired refresh token.')
+const invalidRefreshError = () => new HttpErrors.Unauthorized('Invalid or expired refresh token.')
 
 @injectable({ scope: BindingScope.TRANSIENT })
 export class MemberAuthService {
@@ -54,6 +50,9 @@ export class MemberAuthService {
 
     @repository(MemberRefreshTokenRepository)
     private refreshTokenRepository: MemberRefreshTokenRepository,
+
+    @repository(AttendanceRepository)
+    private attendanceRepository: AttendanceRepository,
 
     @inject(EMAIL_SERVICE)
     private emailService: EmailService,
@@ -72,8 +71,7 @@ export class MemberAuthService {
 
     if (
       existing &&
-      now.getTime() - new Date(existing.requestedAt).getTime() <
-        REQUEST_COOLDOWN_MS
+      now.getTime() - new Date(existing.requestedAt).getTime() < REQUEST_COOLDOWN_MS
     ) {
       return
     }
@@ -146,6 +144,7 @@ export class MemberAuthService {
       where: { tokenHash: hashRefreshToken(token) },
     })
 
+    // eslint-disable-next-line @typescript-eslint/prefer-nullish-coalescing
     if (!record || record.revokedAt || isExpired(record.expiresAt)) {
       throw invalidRefreshError()
     }
@@ -186,14 +185,12 @@ export class MemberAuthService {
 
     const { subscriptions, ...memberData } = member
     const latest = subscriptions?.[0]
-    const { membershipPlan, ...subscriptionData } = latest || {}
+    const { membershipPlan, ...subscriptionData } = latest ?? {}
 
     return {
       id: member.id!,
       member: memberData as Member,
-      subscription: latest
-        ? { ...subscriptionData, plan: membershipPlan! }
-        : undefined,
+      subscription: latest ? { ...subscriptionData, plan: membershipPlan! } : undefined,
     }
   }
 
@@ -207,9 +204,7 @@ export class MemberAuthService {
 
     const token = await this.memberQRCodeService.getActiveToken(memberId)
     if (!token) {
-      throw new HttpErrors.NotFound(
-        'No active QR code yet. Please ask reception for help.',
-      )
+      throw new HttpErrors.NotFound('No active QR code yet. Please ask reception for help.')
     }
 
     return { token }
@@ -240,7 +235,7 @@ export class MemberAuthService {
       })
       .catch(() => null)
 
-    return { subscriptions: memberData?.subscriptions || [] }
+    return { subscriptions: memberData?.subscriptions ?? [] }
   }
 
   async logout(refreshToken: string): Promise<void> {
@@ -251,6 +246,51 @@ export class MemberAuthService {
         revokedAt: null as unknown as Date | undefined,
       },
     )
+  }
+  async getMemberCheckInHistory(
+    token: string,
+    limit = 10,
+    offset = 0,
+  ): Promise<MemberCheckInHistoryResponse> {
+    const memberId = verifyMemberAccessToken(token)
+
+    const member = await this.findActiveMemberById(memberId)
+
+    if (!member) {
+      throw new HttpErrors.Unauthorized('Invalid or expired access token.')
+    }
+
+    const safeLimit = Math.min(Math.max(1, Math.floor(limit)), 100)
+    const safeOffset = Math.max(0, Math.floor(offset))
+
+    const where = { memberId }
+
+    const [attendances, count] = await Promise.all([
+      this.attendanceRepository.find({
+        where,
+        order: ['checkedInAt DESC'],
+        limit: safeLimit,
+        skip: safeOffset,
+      }),
+      this.attendanceRepository.count(where),
+    ])
+
+    const checkIns: MemberCheckInHistoryItem[] = attendances.map((attendance: Attendance) => ({
+      id: attendance.id!,
+      checkIn: attendance.checkedInAt,
+      checkOut: attendance.checkedOutAt ?? null,
+      status: attendance.checkedOutAt ? 'checked-out' : 'checked-in',
+    }))
+
+    return {
+      checkIns,
+      pagination: {
+        limit: safeLimit,
+        offset: safeOffset,
+        total: count.count,
+        hasMore: safeOffset + checkIns.length < count.count,
+      },
+    }
   }
 
   // ---------------------------- Private Methods ----------------------------

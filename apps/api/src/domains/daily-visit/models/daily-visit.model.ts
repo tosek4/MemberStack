@@ -1,10 +1,4 @@
-import {
-  belongsTo,
-  Entity,
-  hasMany,
-  model,
-  property,
-} from '@loopback/repository'
+import { belongsTo, Entity, hasMany, model, property } from '@loopback/repository'
 
 import { MemberPlan } from '../../member-plan/models/member-plan.model'
 import { User } from '../../user/models/user.model'

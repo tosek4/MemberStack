@@ -1,15 +1,6 @@
 import { service } from '@loopback/core'
 import { Count, Filter, Where } from '@loopback/repository'
-import {
-  api,
-  del,
-  get,
-  param,
-  patch,
-  post,
-  requestBody,
-  response,
-} from '@loopback/rest'
+import { api, del, get, param, patch, post, requestBody, response } from '@loopback/rest'
 import { MemberPlan } from '../models'
 import { MemberPlanService } from '../service'
 import { authorize } from '@loopback/authorization'
@@ -27,12 +18,7 @@ import { authenticate } from '@loopback/authentication'
 
 @authenticate('jwt')
 @authorize({
-  allowedRoles: [
-    AppRole.ADMIN,
-    AppRole.SUPER_ADMIN,
-    AppRole.TRAINER,
-    AppRole.MANAGER,
-  ],
+  allowedRoles: [AppRole.ADMIN, AppRole.SUPER_ADMIN, AppRole.TRAINER, AppRole.MANAGER],
   voters: ['authorization.authorizers.role'],
 })
 @api({ basePath: '/member-plans' })
@@ -44,9 +30,7 @@ export class MemberPlanController {
 
   @get('/')
   @response(200, MemberPlanResponseSchema)
-  find(
-    @param.filter(MemberPlan) filter?: Filter<MemberPlan>,
-  ): Promise<MemberPlan[]> {
+  find(@param.filter(MemberPlan) filter?: Filter<MemberPlan>): Promise<MemberPlan[]> {
     return this.memberPlanService.getAllMemberPlans(filter)
   }
 

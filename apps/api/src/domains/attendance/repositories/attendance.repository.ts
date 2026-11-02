@@ -1,9 +1,5 @@
 import { Getter, inject } from '@loopback/core'
-import {
-  BelongsToAccessor,
-  DefaultCrudRepository,
-  repository,
-} from '@loopback/repository'
+import { BelongsToAccessor, DefaultCrudRepository, repository } from '@loopback/repository'
 import { PostgresDataSource } from '../../../datasources'
 import { Attendance } from '../models'
 import { Member } from '../../member/models'
@@ -19,20 +15,11 @@ export class AttendanceRepository extends DefaultCrudRepository<
   typeof Attendance.prototype.id,
   AttendanceRelations
 > {
-  public readonly member: BelongsToAccessor<
-    Member,
-    typeof Attendance.prototype.id
-  >
+  public readonly member: BelongsToAccessor<Member, typeof Attendance.prototype.id>
 
-  public readonly createdBy: BelongsToAccessor<
-    User,
-    typeof Attendance.prototype.id
-  >
+  public readonly createdBy: BelongsToAccessor<User, typeof Attendance.prototype.id>
 
-  public readonly dailyVisit: BelongsToAccessor<
-    DailyVisit,
-    typeof Attendance.prototype.id
-  >
+  public readonly dailyVisit: BelongsToAccessor<DailyVisit, typeof Attendance.prototype.id>
 
   constructor(
     @inject('datasources.postgres') dataSource: PostgresDataSource,
@@ -47,30 +34,15 @@ export class AttendanceRepository extends DefaultCrudRepository<
   ) {
     super(Attendance, dataSource)
 
-    this.member = this.createBelongsToAccessorFor(
-      'member',
-      memberRepositoryGetter,
-    )
+    this.member = this.createBelongsToAccessorFor('member', memberRepositoryGetter)
     this.registerInclusionResolver('member', this.member.inclusionResolver)
 
-    this.createdBy = this.createBelongsToAccessorFor(
-      'createdBy',
-      userRepositoryGetter,
-    )
-    this.registerInclusionResolver(
-      'createdBy',
-      this.createdBy.inclusionResolver,
-    )
+    this.createdBy = this.createBelongsToAccessorFor('createdBy', userRepositoryGetter)
+    this.registerInclusionResolver('createdBy', this.createdBy.inclusionResolver)
 
-    this.dailyVisit = this.createBelongsToAccessorFor(
-      'dailyVisit',
-      dailyVisitRepositoryGetter,
-    )
+    this.dailyVisit = this.createBelongsToAccessorFor('dailyVisit', dailyVisitRepositoryGetter)
 
-    this.registerInclusionResolver(
-      'dailyVisit',
-      this.dailyVisit.inclusionResolver,
-    )
+    this.registerInclusionResolver('dailyVisit', this.dailyVisit.inclusionResolver)
   }
 
   async findIdsForList(filters?: AttendanceListFilters): Promise<number[]> {
@@ -113,8 +85,7 @@ export class AttendanceRepository extends DefaultCrudRepository<
     `)
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
     const query = `
     SELECT a."id"

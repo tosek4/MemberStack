@@ -25,15 +25,9 @@ export class MemberRepository extends DefaultCrudRepository<
 > {
   public readonly createdBy: BelongsToAccessor<User, typeof Member.prototype.id>
 
-  public readonly attendances: HasManyRepositoryFactory<
-    Attendance,
-    typeof Member.prototype.id
-  >
+  public readonly attendances: HasManyRepositoryFactory<Attendance, typeof Member.prototype.id>
 
-  public readonly payments: HasManyRepositoryFactory<
-    Payment,
-    typeof Member.prototype.id
-  >
+  public readonly payments: HasManyRepositoryFactory<Payment, typeof Member.prototype.id>
 
   public readonly subscriptions: HasManyRepositoryFactory<
     MemberSubscription,
@@ -53,38 +47,23 @@ export class MemberRepository extends DefaultCrudRepository<
   ) {
     super(Member, dataSource)
 
-    this.createdBy = this.createBelongsToAccessorFor(
-      'createdBy',
-      userRepositoryGetter,
-    )
-    this.registerInclusionResolver(
-      'createdBy',
-      this.createdBy.inclusionResolver,
-    )
+    this.createdBy = this.createBelongsToAccessorFor('createdBy', userRepositoryGetter)
+    this.registerInclusionResolver('createdBy', this.createdBy.inclusionResolver)
 
     this.attendances = this.createHasManyRepositoryFactoryFor(
       'attendances',
       attendanceRepositoryGetter,
     )
-    this.registerInclusionResolver(
-      'attendances',
-      this.attendances.inclusionResolver,
-    )
+    this.registerInclusionResolver('attendances', this.attendances.inclusionResolver)
 
-    this.payments = this.createHasManyRepositoryFactoryFor(
-      'payments',
-      paymentRepositoryGetter,
-    )
+    this.payments = this.createHasManyRepositoryFactoryFor('payments', paymentRepositoryGetter)
     this.registerInclusionResolver('payments', this.payments.inclusionResolver)
 
     this.subscriptions = this.createHasManyRepositoryFactoryFor(
       'subscriptions',
       memberSubscriptionRepositoryGetter,
     )
-    this.registerInclusionResolver(
-      'subscriptions',
-      this.subscriptions.inclusionResolver,
-    )
+    this.registerInclusionResolver('subscriptions', this.subscriptions.inclusionResolver)
   }
 
   async findIdsForList(filters?: MemberListFilters): Promise<number[]> {
@@ -133,8 +112,7 @@ export class MemberRepository extends DefaultCrudRepository<
     `)
     }
 
-    const whereClause =
-      conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
+    const whereClause = conditions.length > 0 ? `WHERE ${conditions.join(' AND ')}` : ''
 
     const query = `
     SELECT m."id"

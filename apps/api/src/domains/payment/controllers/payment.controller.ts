@@ -1,15 +1,6 @@
 import { service } from '@loopback/core'
 import { Count, Where } from '@loopback/repository'
-import {
-  api,
-  del,
-  get,
-  param,
-  patch,
-  post,
-  requestBody,
-  response,
-} from '@loopback/rest'
+import { api, del, get, param, patch, post, requestBody, response } from '@loopback/rest'
 import { Payment } from '../models'
 import { PaymentService } from '../service'
 import {
@@ -29,12 +20,7 @@ import { authorize } from '@loopback/authorization/dist/decorators/authorize'
 @authenticate('jwt')
 @api({ basePath: '/payments' })
 @authorize({
-  allowedRoles: [
-    AppRole.ADMIN,
-    AppRole.SUPER_ADMIN,
-    AppRole.MANAGER,
-    AppRole.RECEPTIONIST,
-  ],
+  allowedRoles: [AppRole.ADMIN, AppRole.SUPER_ADMIN, AppRole.MANAGER, AppRole.RECEPTIONIST],
   voters: ['authorization.authorizers.role'],
 })
 export class PaymentController {

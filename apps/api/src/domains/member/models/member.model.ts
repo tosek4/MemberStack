@@ -1,10 +1,4 @@
-import {
-  belongsTo,
-  Entity,
-  hasMany,
-  model,
-  property,
-} from '@loopback/repository'
+import { belongsTo, Entity, hasMany, model, property } from '@loopback/repository'
 import { User } from '../../user/models'
 import { Attendance } from '../../attendance/models'
 import { Payment } from '../../payment/models'
@@ -61,11 +55,13 @@ export class Member extends Entity {
   @property({
     type: 'string',
   })
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   emergency_contact?: string
 
   @property({
     type: 'string',
   })
+  // eslint-disable-next-line @typescript-eslint/naming-convention
   profile_image?: string
 
   @property({

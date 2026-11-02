@@ -1,4 +1,4 @@
-import { post, param, response, api, get } from '@loopback/rest'
+import { post, param, response, api } from '@loopback/rest'
 import { authenticate } from '@loopback/authentication'
 import { service } from '@loopback/core'
 

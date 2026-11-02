@@ -99,7 +99,7 @@ export class MemberQRCodeService {
   }
 
   async findActiveQRCode(memberId: number): Promise<MemberQRCode | null> {
-    return await this.memberQRCodeRepository.findOne({
+    return this.memberQRCodeRepository.findOne({
       where: { memberId, status: 'active' },
       order: ['issuedAt DESC'],
     })

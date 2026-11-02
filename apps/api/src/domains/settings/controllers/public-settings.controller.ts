@@ -5,9 +5,7 @@ import { PublicSettings } from '../types'
 
 @api({ basePath: '/settings/public' })
 export class PublicSettingsController {
-  constructor(
-    @service(SettingsService) private settingsService: SettingsService,
-  ) {}
+  constructor(@service(SettingsService) private settingsService: SettingsService) {}
 
   @get('/')
   @response(200, {

@@ -11,12 +11,7 @@ export interface MemberSubscriptionRelations {
   payments?: PaymentWithRelations[]
 }
 
-export type MemberSubscriptionStatus =
-  | 'active'
-  | 'inactive'
-  | 'expired'
-  | 'suspended'
-  | 'blocked'
+export type MemberSubscriptionStatus = 'active' | 'inactive' | 'expired' | 'suspended' | 'blocked'
 
 export interface MemberSubscriptionFilters {
   search?: string
