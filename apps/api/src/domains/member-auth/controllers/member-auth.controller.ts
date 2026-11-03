@@ -1,5 +1,16 @@
 import { inject, service } from '@loopback/core'
-import { api, get, post, requestBody, response, RestBindings, Request, param } from '@loopback/rest'
+import {
+  api,
+  get,
+  post,
+  requestBody,
+  response,
+  RestBindings,
+  Request,
+  RequestBodyObject,
+  param,
+  patch,
+} from '@loopback/rest'
 
 import { MemberAuthService } from '../service/member-auth.service'
 import {
@@ -9,6 +20,7 @@ import {
   MeResponseSchema,
   MyQrCodeResponseSchema,
   RefreshRequestSchema,
+  UpdateMemberProfileRequestSchema,
   VerifyCodeBodyRequestSchema,
 } from './member-auth.docs'
 import { MemberCheckInHistoryResponse, MemberData, MemberSubscriptionData } from '../types'
@@ -119,5 +131,20 @@ export class MemberAuthController {
     const token = extractBearerToken(this.request.headers.authorization)
 
     return this.memberAuthService.getMemberCheckInHistory(token, limit, offset)
+  }
+
+  @patch('/me')
+  @response(200, MeResponseSchema)
+  async updateMe(
+    @requestBody(UpdateMemberProfileRequestSchema as Partial<RequestBodyObject>)
+    body: {
+      firstName?: string
+      lastName?: string
+      phone?: string | null
+    },
+  ): Promise<MemberData> {
+    const token = extractBearerToken(this.request.headers.authorization)
+
+    return this.memberAuthService.updateMemberProfile(token, body)
   }
 }

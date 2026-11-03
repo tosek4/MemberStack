@@ -293,6 +293,61 @@ export class MemberAuthService {
     }
   }
 
+  async updateMemberProfile(
+    accessToken: string,
+    data: {
+      firstName?: string
+      lastName?: string
+      phone?: string | null
+    },
+  ): Promise<MemberData> {
+    const memberId = verifyMemberAccessToken(accessToken)
+
+    const member = await this.findActiveMemberById(memberId)
+
+    if (!member) {
+      throw new HttpErrors.Unauthorized('Invalid or expired access token.')
+    }
+
+    const updateData: {
+      firstName?: string
+      lastName?: string
+      phone?: string | null
+    } = {}
+
+    if (data.firstName !== undefined) {
+      const firstName = data.firstName.trim()
+
+      if (!firstName) {
+        throw new HttpErrors.BadRequest('First name cannot be empty.')
+      }
+
+      updateData.firstName = firstName
+    }
+
+    if (data.lastName !== undefined) {
+      const lastName = data.lastName.trim()
+
+      if (!lastName) {
+        throw new HttpErrors.BadRequest('Last name cannot be empty.')
+      }
+
+      updateData.lastName = lastName
+    }
+
+    if (data.phone !== undefined) {
+      updateData.phone = data.phone?.trim() || null
+    }
+
+    if (Object.keys(updateData).length === 0) {
+      throw new HttpErrors.BadRequest('No profile fields provided.')
+    }
+
+    await this.memberRepository.updateById(memberId, updateData as Partial<Member>)
+
+    return this.getMemberInfo(accessToken)
+  }
+
   // ---------------------------- Private Methods ----------------------------
   private async findActiveMemberByEmail(email: string): Promise<Member | null> {
     const member = await this.memberRepository.findOne({ where: { email } })

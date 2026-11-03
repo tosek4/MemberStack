@@ -136,3 +136,35 @@ export const MemberCheckInHistoryRequestSchema = {
   },
   required: true,
 }
+
+export const UpdateMemberProfileSchema = {
+  type: 'object',
+  required: ['refreshToken'],
+  properties: {
+    firstName: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+    },
+    lastName: {
+      type: 'string',
+      minLength: 1,
+      maxLength: 100,
+    },
+    phone: {
+      type: 'string',
+      maxLength: 30,
+      nullable: true,
+    },
+  },
+}
+
+export const UpdateMemberProfileRequestSchema = {
+  description: 'Update the authenticated member profile',
+  content: {
+    'application/json': {
+      schema: UpdateMemberProfileSchema,
+    },
+  },
+  required: true,
+}
