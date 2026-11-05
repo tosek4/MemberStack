@@ -60,3 +60,27 @@ export interface MemberCheckInHistoryResponse {
     hasMore: boolean
   }
 }
+
+export interface MemberPaymentHistoryItem {
+  id: number
+  amount: number
+  currency: 'EUR'
+  paymentMethod: string
+  status: string
+  paidAt: Date | undefined
+  transactionReference?: string
+  membershipPlan: {
+    id: number
+    name: string
+  } | null
+}
+
+export interface MemberPaymentHistoryResponse {
+  payments: MemberPaymentHistoryItem[]
+  pagination: {
+    limit: number
+    offset: number
+    total: number
+    hasMore: boolean
+  }
+}

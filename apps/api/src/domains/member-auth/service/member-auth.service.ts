@@ -13,6 +13,8 @@ import {
   MemberCheckInHistoryItem,
   MemberCheckInHistoryResponse,
   MemberData,
+  MemberPaymentHistoryItem,
+  MemberPaymentHistoryResponse,
   MemberSubscriptionData,
 } from '../types'
 import {
@@ -30,6 +32,8 @@ import { MemberQRCodeService } from '../../member-qrcode/services/member-qrcode.
 import { MEMBER_QR_CODE_SERVICE } from '../../member-qrcode/keys'
 import { AttendanceRepository } from '../../attendance/repositories'
 import { Attendance } from '../../attendance/models'
+import { PaymentRepository } from '../../payment/repositories'
+import { Payment } from '../../payment/models'
 export interface TokenPair {
   accessToken: string
   refreshToken: string
@@ -53,6 +57,9 @@ export class MemberAuthService {
 
     @repository(AttendanceRepository)
     private attendanceRepository: AttendanceRepository,
+
+    @repository(PaymentRepository)
+    private paymentRepository: PaymentRepository,
 
     @inject(EMAIL_SERVICE)
     private emailService: EmailService,
@@ -346,6 +353,63 @@ export class MemberAuthService {
     await this.memberRepository.updateById(memberId, updateData as Partial<Member>)
 
     return this.getMemberInfo(accessToken)
+  }
+
+  async getMemberPaymentHistory(
+    accessToken: string,
+    limit = 10,
+    offset = 0,
+  ): Promise<MemberPaymentHistoryResponse> {
+    const memberId = verifyMemberAccessToken(accessToken)
+
+    await this.findActiveMemberById(memberId)
+
+    const safeLimit = Math.min(Math.max(limit, 1), 100)
+    const safeOffset = Math.max(offset, 0)
+
+    const where = { memberId }
+
+    const [payments, total] = await Promise.all([
+      this.paymentRepository.find({
+        where,
+        order: ['paidAt DESC', 'id DESC'],
+        limit: safeLimit,
+        skip: safeOffset,
+        include: [
+          {
+            relation: 'memberSubscription',
+            scope: {
+              include: ['membershipPlan'],
+            },
+          },
+        ],
+      }),
+      this.paymentRepository.count(where),
+    ])
+
+    return {
+      payments: payments.map((payment) => ({
+        id: payment.id!,
+        amount: payment.amount!,
+        currency: 'EUR',
+        paymentMethod: payment.paymentMethod,
+        status: payment.status ?? 'pending',
+        paidAt: payment.paidAt!,
+        transactionReference: payment.transactionReference,
+        membershipPlan: payment.memberSubscription?.membershipPlan
+          ? {
+              id: payment.memberSubscription.membershipPlan.id!,
+              name: payment.memberSubscription.membershipPlan.name,
+            }
+          : null,
+      })),
+      pagination: {
+        limit: safeLimit,
+        offset: safeOffset,
+        total: total.count,
+        hasMore: safeOffset + payments.length < total.count,
+      },
+    }
   }
 
   // ---------------------------- Private Methods ----------------------------

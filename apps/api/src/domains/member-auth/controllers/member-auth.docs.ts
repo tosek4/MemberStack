@@ -168,3 +168,57 @@ export const UpdateMemberProfileRequestSchema = {
   },
   required: true,
 }
+
+export const MemberPaymentHistoryResponseSchema = {
+  type: 'object',
+  properties: {
+    payments: {
+      type: 'array',
+      items: {
+        type: 'object',
+        properties: {
+          id: { type: 'number' },
+          amount: { type: 'number' },
+          currency: { type: 'string', enum: ['EUR'] },
+          paymentMethod: { type: 'string' },
+          status: { type: 'string' },
+          paidAt: { type: 'string', format: 'date-time' },
+          transactionReference: { type: 'string' },
+          membershipPlan: {
+            oneOf: [
+              {
+                type: 'object',
+                properties: {
+                  id: { type: 'number' },
+                  name: { type: 'string' },
+                },
+                required: ['id', 'name'],
+              },
+              { type: 'null' },
+            ],
+          },
+        },
+        required: [
+          'id',
+          'amount',
+          'currency',
+          'paymentMethod',
+          'status',
+          'paidAt',
+          'membershipPlan',
+        ],
+      },
+    },
+    pagination: {
+      type: 'object',
+      properties: {
+        limit: { type: 'number' },
+        offset: { type: 'number' },
+        total: { type: 'number' },
+        hasMore: { type: 'boolean' },
+      },
+      required: ['limit', 'offset', 'total', 'hasMore'],
+    },
+  },
+  required: ['payments', 'pagination'],
+}

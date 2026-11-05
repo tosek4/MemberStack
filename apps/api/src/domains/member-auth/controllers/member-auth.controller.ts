@@ -17,13 +17,19 @@ import {
   CreateMemberCodeRequestSchema,
   LogoutRequestSchema,
   MemberCheckInHistoryRequestSchema,
+  MemberPaymentHistoryResponseSchema,
   MeResponseSchema,
   MyQrCodeResponseSchema,
   RefreshRequestSchema,
   UpdateMemberProfileRequestSchema,
   VerifyCodeBodyRequestSchema,
 } from './member-auth.docs'
-import { MemberCheckInHistoryResponse, MemberData, MemberSubscriptionData } from '../types'
+import {
+  MemberCheckInHistoryResponse,
+  MemberData,
+  MemberPaymentHistoryResponse,
+  MemberSubscriptionData,
+} from '../types'
 import { extractBearerToken } from '../utils'
 
 @api({ basePath: '/member-auth' })
@@ -146,5 +152,23 @@ export class MemberAuthController {
     const token = extractBearerToken(this.request.headers.authorization)
 
     return this.memberAuthService.updateMemberProfile(token, body)
+  }
+
+  @get('/payments')
+  @response(200, {
+    description: 'Member payment history',
+    content: {
+      'application/json': {
+        schema: MemberPaymentHistoryResponseSchema,
+      },
+    },
+  })
+  async getMemberPaymentHistory(
+    @param.query.number('limit', { required: false }) limit = 10,
+    @param.query.number('offset', { required: false }) offset = 0,
+  ): Promise<MemberPaymentHistoryResponse> {
+  const accessToken = extractBearerToken(this.request.headers.authorization)
+
+    return this.memberAuthService.getMemberPaymentHistory(accessToken, limit, offset)
   }
 }
