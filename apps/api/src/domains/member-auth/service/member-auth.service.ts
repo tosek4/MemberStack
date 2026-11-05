@@ -13,7 +13,6 @@ import {
   MemberCheckInHistoryItem,
   MemberCheckInHistoryResponse,
   MemberData,
-  MemberPaymentHistoryItem,
   MemberPaymentHistoryResponse,
   MemberSubscriptionData,
 } from '../types'
@@ -33,7 +32,6 @@ import { MEMBER_QR_CODE_SERVICE } from '../../member-qrcode/keys'
 import { AttendanceRepository } from '../../attendance/repositories'
 import { Attendance } from '../../attendance/models'
 import { PaymentRepository } from '../../payment/repositories'
-import { Payment } from '../../payment/models'
 export interface TokenPair {
   accessToken: string
   refreshToken: string
@@ -343,7 +341,7 @@ export class MemberAuthService {
     }
 
     if (data.phone !== undefined) {
-      updateData.phone = data.phone?.trim() || null
+      updateData.phone = data.phone?.trim() ?? null
     }
 
     if (Object.keys(updateData).length === 0) {

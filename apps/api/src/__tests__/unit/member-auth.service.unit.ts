@@ -49,6 +49,7 @@ function setup() {
     emailService as never,
     {} as never, // MemberQRCodeService: not used by these tests
     {} as never,
+    {} as never, // AttendanceRepository: not used by these tests
   )
 
   return { service, memberRepository, codeRepository, refreshTokenRepository }
